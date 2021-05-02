@@ -1,4 +1,4 @@
-PROJECT TIMELINE:
+#PROJECT TIMELINE:
 
 Week 0 (May 3-10):
 - Environment Setup (Android Studio, Git, Flutter, Dart)
