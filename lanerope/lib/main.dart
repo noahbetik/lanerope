@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import './screens/home.dart';
+import "./screens/login.dart";
 import 'dart:io';
 
 void main() {
@@ -12,6 +13,9 @@ class LaneropeApp extends StatelessWidget {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
         title: "Lanerope",
-        home: Home());
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: Login());
   }
 }
