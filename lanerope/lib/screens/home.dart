@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:lanerope/screens/calendar.dart';
 import 'dart:io';
-import './screens/calendar.dart';
+/*import './screens/calendar.dart';
 import './screens/forms.dart';
 import './screens/coachDM.dart';
 import './screens/athlete.dart';
-import './screens/settings.dart';
+import './screens/settings.dart';*/
 
 import 'calendar.dart';
 import 'forms.dart';
 import 'coachDM.dart';
-import 'athlete.dart';
+import 'athleteInfo.dart';
 import 'settings.dart';
 
 bool ios = Platform.isIOS;
@@ -75,7 +75,7 @@ class Home extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => Athlete()),
+                  MaterialPageRoute(builder: (context) => AthleteInfo()),
                 );
               },
             ),

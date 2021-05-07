@@ -4,12 +4,9 @@ import 'dart:io';
 bool ios = Platform.isIOS;
 bool android = Platform.isAndroid;
 
-class Athlete extends StatelessWidget {
+class Login extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(title: Text("Athlete Info")),
-        body: Material()
-    );
+    return ; // login page
   }
 }
