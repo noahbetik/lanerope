@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
-import './screens/home.dart';
-
 
 bool ios = Platform.isIOS;
 bool android = Platform.isAndroid;

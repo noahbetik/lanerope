@@ -4,11 +4,11 @@ import 'dart:io';
 bool ios = Platform.isIOS;
 bool android = Platform.isAndroid;
 
-class Calendar extends StatelessWidget {
+class CoachDM extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text("Calendar")),
+        appBar: AppBar(title: Text("Direct Messages")),
         body: Material()
     );
   }

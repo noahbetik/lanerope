@@ -1,5 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:lanerope/screens/calendar.dart';
 import 'dart:io';
+import './screens/calendar.dart';
+import './screens/forms.dart';
+import './screens/coachDM.dart';
+import './screens/athlete.dart';
+import './screens/settings.dart';
+
+import 'calendar.dart';
+import 'forms.dart';
+import 'coachDM.dart';
+import 'athlete.dart';
+import 'settings.dart';
 
 bool ios = Platform.isIOS;
 bool android = Platform.isAndroid;
@@ -24,57 +36,56 @@ class Home extends StatelessWidget {
           // Important: Remove any padding from the ListView.
           padding: EdgeInsets.zero,
           children: <Widget>[
-            Container(
-                margin: EdgeInsets.zero,
-                width: 48.0,
-                height: 94.5,
-                child: DrawerHeader(
+            DrawerHeader(
                   child: Text('Pages',
                       style: TextStyle(color: Colors.white, fontSize: 24.0)),
                   decoration: BoxDecoration(
                     color: Colors.blue,
                   ),
-                )),
+                ),
             ListTile(
               title: Text('Calendar'),
               onTap: () {
-                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Calendar()),
+                );
               },
             ),
             ListTile(
               title: Text('Forms'),
               onTap: () {
-                // Update the state of the app
-                // ...
-                // Then close the drawer
-                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Forms()),
+                );
               },
             ),
             ListTile(
               title: Text('Coach DM'),
               onTap: () {
-                // Update the state of the app
-                // ...
-                // Then close the drawer
-                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CoachDM()),
+                );
               },
             ),
             ListTile(
               title: Text('Athlete Info'),
               onTap: () {
-                // Update the state of the app
-                // ...
-                // Then close the drawer
-                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Athlete()),
+                );
               },
             ),
             ListTile(
               title: Text('Settings'),
               onTap: () {
-                // Update the state of the app
-                // ...
-                // Then close the drawer
-                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Settings()),
+                );
               },
             ),
           ],
