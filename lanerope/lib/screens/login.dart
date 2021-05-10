@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:string_validator/string_validator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 bool ios = Platform.isIOS;
 bool android = Platform.isAndroid;
@@ -59,14 +61,16 @@ class _LoginState extends State<Login> {
                           }
                           return null;
                         }),
-                    ElevatedButton(
-                      onPressed: () {
+                    ElevatedButton (
+                      onPressed: () async {
                         // Validate returns true if the form is valid, or false otherwise.
                         if (_accountKey.currentState!.validate()) {
                           // If the form is valid, display a snackbar. In the real world,
                           // you'd often call a server or save the information in a database.
                           ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text('Welcome back!')));
+                          final prefs = await SharedPreferences.getInstance();
+                          prefs.setBool("login", true);
                           Navigator.of(context).pushReplacementNamed('/home');
                         }
                       },
