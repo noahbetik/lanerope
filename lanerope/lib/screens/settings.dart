@@ -26,7 +26,7 @@ class Settings extends StatelessWidget {
                 icon: Text("Log out", style: TextStyle(fontSize: textSize)),
                 onPressed: () async {
                   final prefs = await SharedPreferences.getInstance();
-                  prefs.setBool("login", true);
+                  prefs.setBool("login", false);
                   Navigator.of(context).pushReplacementNamed('/login');
                 },
                 alignment: Alignment.centerLeft,
