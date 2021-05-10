@@ -6,12 +6,12 @@ bool ios = Platform.isIOS;
 bool android = Platform.isAndroid;
 
 
-class Create extends StatefulWidget {
+class Account extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => _CreateState();
+  State<StatefulWidget> createState() => _AccountState();
 }
 
-class _CreateState extends State<Create> {
+class _AccountState extends State<Account> {
   String name = '';
 
   final _accountKey = GlobalKey<FormState>();
@@ -68,7 +68,7 @@ class _CreateState extends State<Create> {
                       validator: (user) {
                         if (user == null || checkLength(user, 2, 40)) {
                           return "Must be between 2 and 40 characters";
-                        }
+                        } // should probably restrict special characters to underscore and period
                         return null;
                       }),
                   TextFormField(
@@ -98,7 +98,7 @@ class _CreateState extends State<Create> {
                           // If the form is valid, display a snackbar. In the real world,
                           // you'd often call a server or save the information in a database.
                           ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Processing Data')));
+                              SnackBar(content: Text('Creating account...')));
                         }
                       },
                       child: Text("Create Account"),)
