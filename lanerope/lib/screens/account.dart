@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lanerope/screens/home.dart';
 import 'dart:io';
 import 'package:string_validator/string_validator.dart';
 
@@ -100,6 +101,10 @@ class _AccountState extends State<Account> {
                           ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text('Creating account...')));
                         }
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(builder: (context) => Home()),
+                                (Route<dynamic> route) => false);
                       },
                       child: Text("Create Account"),)
                 ],

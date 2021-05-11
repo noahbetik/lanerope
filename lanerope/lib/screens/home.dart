@@ -32,55 +32,55 @@ class Home extends StatelessWidget {
           padding: EdgeInsets.zero,
           children: <Widget>[
             DrawerHeader(
-                  child: Text('Pages',
-                      style: TextStyle(color: Colors.white, fontSize: 24.0)),
-                  decoration: BoxDecoration(
-                    color: Colors.blue,
-                  ),
-                ),
+              child: Text('Pages',
+                  style: TextStyle(color: Colors.white, fontSize: 24.0)),
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+            ),
             ListTile(
               title: Text('Calendar'),
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Calendar()),
-                );
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => Calendar()),
+                    (Route<dynamic> route) => false);
               },
             ),
             ListTile(
               title: Text('Forms'),
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Forms()),
-                );
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => Forms()),
+                    (Route<dynamic> route) => false);
               },
             ),
             ListTile(
               title: Text('Coach DM'),
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => CoachDM()),
-                );
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => CoachDM()),
+                    (Route<dynamic> route) => false);
               },
             ),
             ListTile(
               title: Text('Athlete Info'),
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => AthleteInfo()),
-                );
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => AthleteInfo()),
+                    (Route<dynamic> route) => false);
               },
             ),
             ListTile(
               title: Text('Settings'),
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Settings()),
-                );
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => Settings()),
+                    (Route<dynamic> route) => false);
               },
             ),
           ],

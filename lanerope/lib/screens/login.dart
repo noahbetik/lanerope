@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:lanerope/screens/account.dart';
 import 'dart:io';
 import 'package:string_validator/string_validator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'home.dart';
 
 
 bool ios = Platform.isIOS;
@@ -71,7 +74,10 @@ class _LoginState extends State<Login> {
                               SnackBar(content: Text('Welcome back!')));
                           final prefs = await SharedPreferences.getInstance();
                           prefs.setBool("login", true);
-                          Navigator.of(context).pushReplacementNamed('/home');
+                          Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(builder: (context) => Home()),
+                                  (Route<dynamic> route) => false);
                         }
                       },
                       child: Text("Log In"),
@@ -82,7 +88,12 @@ class _LoginState extends State<Login> {
               Spacer(),
               Text("New here? Create an account"),
               ElevatedButton(
-                  onPressed: () {}, child: Text("Create an account"))
+                  onPressed: () {
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (context) => Account()),
+                            (Route<dynamic> route) => false);
+                  }, child: Text("Create an account"))
             ])));
   }
 }
