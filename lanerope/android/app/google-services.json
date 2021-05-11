@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "616894369632",
+    "project_id": "lanerope-nb",
+    "storage_bucket": "lanerope-nb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:616894369632:android:d079b8c1f0fc3c86739805",
+        "android_client_info": {
+          "package_name": "com.example.lanerope"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "616894369632-kdmcvomu3eb4qdkc3ot8la1hkics2p9s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCA6vbD9_WngloXrtRceRiQdLKITS5aVow"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "616894369632-kdmcvomu3eb4qdkc3ot8la1hkics2p9s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
