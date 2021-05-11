@@ -39,6 +39,15 @@ class Home extends StatelessWidget {
               ),
             ),
             ListTile(
+              title: Text('Home'),
+              onTap: () {
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => Home()),
+                        (Route<dynamic> route) => false);
+              },
+            ),
+            ListTile(
               title: Text('Calendar'),
               onTap: () {
                 Navigator.pushAndRemoveUntil(

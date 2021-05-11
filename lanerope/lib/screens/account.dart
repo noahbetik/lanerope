@@ -100,11 +100,11 @@ class _AccountState extends State<Account> {
                           // you'd often call a server or save the information in a database.
                           ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text('Creating account...')));
+                          Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(builder: (context) => Home()),
+                                  (Route<dynamic> route) => false);
                         }
-                        Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(builder: (context) => Home()),
-                                (Route<dynamic> route) => false);
                       },
                       child: Text("Create Account"),)
                 ],
