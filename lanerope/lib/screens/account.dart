@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lanerope/screens/home.dart';
 import 'dart:io';
 import 'package:string_validator/string_validator.dart';
+//import 'package:firebase_auth/firebase_auth.dart';
 
 bool ios = Platform.isIOS;
 bool android = Platform.isAndroid;
@@ -93,13 +94,16 @@ class _AccountState extends State<Account> {
                         return null;
                       }),
                   ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         // Validate returns true if the form is valid, or false otherwise.
                         if (_accountKey.currentState!.validate()) {
                           // If the form is valid, display a snackbar. In the real world,
                           // you'd often call a server or save the information in a database.
                           ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text('Creating account...')));
+
+
+
                           Navigator.pushAndRemoveUntil(
                               context,
                               MaterialPageRoute(builder: (context) => Home()),

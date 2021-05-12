@@ -4,20 +4,14 @@ import "./screens/account.dart";
 import "./screens/login.dart";
 import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Widget _defaultHome = Login();
-  final prefs = await SharedPreferences.getInstance();
+  print("aight lets go");
 
-  final bool _status = prefs.getBool("login") ?? false;
-  print(_status);
-
-  /*if (_loggedIn) {
-    _defaultHome == Home();
-  }*/
-
-  runApp(new MaterialApp(
+  /*runApp(new MaterialApp(
       debugShowCheckedModeBanner: false,
       title: "Lanerope",
       theme: ThemeData(
@@ -27,18 +21,73 @@ void main() async {
       routes: <String, WidgetBuilder>{
         '/home': (BuildContext context) => new Home(),
         '/login': (BuildContext context) => new Login()
-      }));
+      }));*/
+  runApp(Lanerope());
+
 }
 
-/*class LaneropeApp extends StatelessWidget {
+Future<bool> loginState() async {
+  final prefs = await SharedPreferences.getInstance();
+  final bool _status = prefs.getBool("login") ?? false; // future bool is true if logged in
+  print(_status);
+  return _status;
+}
+
+class Lanerope extends StatefulWidget {
+  // Create the initialization Future outside of `build`:
+  @override
+  _LaneropeState createState() {
+    print("inside stateful widget");
+    return _LaneropeState();
+  }
+}
+
+class _LaneropeState extends State<Lanerope> {
+  /// The future is part of the state of our widget. We should not call `initializeApp`
+  /// directly inside [build].
+
+
+  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
+  final Future<bool> _login = loginState();
+
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: "Lanerope",
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
-        home: Home());
+    print("inside build widget");
+    return FutureBuilder(
+      // Initialize FlutterFire:
+      future:  Future.wait([_initialization, _login]),
+      builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
+        // Check for errors
+        /*if (snapshot.hasError) {
+          return SomethingWentWrong();
+        }*/
+        print("waiting for future");
+
+        // Once complete, show your application
+        if (snapshot.connectionState == ConnectionState.done) {
+          print("database connected");
+          bool login = false;
+          if (snapshot.data![1] == true){
+            login = true;
+            print("user already logged in");
+          }
+          return new MaterialApp(
+              debugShowCheckedModeBanner: false,
+              title: "Lanerope",
+              theme: ThemeData(
+                primarySwatch: Colors.blue,
+              ),
+              home: login == true ? Home() : Login(),
+              routes: <String, WidgetBuilder>{
+                '/home': (BuildContext context) => new Home(),
+                '/login': (BuildContext context) => new Login()
+              });
+        }
+
+        // Otherwise, show something whilst waiting for initialization to complete
+        return CircularProgressIndicator.adaptive(); // great place to put a splash screen or something
+      },
+    );
   }
-}*/
+}
