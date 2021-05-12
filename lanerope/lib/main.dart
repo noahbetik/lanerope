@@ -23,12 +23,12 @@ void main() async {
         '/login': (BuildContext context) => new Login()
       }));*/
   runApp(Lanerope());
-
 }
 
 Future<bool> loginState() async {
   final prefs = await SharedPreferences.getInstance();
-  final bool _status = prefs.getBool("login") ?? false; // future bool is true if logged in
+  final bool _status =
+      prefs.getBool("login") ?? false; // future bool is true if logged in
   print(_status);
   return _status;
 }
@@ -46,17 +46,15 @@ class _LaneropeState extends State<Lanerope> {
   /// The future is part of the state of our widget. We should not call `initializeApp`
   /// directly inside [build].
 
-
   final Future<FirebaseApp> _initialization = Firebase.initializeApp();
   final Future<bool> _login = loginState();
-
 
   @override
   Widget build(BuildContext context) {
     print("inside build widget");
     return FutureBuilder(
       // Initialize FlutterFire:
-      future:  Future.wait([_initialization, _login]),
+      future: Future.wait([_initialization, _login]),
       builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
         // Check for errors
         /*if (snapshot.hasError) {
@@ -68,7 +66,7 @@ class _LaneropeState extends State<Lanerope> {
         if (snapshot.connectionState == ConnectionState.done) {
           print("database connected");
           bool login = false;
-          if (snapshot.data![1] == true){
+          if (snapshot.data![1] == true) {
             login = true;
             print("user already logged in");
           }
@@ -86,7 +84,8 @@ class _LaneropeState extends State<Lanerope> {
         }
 
         // Otherwise, show something whilst waiting for initialization to complete
-        return CircularProgressIndicator.adaptive(); // great place to put a splash screen or something
+        return CircularProgressIndicator
+            .adaptive(); // great place to put a splash screen or something
       },
     );
   }
