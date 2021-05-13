@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lanerope/screens/calendar.dart';
 import 'dart:io';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import 'calendar.dart';
 import 'forms.dart';
@@ -10,6 +12,7 @@ import 'settings.dart';
 
 bool ios = Platform.isIOS;
 bool android = Platform.isAndroid;
+FirebaseAuth auth = FirebaseAuth.instance;
 
 class Home extends StatelessWidget {
   @override
