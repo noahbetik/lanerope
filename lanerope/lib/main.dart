@@ -10,18 +10,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   print("aight lets go");
-
-  /*runApp(new MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: "Lanerope",
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: _status == true ? Home() : Login(),
-      routes: <String, WidgetBuilder>{
-        '/home': (BuildContext context) => new Home(),
-        '/login': (BuildContext context) => new Login()
-      }));*/
   runApp(Lanerope());
 }
 
@@ -82,7 +70,6 @@ class _LaneropeState extends State<Lanerope> {
                 '/login': (BuildContext context) => new Login()
               });
         }
-
         // Otherwise, show something whilst waiting for initialization to complete
         return CircularProgressIndicator
             .adaptive(); // great place to put a splash screen or something

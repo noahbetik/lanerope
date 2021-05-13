@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:string_validator/string_validator.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-//import 'package:email_validator/email_validator.dart';
+import 'package:lanerope/AddUser.dart';
 
 bool ios = Platform.isIOS;
 bool android = Platform.isAndroid;
@@ -17,8 +17,12 @@ class Account extends StatefulWidget {
 
 class _AccountState extends State<Account> {
   String name = '';
-
+  String role = "Athlete";
   final _accountKey = GlobalKey<FormState>();
+  final emailGrabber = TextEditingController();
+  final passGrabber = TextEditingController();
+  final fNameGrabber = TextEditingController();
+  final lNameGrabber = TextEditingController();
 
   bool checkLength(String text, int min, int max) {
     if (text.length < min || text.length > max) {
@@ -31,15 +35,13 @@ class _AccountState extends State<Account> {
     return !isAlpha(text);
   }
 
-  final emailGrabber = TextEditingController();
-  final passGrabber = TextEditingController();
-
   @override
   void dispose() {
     // to be used later?? idk where
-    // Clean up the controller when the widget is disposed.
     emailGrabber.dispose();
     passGrabber.dispose();
+    fNameGrabber.dispose();
+    lNameGrabber.dispose();
     super.dispose();
   }
 
@@ -56,7 +58,8 @@ class _AccountState extends State<Account> {
               key: _accountKey,
               child: Column(
                 children: <Widget>[
-                  TextFormField(
+                  TextFormField( // do space scrubbing
+                      controller: fNameGrabber,
                       decoration: InputDecoration(hintText: 'Given name'),
                       validator: (name) {
                         if (name == null || checkLength(name, 2, 40)) {
@@ -67,7 +70,8 @@ class _AccountState extends State<Account> {
                         }
                         return null;
                       }),
-                  TextFormField(
+                  TextFormField( // do space scrubbing
+                      controller: lNameGrabber,
                       decoration: InputDecoration(hintText: 'Family name'),
                       validator: (name) {
                         if (name == null || checkLength(name, 2, 40)) {
@@ -80,9 +84,9 @@ class _AccountState extends State<Account> {
                       }),
                   TextFormField(
                       controller: emailGrabber,
-                      decoration: InputDecoration(hintText: 'email'),
+                      decoration: InputDecoration(hintText: 'Email address'),
                       validator: (email) {
-                        if (email == null) {
+                        if (email == null || !isEmail(email)) {
                           // need a better email checking method with null safety
                           return "Please enter a valid email address";
                         }
@@ -119,12 +123,33 @@ class _AccountState extends State<Account> {
                         }
                         return null;
                       }),
+                  Container(
+                    alignment: Alignment.bottomLeft,
+                    padding: EdgeInsets.only(top: 8.0, bottom: 3.0),
+                    child: DropdownButton<String>(
+                      value: role,
+                      items: <String>[
+                        'Athlete',
+                        'Parent/Guardian',
+                        'Coach/Admin',
+                        'Assistant Coach' // need validation for coach roles
+                      ].map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                      onChanged: (String? newRole) {
+                        setState(() {
+                          role = newRole!;
+                        });
+                      },
+                    ),
+                  ),
+                  Spacer(),
                   ElevatedButton(
                     onPressed: () async {
-                      // Validate returns true if the form is valid, or false otherwise.
                       if (_accountKey.currentState!.validate()) {
-                        // If the form is valid, display a snackbar. In the real world,
-                        // you'd often call a server or save the information in a database.
                         try {
                           UserCredential userCredential = await FirebaseAuth
                               .instance
@@ -143,6 +168,9 @@ class _AccountState extends State<Account> {
                         }
 
                         String uid = auth.currentUser!.uid;
+                        AddUser dbAdd = AddUser(
+                            uid, fNameGrabber.text, lNameGrabber.text, role);
+                        dbAdd.addUser();
 
                         ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text('Creating account...')));
