@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import 'athleteInfo.dart';
 import 'calendar.dart';
@@ -104,6 +105,7 @@ class Settings extends StatelessWidget {
               child: IconButton(
                 icon: Text("Log out", style: TextStyle(fontSize: textSize)),
                 onPressed: () async {
+                  await FirebaseAuth.instance.signOut();
                   final prefs = await SharedPreferences.getInstance();
                   prefs.setBool("login", false);
                   Navigator.of(context).pushReplacementNamed('/login');

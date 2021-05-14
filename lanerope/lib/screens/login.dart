@@ -3,9 +3,9 @@ import 'package:lanerope/screens/account.dart';
 import 'dart:io';
 import 'package:string_validator/string_validator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import 'home.dart';
-
 
 bool ios = Platform.isIOS;
 bool android = Platform.isAndroid;
@@ -17,8 +17,10 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   String name = '';
-
+  FirebaseAuth log = FirebaseAuth.instance;
   final _accountKey = GlobalKey<FormState>();
+  final emailGrabber = TextEditingController();
+  final passGrabber = TextEditingController();
 
   bool checkLength(String text, int min, int max) {
     if (text.length < min || text.length > max) {
@@ -46,7 +48,8 @@ class _LoginState extends State<Login> {
                 child: Column(
                   children: <Widget>[
                     TextFormField(
-                        decoration: InputDecoration(hintText: 'Username'),
+                        controller: emailGrabber,
+                        decoration: InputDecoration(hintText: 'Email address'),
                         validator: (user) {
                           if (user == null || checkLength(user, 2, 40)) {
                             return "Must be between 2 and 40 characters";
@@ -54,6 +57,7 @@ class _LoginState extends State<Login> {
                           return null;
                         }),
                     TextFormField(
+                        controller: passGrabber,
                         decoration: InputDecoration(hintText: 'Password'),
                         validator: (pass) {
                           if (pass == null || checkLength(pass, 8, 40)) {
@@ -64,20 +68,40 @@ class _LoginState extends State<Login> {
                           }
                           return null;
                         }),
-                    ElevatedButton (
+                    ElevatedButton(
                       onPressed: () async {
-                        // Validate returns true if the form is valid, or false otherwise.
+                        int errorCode = 0;
                         if (_accountKey.currentState!.validate()) {
-                          // If the form is valid, display a snackbar. In the real world,
-                          // you'd often call a server or save the information in a database.
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Welcome back!')));
-                          final prefs = await SharedPreferences.getInstance();
-                          prefs.setBool("login", true);
-                          Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(builder: (context) => Home()),
+                          try {
+                            UserCredential userCredential =
+                                await log.signInWithEmailAndPassword(
+                                    email: emailGrabber.text,
+                                    password: passGrabber.text);
+                          } on FirebaseAuthException catch (e) {
+                            if (e.code == 'user-not-found') {
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                  content: Text(
+                                      "An account doesn't exist with that email...")));
+                            } else if (e.code == 'wrong-password') {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text('Incorrect password!')));
+                            }
+                          }
+                          log.authStateChanges().listen((User? user) async {
+                            if (user != null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Welcome back!')));
+                              final prefs =
+                                  await SharedPreferences.getInstance();
+                              prefs.setBool("login", true);
+                              Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Home()),
                                   (Route<dynamic> route) => false);
+                            }
+                          });
                         }
                       },
                       child: Text("Log In"),
@@ -92,8 +116,9 @@ class _LoginState extends State<Login> {
                     Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(builder: (context) => Account()),
-                            (Route<dynamic> route) => false);
-                  }, child: Text("Create an account"))
+                        (Route<dynamic> route) => false);
+                  },
+                  child: Text("Create an account"))
             ])));
   }
 }
