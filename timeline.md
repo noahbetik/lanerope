@@ -6,3 +6,6 @@
 - Hello World!
 
 **Week 1 (May 11-18):**
+- Basic UI with pages for main features & navigation
+- Connect to Firebase
+- Account creation and login systems
