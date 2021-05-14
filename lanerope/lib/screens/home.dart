@@ -3,6 +3,7 @@ import 'package:lanerope/screens/calendar.dart';
 import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:lanerope/globals.dart' as globals;
 
 import 'calendar.dart';
 import 'forms.dart';
@@ -125,6 +126,8 @@ class Home extends StatelessWidget {
     String minutes =
         (minute < 10) ? "0" + minute.toString() : minute.toString();
 
-    return "The time is " + hour.toString() + ":" + minutes + "\n" + hello;
+    String timeString = "The time is " + hour.toString() + ":" + minutes + "\n" + hello;
+
+    return timeString + "\nYou are a " + globals.role;
   }
 }

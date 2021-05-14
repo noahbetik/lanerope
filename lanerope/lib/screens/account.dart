@@ -6,6 +6,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lanerope/AddUser.dart';
 
+import 'login.dart';
+
 bool ios = Platform.isIOS;
 bool android = Platform.isAndroid;
 FirebaseAuth auth = FirebaseAuth.instance;
@@ -176,7 +178,7 @@ class _AccountState extends State<Account> {
                             SnackBar(content: Text('Creating account...')));
                         Navigator.pushAndRemoveUntil(
                             context,
-                            MaterialPageRoute(builder: (context) => Home()),
+                            MaterialPageRoute(builder: (context) => Login()),
                             (Route<dynamic> route) => false);
                       }
                     },

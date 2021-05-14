@@ -16,7 +16,8 @@ class AddUser {
   Future<void> addUser() {
     // Call the user's CollectionReference to add a new user
     return users
-        .add({
+        .doc(uid)
+        .set({
           'uid': uid,
           'first_name': firstName,
           'last_name': lastName,

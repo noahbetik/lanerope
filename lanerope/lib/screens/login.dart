@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lanerope/screens/account.dart';
+import 'package:lanerope/globals.dart' as globals;
 import 'dart:io';
 import 'package:string_validator/string_validator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -92,6 +93,9 @@ class _LoginState extends State<Login> {
                             if (user != null) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(content: Text('Welcome back!')));
+                              var current = log.currentUser;
+                              globals.currentUID = current!.uid;
+                              globals.role = await globals.findRole();
                               final prefs =
                                   await SharedPreferences.getInstance();
                               prefs.setBool("login", true);
