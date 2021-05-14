@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import './screens/home.dart';
 import "./screens/account.dart";
 import "./screens/login.dart";
+import 'package:lanerope/globals.dart' as globals;
 import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -18,6 +19,7 @@ Future<bool> loginState() async {
   final bool _status =
       prefs.getBool("login") ?? false; // future bool is true if logged in
   print(_status);
+  globals.role = prefs.getString("role") ?? "";
   return _status;
 }
 

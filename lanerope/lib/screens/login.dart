@@ -99,6 +99,7 @@ class _LoginState extends State<Login> {
                               final prefs =
                                   await SharedPreferences.getInstance();
                               prefs.setBool("login", true);
+                              prefs.setString("role", globals.role);
                               Navigator.pushAndRemoveUntil(
                                   context,
                                   MaterialPageRoute(
