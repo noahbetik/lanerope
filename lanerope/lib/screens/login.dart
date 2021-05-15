@@ -1,11 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:lanerope/screens/account.dart';
-import 'package:lanerope/globals.dart' as globals;
 import 'dart:io';
-import 'package:string_validator/string_validator.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
+import 'package:flutter/material.dart';
+import 'package:lanerope/globals.dart' as globals;
+import 'package:lanerope/screens/account.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:string_validator/string_validator.dart';
 import 'home.dart';
 
 bool ios = Platform.isIOS;

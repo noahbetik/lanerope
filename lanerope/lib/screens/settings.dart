@@ -1,15 +1,14 @@
-import 'package:flutter/material.dart';
 import 'dart:io';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:lanerope/globals.dart' as globals;
 import 'athleteInfo.dart';
 import 'calendar.dart';
 import 'coachDM.dart';
 import 'forms.dart';
 import 'home.dart';
-
-
 
 bool ios = Platform.isIOS;
 bool android = Platform.isAndroid;
@@ -42,7 +41,7 @@ class Settings extends StatelessWidget {
                   Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(builder: (context) => Home()),
-                          (Route<dynamic> route) => false);
+                      (Route<dynamic> route) => false);
                 },
               ),
               ListTile(
@@ -51,7 +50,7 @@ class Settings extends StatelessWidget {
                   Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(builder: (context) => Calendar()),
-                          (Route<dynamic> route) => false);
+                      (Route<dynamic> route) => false);
                 },
               ),
               ListTile(
@@ -60,7 +59,7 @@ class Settings extends StatelessWidget {
                   Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(builder: (context) => Forms()),
-                          (Route<dynamic> route) => false);
+                      (Route<dynamic> route) => false);
                 },
               ),
               ListTile(
@@ -69,7 +68,7 @@ class Settings extends StatelessWidget {
                   Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(builder: (context) => CoachDM()),
-                          (Route<dynamic> route) => false);
+                      (Route<dynamic> route) => false);
                 },
               ),
               ListTile(
@@ -78,16 +77,26 @@ class Settings extends StatelessWidget {
                   Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(builder: (context) => AthleteInfo()),
-                          (Route<dynamic> route) => false);
+                      (Route<dynamic> route) => false);
                 },
               ),
+              if (globals.role == "Coach/Admin")
+                ListTile(
+                  title: Text('Admin Page'),
+                  onTap: () {
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (context) => Settings()),
+                        (Route<dynamic> route) => false);
+                  },
+                ),
               ListTile(
                 title: Text('Settings'),
                 onTap: () {
                   Navigator.pushAndRemoveUntil(
                       context,
                       MaterialPageRoute(builder: (context) => Settings()),
-                          (Route<dynamic> route) => false);
+                      (Route<dynamic> route) => false);
                 },
               ),
             ],

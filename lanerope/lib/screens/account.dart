@@ -1,10 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:lanerope/screens/home.dart';
 import 'dart:io';
-import 'package:string_validator/string_validator.dart';
-import 'package:firebase_core/firebase_core.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:lanerope/AddUser.dart';
+import 'package:string_validator/string_validator.dart';
 
 import 'login.dart';
 
