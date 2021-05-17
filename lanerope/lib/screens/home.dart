@@ -2,12 +2,7 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lanerope/globals.dart' as globals;
-import 'package:lanerope/screens/calendar.dart';
-import 'athleteInfo.dart';
-import 'calendar.dart';
-import 'coachDM.dart';
-import 'forms.dart';
-import 'settings.dart';
+import 'package:lanerope/pagesDrawer.dart' as pd;
 
 bool ios = Platform.isIOS;
 bool android = Platform.isAndroid;
@@ -25,97 +20,8 @@ class Home extends StatelessWidget {
                 textDirection: TextDirection.ltr,
                 style: TextStyle(color: Colors.black, fontSize: 36.0))),
       ),
-      drawer: Drawer(
-        // Add a ListView to the drawer. This ensures the user can scroll
-        // through the options in the drawer if there isn't enough vertical
-        // space to fit everything.
-        child: ListView(
-          // Important: Remove any padding from the ListView.
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            DrawerHeader(
-              child: Text('Pages',
-                  style: TextStyle(color: Colors.white, fontSize: 24.0)),
-              decoration: BoxDecoration(
-                color: Colors.blue,
-              ),
-            ),
-            ListTile(
-              title: Text('Home'),
-              onTap: () {
-                Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => Home()),
-                    (Route<dynamic> route) => false);
-              },
-            ),
-            ListTile(
-              title: Text('Calendar'),
-              onTap: () {
-                Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => Calendar()),
-                    (Route<dynamic> route) => false);
-              },
-            ),
-            ListTile(
-              title: Text('Forms'),
-              onTap: () {
-                Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => Forms()),
-                    (Route<dynamic> route) => false);
-              },
-            ),
-            ListTile(
-              title: Text('Coach DM'),
-              onTap: () {
-                Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => CoachDM()),
-                    (Route<dynamic> route) => false);
-              },
-            ),
-            ListTile(
-              title: Text('Athlete Info'),
-              onTap: () {
-                Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => AthleteInfo()),
-                    (Route<dynamic> route) => false);
-              },
-            ),
-            if (globals.role == "Coach/Admin")
-              ListTile(
-                title: Text('Admin Page'),
-                onTap: () {
-                  Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(builder: (context) => Settings()),
-                      (Route<dynamic> route) => false);
-                },
-              ),
-            ListTile(
-              title: Text('Settings'),
-              onTap: () {
-                Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => Settings()),
-                    (Route<dynamic> route) => false);
-              },
-            ),
-          ],
-        ),
-      ),
+      drawer: pd.PagesDrawer().importDrawer(context)
     );
-
-    /*Material(
-        color: Colors.white,
-        child: Center(
-            child: Text(sayHi(),
-                textDirection: TextDirection.ltr,
-                style: TextStyle(color: Colors.black, fontSize: 36.0))),
-      );*/
   }
 
   String sayHi() {

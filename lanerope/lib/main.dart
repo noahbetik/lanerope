@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:lanerope/globals.dart' as globals;
 import 'package:shared_preferences/shared_preferences.dart';
+
 import './screens/home.dart';
 import "./screens/login.dart";
 
