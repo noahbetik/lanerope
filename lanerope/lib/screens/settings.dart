@@ -18,6 +18,7 @@ class Settings extends StatelessWidget {
         appBar: AppBar(title: Text("Settings")),
         body: Material(
             child: ListView(
+          physics: BouncingScrollPhysics(),
           padding: EdgeInsets.zero,
           children: <Widget>[
             Container(

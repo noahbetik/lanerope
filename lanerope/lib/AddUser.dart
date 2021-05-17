@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AddUser {
@@ -20,7 +21,8 @@ class AddUser {
           'first_name': firstName,
           'last_name': lastName,
           'role': role,
-          // want nested collections for parent/athlete/coach/relations
+          'groups' : [],
+          // want nested something for parent/athlete/coach/relations
         })
         .then((value) => print("User Added"))
         .catchError((error) => print("Failed to add user: $error"));
