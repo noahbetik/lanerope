@@ -6,6 +6,10 @@ import 'package:expandable/expandable.dart';
 bool ios = Platform.isIOS;
 bool android = Platform.isAndroid;
 
+List<Widget> groupBoxes = [
+  GroupBox(groupName: "AG2")
+]; // shouldn't have mutable fields, need to convert to stateful widget
+
 class AdminPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -35,9 +39,6 @@ class SelectionCard extends StatefulWidget {
 
 class _SelectionCardState extends State<SelectionCard> {
   // needs to draw state from separate button
-  List<Widget> groupBoxes = [
-    GroupBox(groupName: "AG2")
-  ]; // shouldn't have mutable fields, need to convert to stateful widget
 
   @override
   Widget build(BuildContext context) {
@@ -215,6 +216,8 @@ class _AddButtonState extends State<AddButton> {
   final _nameKey = GlobalKey<FormState>();
   final nameGrabber = TextEditingController();
 
+  String groupName = '';
+
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
@@ -225,9 +228,9 @@ class _AddButtonState extends State<AddButton> {
                 title: Text("Add Group"),
                 content: Container(
                     width: double.maxFinite,
-                    height : 300,
-                    child: ListView(
-                        padding: const EdgeInsets.all(8),
+                    height: 100,
+                    child: ListView(padding: const EdgeInsets.all(8),
+                        // shrinkWrap: true, // probably not necessary
                         children: <Widget>[
                           // can add more settings for group attributes here
                           Form(
@@ -236,14 +239,24 @@ class _AddButtonState extends State<AddButton> {
                               children: <Widget>[
                                 TextFormField(
                                     controller: nameGrabber,
-                                    decoration: InputDecoration(
-                                        hintText: 'Group Name'),
+                                    decoration:
+                                        InputDecoration(hintText: 'Group Name'),
                                     validator: (name) {
                                       if (name == null) {
                                         return "Please give this group a name";
                                       }
                                       return null;
                                     }),
+                                ElevatedButton(
+                                    onPressed: () {
+                                      if (_nameKey.currentState!.validate()) {
+                                        groupName = nameGrabber.text;
+                                        groupBoxes.add(GroupBox(groupName: groupName));
+                                        // need to trigger the rebuild of selection card
+                                        Navigator.pop(context);
+                                      }
+                                    },
+                                    child: Text("Add Group"))
                               ],
                             ),
                           )
