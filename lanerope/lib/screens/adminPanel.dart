@@ -31,6 +31,8 @@ class AdminPanel extends StatelessWidget {
 
 class SelectionCard extends StatelessWidget{
 
+  List<Widget> groupBoxes = [GroupBox(groupName: "AG2")];
+
   @override
   Widget build(BuildContext context) {
     const loremIpsum =
@@ -58,15 +60,7 @@ class SelectionCard extends StatelessWidget{
                           style: Theme.of(context).textTheme.bodyText1,
                         )),
                     collapsed: Column(
-                        children: <Widget>[
-                      Text(
-                        loremIpsum,
-                        softWrap: true,
-                        maxLines: 2,
-                        overflow: TextOverflow.fade,
-                      ),
-
-                    ]
+                        children: <Widget>[GroupBox(groupName: "AG2")],
                     ),
                     expanded: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -174,7 +168,9 @@ class GroupCard extends StatelessWidget{
 }
 
 class GroupBox extends StatefulWidget {
-  const GroupBox({Key? key}) : super(key: key);
+  const GroupBox({Key? key, required this.groupName}) : super(key: key);
+
+  final String groupName;
 
   @override
   State<GroupBox> createState() => _GroupBoxState();
@@ -187,11 +183,11 @@ class _GroupBoxState extends State<GroupBox> {
   @override
   Widget build(BuildContext context) {
     return CheckboxListTile(
-      title: const Text('Animate Slowly'),
-      value: x != 1.0,
+      title: Text(widget.groupName),
+      value: x == 1,
       onChanged: (bool? value) {
         setState(() {
-          x = 1; // placeholder
+          x = value! ? 1 : 0; // placeholder
         });
       },
       secondary: const Icon(Icons.hourglass_empty),
