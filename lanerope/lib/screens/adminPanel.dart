@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:lanerope/pagesDrawer.dart' as pd;
 import 'package:expandable/expandable.dart';
@@ -11,6 +12,8 @@ List<Widget> groupBoxes = [
 ]; // shouldn't have mutable fields, need to convert to stateful widget
 
 class AdminPanel extends StatelessWidget {
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,10 +45,8 @@ class _SelectionCardState extends State<SelectionCard> {
 
   @override
   Widget build(BuildContext context) {
-    const loremIpsum =
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
-    return StatefulBuilder(
-        builder: (BuildContext context, StateSetter setState) {
+    return StreamBuilder(stream: aStream,
+        builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
       return ExpandableNotifier(
           child: Padding(
         padding: const EdgeInsets.all(10),
@@ -68,25 +69,14 @@ class _SelectionCardState extends State<SelectionCard> {
                         "Group Selection",
                         style: Theme.of(context).textTheme.bodyText1,
                       )),
-                  collapsed: Column(
-                    children: groupBoxes,
-                  ),
+                  collapsed: Container(),
                   expanded: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      for (var _ in Iterable.generate(5))
-                        Padding(
-                            padding: EdgeInsets.only(bottom: 10),
-                            child: Text(
-                              loremIpsum,
-                              softWrap: true,
-                              overflow: TextOverflow.fade,
-                            )),
-                    ],
+                    children: groupBoxes
                   ),
                   builder: (_, collapsed, expanded) {
                     return Padding(
-                      padding: EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                      padding: EdgeInsets.only(left: 10, right: 10),
                       child: Expandable(
                         collapsed: collapsed,
                         expanded: expanded,
@@ -186,7 +176,6 @@ class GroupBox extends StatefulWidget {
   State<GroupBox> createState() => _GroupBoxState();
 }
 
-/// This is the private State class that goes with MyStatefulWidget.
 class _GroupBoxState extends State<GroupBox> {
   int x = 0;
 
@@ -205,18 +194,9 @@ class _GroupBoxState extends State<GroupBox> {
   }
 }
 
-class AddButton extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() {
-    return _AddButtonState();
-  }
-}
-
-class _AddButtonState extends State<AddButton> {
+class AddButton extends StatelessWidget {
   final _nameKey = GlobalKey<FormState>();
   final nameGrabber = TextEditingController();
-
-  String groupName = '';
 
   @override
   Widget build(BuildContext context) {
@@ -250,8 +230,7 @@ class _AddButtonState extends State<AddButton> {
                                 ElevatedButton(
                                     onPressed: () {
                                       if (_nameKey.currentState!.validate()) {
-                                        groupName = nameGrabber.text;
-                                        groupBoxes.add(GroupBox(groupName: groupName));
+                                        groupBoxes.add(GroupBox(groupName: nameGrabber.text));
                                         // need to trigger the rebuild of selection card
                                         Navigator.pop(context);
                                       }
