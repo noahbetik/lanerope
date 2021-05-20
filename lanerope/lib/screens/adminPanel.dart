@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -6,13 +7,14 @@ import 'package:expandable/expandable.dart';
 
 bool ios = Platform.isIOS;
 bool android = Platform.isAndroid;
+StreamController<bool> ctrl = StreamController<bool>.broadcast();
+Stream<bool> redraw = ctrl.stream;
 
 List<Widget> groupBoxes = [
   GroupBox(groupName: "AG2")
 ]; // shouldn't have mutable fields, need to convert to stateful widget
 
 class AdminPanel extends StatelessWidget {
-
 
   @override
   Widget build(BuildContext context) {
@@ -45,8 +47,8 @@ class _SelectionCardState extends State<SelectionCard> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(stream: aStream,
-        builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+    return StreamBuilder<bool>(stream: redraw,
+        builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
       return ExpandableNotifier(
           child: Padding(
         padding: const EdgeInsets.all(10),
@@ -231,6 +233,7 @@ class AddButton extends StatelessWidget {
                                     onPressed: () {
                                       if (_nameKey.currentState!.validate()) {
                                         groupBoxes.add(GroupBox(groupName: nameGrabber.text));
+                                        ctrl.add(true);
                                         // need to trigger the rebuild of selection card
                                         Navigator.pop(context);
                                       }
