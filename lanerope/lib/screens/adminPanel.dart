@@ -4,18 +4,35 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:lanerope/pagesDrawer.dart' as pd;
 import 'package:expandable/expandable.dart';
+import 'package:lanerope/AddGroup.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:lanerope/globals.dart' as globals;
 
 bool ios = Platform.isIOS;
 bool android = Platform.isAndroid;
 StreamController<bool> ctrl = StreamController<bool>.broadcast();
 Stream<bool> redraw = ctrl.stream;
 
-List<Widget> groupBoxes = [
-  GroupBox(groupName: "AG2")
-]; // shouldn't have mutable fields, need to convert to stateful widget
+List<Widget> groupBoxes = [];
+
+getGroups() async {
+  List<String> subs = [];
+  await FirebaseFirestore.instance.collection('groups').get().then((snapshot) {
+    snapshot.docs.forEach((element) {
+      groupBoxes.add(GroupBox(groupName: element.id));
+    });
+  });
+  groupBoxes.add(ElevatedButton(
+      onPressed: () {
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(globals.currentUID)
+            .update({"groups": FieldValue.arrayUnion(subs)});
+      },
+      child: Text("Subscribe")));
+}
 
 class AdminPanel extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,52 +64,52 @@ class _SelectionCardState extends State<SelectionCard> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<bool>(stream: redraw,
+    return StreamBuilder<bool>(
+        stream: redraw,
         builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-      return ExpandableNotifier(
-          child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Card(
-          clipBehavior: Clip.antiAlias,
-          child: Column(
-            children: <Widget>[
-              ScrollOnExpand(
-                scrollOnExpand: true,
-                scrollOnCollapse: false,
-                child: ExpandablePanel(
-                  theme: const ExpandableThemeData(
-                    headerAlignment: ExpandablePanelHeaderAlignment.center,
-                    tapBodyToCollapse: true,
-                    tapBodyToExpand: true,
-                  ),
-                  header: Padding(
-                      padding: EdgeInsets.all(10),
-                      child: Text(
-                        "Group Selection",
-                        style: Theme.of(context).textTheme.bodyText1,
-                      )),
-                  collapsed: Container(),
-                  expanded: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: groupBoxes
-                  ),
-                  builder: (_, collapsed, expanded) {
-                    return Padding(
-                      padding: EdgeInsets.only(left: 10, right: 10),
-                      child: Expandable(
-                        collapsed: collapsed,
-                        expanded: expanded,
-                        theme: const ExpandableThemeData(crossFadePoint: 0),
+          return ExpandableNotifier(
+              child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Card(
+              clipBehavior: Clip.antiAlias,
+              child: Column(
+                children: <Widget>[
+                  ScrollOnExpand(
+                    scrollOnExpand: true,
+                    scrollOnCollapse: false,
+                    child: ExpandablePanel(
+                      theme: const ExpandableThemeData(
+                        headerAlignment: ExpandablePanelHeaderAlignment.center,
+                        tapBodyToCollapse: true,
+                        tapBodyToExpand: true,
                       ),
-                    );
-                  },
-                ),
+                      header: Padding(
+                          padding: EdgeInsets.all(10),
+                          child: Text(
+                            "Group Selection",
+                            style: Theme.of(context).textTheme.bodyText1,
+                          )),
+                      collapsed: Container(),
+                      expanded: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: groupBoxes),
+                      builder: (_, collapsed, expanded) {
+                        return Padding(
+                          padding: EdgeInsets.only(left: 10, right: 10),
+                          child: Expandable(
+                            collapsed: collapsed,
+                            expanded: expanded,
+                            theme: const ExpandableThemeData(crossFadePoint: 0),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
-      ));
-    });
+            ),
+          ));
+        });
   }
 }
 
@@ -174,21 +191,26 @@ class GroupBox extends StatefulWidget {
 
   final String groupName;
 
+  getName(){
+    return this.groupName;
+  }
+
   @override
   State<GroupBox> createState() => _GroupBoxState();
 }
 
 class _GroupBoxState extends State<GroupBox> {
-  int x = 0;
+  bool checked = false;
+  CollectionReference user = FirebaseFirestore.instance.collection('users');
 
   @override
   Widget build(BuildContext context) {
     return CheckboxListTile(
       title: Text(widget.groupName),
-      value: x == 1,
+      value: checked == true,
       onChanged: (bool? value) {
         setState(() {
-          x = value! ? 1 : 0; // placeholder
+          checked = value! ? true : false;
         });
       },
       secondary: const Icon(Icons.hourglass_empty),
@@ -232,9 +254,11 @@ class AddButton extends StatelessWidget {
                                 ElevatedButton(
                                     onPressed: () {
                                       if (_nameKey.currentState!.validate()) {
-                                        groupBoxes.add(GroupBox(groupName: nameGrabber.text));
+                                        groupBoxes.add(GroupBox(
+                                            groupName: nameGrabber.text));
+                                        AddGroup(nameGrabber.text).addGroup();
+                                        nameGrabber.clear();
                                         ctrl.add(true);
-                                        // need to trigger the rebuild of selection card
                                         Navigator.pop(context);
                                       }
                                     },
@@ -244,7 +268,7 @@ class AddButton extends StatelessWidget {
                           )
                         ]))));
       },
-      child: const Icon(Icons.plus_one_rounded),
+      child: const Icon(Icons.person_add_rounded),
       backgroundColor: Colors.green,
     );
   }

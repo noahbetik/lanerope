@@ -21,7 +21,7 @@ class AddUser {
           'first_name': firstName,
           'last_name': lastName,
           'role': role,
-          'groups' : [],
+          'groups' : <String>[],
           // want nested something for parent/athlete/coach/relations
         })
         .then((value) => print("User Added"))
