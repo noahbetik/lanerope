@@ -14,23 +14,17 @@ StreamController<bool> ctrl = StreamController<bool>.broadcast();
 Stream<bool> redraw = ctrl.stream;
 
 List<Widget> groupBoxes = [];
+List<String> subs = [];
 
 getGroups() async {
-  List<String> subs = [];
   await FirebaseFirestore.instance.collection('groups').get().then((snapshot) {
     snapshot.docs.forEach((element) {
       groupBoxes.add(GroupBox(groupName: element.id));
     });
   });
-  groupBoxes.add(ElevatedButton(
-      onPressed: () {
-        FirebaseFirestore.instance
-            .collection('users')
-            .doc(globals.currentUID)
-            .update({"groups": FieldValue.arrayUnion(subs)});
-      },
-      child: Text("Subscribe")));
 }
+
+
 
 class AdminPanel extends StatelessWidget {
   @override
@@ -67,6 +61,15 @@ class _SelectionCardState extends State<SelectionCard> {
     return StreamBuilder<bool>(
         stream: redraw,
         builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+          List<Widget> subWidgets = List<Widget>.from(groupBoxes);
+          subWidgets.add(ElevatedButton(
+              onPressed: () {
+                FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(globals.currentUID)
+                    .update({"groups": FieldValue.arrayUnion(subs)});
+              },
+              child: Text("Subscribe")));
           return ExpandableNotifier(
               child: Padding(
             padding: const EdgeInsets.all(10),
@@ -92,7 +95,7 @@ class _SelectionCardState extends State<SelectionCard> {
                       collapsed: Container(),
                       expanded: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: groupBoxes),
+                          children: subWidgets),
                       builder: (_, collapsed, expanded) {
                         return Padding(
                           padding: EdgeInsets.only(left: 10, right: 10),
@@ -205,13 +208,20 @@ class _GroupBoxState extends State<GroupBox> {
 
   @override
   Widget build(BuildContext context) {
+    String name = widget.groupName;
     return CheckboxListTile(
-      title: Text(widget.groupName),
+      title: Text(name),
       value: checked == true,
       onChanged: (bool? value) {
         setState(() {
           checked = value! ? true : false;
         });
+        if (checked == true){
+          subs.add(name);
+        }
+        else if (subs.contains(name)){
+          subs.remove(name);
+        }
       },
       secondary: const Icon(Icons.hourglass_empty),
     );
