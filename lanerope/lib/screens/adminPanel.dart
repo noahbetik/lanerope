@@ -38,6 +38,7 @@ class AdminPanel extends StatelessWidget {
             physics: const BouncingScrollPhysics(),
             children: <Widget>[
               SelectionCard(),
+              GroupCard(),
             ],
           )),
       drawer: pd.PagesDrawer().importDrawer(context),
@@ -45,16 +46,7 @@ class AdminPanel extends StatelessWidget {
   }
 }
 
-class SelectionCard extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() {
-    return _SelectionCardState();
-  }
-}
-
-class _SelectionCardState extends State<SelectionCard> {
-  // needs to draw state from separate button
-
+class SelectionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<bool>(
@@ -142,6 +134,10 @@ class GroupCard extends StatelessWidget {
                   child: Container(
                     decoration: BoxDecoration(
                       color: Colors.red,
+                      image: DecorationImage(
+                        fit: BoxFit.cover,
+                        image: AssetImage("images/bun.JPG")
+                      ),
                       shape: BoxShape.rectangle,
                     ),
                   ),
@@ -157,7 +153,7 @@ class GroupCard extends StatelessWidget {
                     header: Padding(
                         padding: EdgeInsets.all(10),
                         child: Text(
-                          "ExpandablePanel",
+                          "Group",
                           style: Theme
                               .of(context)
                               .textTheme
