@@ -6,7 +6,6 @@ class AddGroup {
   CollectionReference groups = FirebaseFirestore.instance.collection('groups');
 
   Future<void> addGroup() {
-    // Call the user's CollectionReference to add a new user
     return groups
         .doc(groupName)
         .set({

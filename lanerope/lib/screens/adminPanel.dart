@@ -29,14 +29,17 @@ getGroups() async {
 getCards() async {
   cards.clear();
   cards.add(SelectionCard());
-  await FirebaseFirestore.instance.collection('users').doc(globals.currentUID).get().then((snapshot) {
+  await FirebaseFirestore.instance
+      .collection('users')
+      .doc(globals.currentUID)
+      .get()
+      .then((snapshot) {
     List<dynamic> myGroups = snapshot.get("groups");
-    for (int i=0; i<myGroups.length; i++){
+    for (int i = 0; i < myGroups.length; i++) {
       cards.add(GroupCard(myGroups[i]));
     }
   });
 }
-
 
 class AdminPanel extends StatelessWidget {
   @override
@@ -69,146 +72,124 @@ class SelectionCard extends StatelessWidget {
                     .collection('users')
                     .doc(globals.currentUID)
                     .update({"groups": FieldValue.arrayUnion(subs)});
-                var groupWrangler = FirebaseFirestore.instance.collection(
-                    'groups');
+                var groupWrangler =
+                    FirebaseFirestore.instance.collection('groups');
                 for (int x = 0; x < subs.length; x++) {
-                  groupWrangler.doc(subs[x]).update(
-                      {"coaches": FieldValue.arrayUnion([globals.currentUID])});}
+                  groupWrangler.doc(subs[x]).update({
+                    "coaches": FieldValue.arrayUnion([globals.currentUID])
+                  });
+                }
               },
               child: Text("Subscribe")));
           return ExpandableNotifier(
               child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Card(
-                  clipBehavior: Clip.antiAlias,
-                  child: Column(
-                    children: <Widget>[
-                      ScrollOnExpand(
-                        scrollOnExpand: true,
-                        scrollOnCollapse: false,
-                        child: ExpandablePanel(
-                          theme: const ExpandableThemeData(
-                            headerAlignment: ExpandablePanelHeaderAlignment
-                                .center,
-                            tapBodyToCollapse: true,
-                            tapBodyToExpand: true,
-                          ),
-                          header: Padding(
-                              padding: EdgeInsets.all(10),
-                              child: Text(
-                                "Group Selection",
-                                style: Theme
-                                    .of(context)
-                                    .textTheme
-                                    .bodyText1,
-                              )),
-                          collapsed: Container(),
-                          expanded: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: subWidgets),
-                          builder: (_, collapsed, expanded) {
-                            return Padding(
-                              padding: EdgeInsets.only(left: 10, right: 10),
-                              child: Expandable(
-                                collapsed: collapsed,
-                                expanded: expanded,
-                                theme: const ExpandableThemeData(
-                                    crossFadePoint: 0),
-                              ),
-                            );
-                          },
-                        ),
+            padding: const EdgeInsets.all(10),
+            child: Card(
+              clipBehavior: Clip.antiAlias,
+              child: Column(
+                children: <Widget>[
+                  ScrollOnExpand(
+                    scrollOnExpand: true,
+                    scrollOnCollapse: false,
+                    child: ExpandablePanel(
+                      theme: const ExpandableThemeData(
+                        headerAlignment: ExpandablePanelHeaderAlignment.center,
+                        tapBodyToCollapse: true,
+                        tapBodyToExpand: true,
                       ),
-                    ],
+                      header: Padding(
+                          padding: EdgeInsets.all(10),
+                          child: Text(
+                            "Group Selection",
+                            style: Theme.of(context).textTheme.bodyText1,
+                          )),
+                      collapsed: Container(),
+                      expanded: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: subWidgets),
+                      builder: (_, collapsed, expanded) {
+                        return Padding(
+                          padding: EdgeInsets.only(left: 10, right: 10),
+                          child: Expandable(
+                            collapsed: collapsed,
+                            expanded: expanded,
+                            theme: const ExpandableThemeData(crossFadePoint: 0),
+                          ),
+                        );
+                      },
+                    ),
                   ),
-                ),
-              ));
+                ],
+              ),
+            ),
+          ));
         });
   }
 }
 
 class GroupCard extends StatelessWidget {
-
   final String cardName;
+
   GroupCard(String name) : cardName = name;
 
   @override
   Widget build(BuildContext context) {
-    const loremIpsum =
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
     return ExpandableNotifier(
         child: Padding(
-          padding: const EdgeInsets.all(10),
-          child: Card(
-            clipBehavior: Clip.antiAlias,
-            child: Column(
-              children: <Widget>[
-                SizedBox(
-                  height: 150,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.red,
-                      image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: AssetImage("images/bun.JPG")
-                      ),
-                      shape: BoxShape.rectangle,
-                    ),
-                  ),
+      padding: const EdgeInsets.all(10),
+      child: Card(
+        clipBehavior: Clip.antiAlias,
+        child: Column(
+          children: <Widget>[
+            SizedBox(
+              height: 150,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.red,
+                  image: DecorationImage(
+                      fit: BoxFit.cover, image: AssetImage("images/bun.JPG")),
+                  shape: BoxShape.rectangle,
                 ),
-                ScrollOnExpand(
-                  scrollOnExpand: true,
-                  scrollOnCollapse: true,
-                  child: ExpandablePanel(
-                    theme: const ExpandableThemeData(
-                      headerAlignment: ExpandablePanelHeaderAlignment.center,
-                      tapBodyToCollapse: true,
-                    ),
-                    header: Padding(
-                        padding: EdgeInsets.all(10),
-                        child: Text(
-                          cardName,
-                          style: Theme
-                              .of(context)
-                              .textTheme
-                              .bodyText1,
-                        )),
-                    collapsed: Text(
-                      loremIpsum,
-                      softWrap: true,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    expanded: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        for (var _ in Iterable.generate(5))
-                          Padding(
-                              padding: EdgeInsets.only(bottom: 10),
-                              child: Text(
-                                loremIpsum,
-                                softWrap: true,
-                                overflow: TextOverflow.fade,
-                              )),
-                      ],
-                    ),
-                    builder: (_, collapsed, expanded) {
-                      return Padding(
-                        padding: EdgeInsets.only(
-                            left: 10, right: 10, bottom: 10),
-                        child: Expandable(
-                          collapsed: collapsed,
-                          expanded: expanded,
-                          theme: const ExpandableThemeData(crossFadePoint: 0),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
-        ));
+            ScrollOnExpand(
+              scrollOnExpand: true,
+              scrollOnCollapse: true,
+              child: ExpandablePanel(
+                theme: const ExpandableThemeData(
+                  headerAlignment: ExpandablePanelHeaderAlignment.center,
+                  tapBodyToCollapse: true,
+                ),
+                header: Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Text(
+                      cardName,
+                      style: Theme.of(context).textTheme.bodyText1,
+                    )),
+                collapsed: Text(
+                  "",
+                  softWrap: true,
+                  maxLines: 2,
+                  overflow: TextOverflow.fade,
+                ),
+                expanded: Column( // put custom widget here
+                ),
+                builder: (_, collapsed, expanded) {
+                  return Padding(
+                    padding: EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                    child: Expandable(
+                      collapsed: collapsed,
+                      expanded: expanded,
+                      theme: const ExpandableThemeData(crossFadePoint: 0),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    ));
   }
 }
 
@@ -241,8 +222,7 @@ class _GroupBoxState extends State<GroupBox> {
         });
         if (checked == true) {
           subs.add(name);
-        }
-        else if (subs.contains(name)) {
+        } else if (subs.contains(name)) {
           subs.remove(name);
         }
       },
@@ -261,48 +241,45 @@ class AddButton extends StatelessWidget {
       onPressed: () {
         showDialog(
             context: context,
-            builder: (context) =>
-                AlertDialog(
-                    title: Text("Add Group"),
-                    content: Container(
-                        width: double.maxFinite,
-                        height: 100,
-                        child: ListView(padding: const EdgeInsets.all(8),
-                            // shrinkWrap: true, // probably not necessary
-                            children: <Widget>[
-                              // can add more settings for group attributes here
-                              Form(
-                                key: _nameKey,
-                                child: Column(
-                                  children: <Widget>[
-                                    TextFormField(
-                                        controller: nameGrabber,
-                                        decoration:
+            builder: (context) => AlertDialog(
+                title: Text("Add Group"),
+                content: Container(
+                    width: double.maxFinite,
+                    height: 100,
+                    child: ListView(padding: const EdgeInsets.all(8),
+                        // shrinkWrap: true, // probably not necessary
+                        children: <Widget>[
+                          // can add more settings for group attributes here
+                          Form(
+                            key: _nameKey,
+                            child: Column(
+                              children: <Widget>[
+                                TextFormField(
+                                    controller: nameGrabber,
+                                    decoration:
                                         InputDecoration(hintText: 'Group Name'),
-                                        validator: (name) {
-                                          if (name == null) {
-                                            return "Please give this group a name";
-                                          }
-                                          return null;
-                                        }),
-                                    ElevatedButton(
-                                        onPressed: () {
-                                          if (_nameKey.currentState!
-                                              .validate()) {
-                                            groupBoxes.add(GroupBox(
-                                                groupName: nameGrabber.text));
-                                            AddGroup(nameGrabber.text)
-                                                .addGroup();
-                                            nameGrabber.clear();
-                                            ctrl.add(true);
-                                            Navigator.pop(context);
-                                          }
-                                        },
-                                        child: Text("Add Group"))
-                                  ],
-                                ),
-                              )
-                            ]))));
+                                    validator: (name) {
+                                      if (name == null) {
+                                        return "Please give this group a name";
+                                      }
+                                      return null;
+                                    }),
+                                ElevatedButton(
+                                    onPressed: () {
+                                      if (_nameKey.currentState!.validate()) {
+                                        groupBoxes.add(GroupBox(
+                                            groupName: nameGrabber.text));
+                                        AddGroup(nameGrabber.text).addGroup();
+                                        nameGrabber.clear();
+                                        ctrl.add(true);
+                                        Navigator.pop(context);
+                                      }
+                                    },
+                                    child: Text("Add Group"))
+                              ],
+                            ),
+                          )
+                        ]))));
       },
       child: const Icon(Icons.person_add_rounded),
       backgroundColor: Colors.green,
