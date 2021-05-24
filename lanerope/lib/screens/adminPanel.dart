@@ -14,13 +14,26 @@ StreamController<bool> ctrl = StreamController<bool>.broadcast();
 Stream<bool> redraw = ctrl.stream;
 
 List<Widget> groupBoxes = [];
+List<Widget> cards = [];
 List<String> subs = [];
 
 getGroups() async {
+  groupBoxes.clear();
   await FirebaseFirestore.instance.collection('groups').get().then((snapshot) {
     snapshot.docs.forEach((element) {
       groupBoxes.add(GroupBox(groupName: element.id));
     });
+  });
+}
+
+getCards() async {
+  cards.clear();
+  cards.add(SelectionCard());
+  await FirebaseFirestore.instance.collection('users').doc(globals.currentUID).get().then((snapshot) {
+    List<dynamic> myGroups = snapshot.get("groups");
+    for (int i=0; i<myGroups.length; i++){
+      cards.add(GroupCard(myGroups[i]));
+    }
   });
 }
 
@@ -36,10 +49,7 @@ class AdminPanel extends StatelessWidget {
               iconColor: Colors.blue, useInkWell: true),
           child: ListView(
             physics: const BouncingScrollPhysics(),
-            children: <Widget>[
-              SelectionCard(),
-              GroupCard(),
-            ],
+            children: cards,
           )),
       drawer: pd.PagesDrawer().importDrawer(context),
     );
@@ -118,6 +128,10 @@ class SelectionCard extends StatelessWidget {
 }
 
 class GroupCard extends StatelessWidget {
+
+  final String cardName;
+  GroupCard(String name) : cardName = name;
+
   @override
   Widget build(BuildContext context) {
     const loremIpsum =
@@ -144,7 +158,7 @@ class GroupCard extends StatelessWidget {
                 ),
                 ScrollOnExpand(
                   scrollOnExpand: true,
-                  scrollOnCollapse: false,
+                  scrollOnCollapse: true,
                   child: ExpandablePanel(
                     theme: const ExpandableThemeData(
                       headerAlignment: ExpandablePanelHeaderAlignment.center,
@@ -153,7 +167,7 @@ class GroupCard extends StatelessWidget {
                     header: Padding(
                         padding: EdgeInsets.all(10),
                         child: Text(
-                          "Group",
+                          cardName,
                           style: Theme
                               .of(context)
                               .textTheme
