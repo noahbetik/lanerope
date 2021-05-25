@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:lanerope/AthleteList.dart';
 import 'package:lanerope/pagesDrawer.dart' as pd;
 import 'package:expandable/expandable.dart';
 import 'package:lanerope/AddGroup.dart';
@@ -12,6 +13,7 @@ bool ios = Platform.isIOS;
 bool android = Platform.isAndroid;
 StreamController<bool> ctrl = StreamController<bool>.broadcast();
 Stream<bool> redraw = ctrl.stream;
+CollectionReference groupWrangler = FirebaseFirestore.instance.collection('groups');
 
 List<Widget> groupBoxes = [];
 List<Widget> cards = [];
@@ -19,7 +21,7 @@ List<String> subs = [];
 
 getGroups() async {
   groupBoxes.clear();
-  await FirebaseFirestore.instance.collection('groups').get().then((snapshot) {
+  await groupWrangler.get().then((snapshot) {
     snapshot.docs.forEach((element) {
       groupBoxes.add(GroupBox(groupName: element.id));
     });
@@ -72,8 +74,6 @@ class SelectionCard extends StatelessWidget {
                     .collection('users')
                     .doc(globals.currentUID)
                     .update({"groups": FieldValue.arrayUnion(subs)});
-                var groupWrangler =
-                    FirebaseFirestore.instance.collection('groups');
                 for (int x = 0; x < subs.length; x++) {
                   groupWrangler.doc(subs[x]).update({
                     "coaches": FieldValue.arrayUnion([globals.currentUID])
@@ -129,8 +129,11 @@ class SelectionCard extends StatelessWidget {
 
 class GroupCard extends StatelessWidget {
   final String cardName;
-
   GroupCard(String name) : cardName = name;
+
+  /*List<String> getAthletes(){ // maybe eventually get this locally to only connect to db once per session
+    groupWrangler.get();
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -168,11 +171,11 @@ class GroupCard extends StatelessWidget {
                     )),
                 collapsed: Text(
                   "",
-                  softWrap: true,
-                  maxLines: 2,
-                  overflow: TextOverflow.fade,
                 ),
-                expanded: Column( // put custom widget here
+                expanded: ListView(
+                  padding: const EdgeInsets.all(0),
+                  children: <Widget>[
+                  ]
                 ),
                 builder: (_, collapsed, expanded) {
                   return Padding(
@@ -191,6 +194,36 @@ class GroupCard extends StatelessWidget {
       ),
     ));
   }
+}
+
+class AthleteTile extends StatelessWidget {
+  final String fullName;
+  AthleteTile(String name) : fullName = name;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(fullName),
+      trailing: IconButton(
+        icon: const Icon(Icons.edit_sharp),
+        onPressed: () {
+          showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                  title: Text("Athlete Info"),
+                  content: Container(
+                      width: double.maxFinite,
+                      height: 100,
+                      child: ListView(padding: const EdgeInsets.all(8),
+                          // shrinkWrap: true, // probably not necessary
+                          children: <Widget>[
+
+                          ]))));
+        },
+      ),
+    );
+  }
+
 }
 
 class GroupBox extends StatefulWidget {
