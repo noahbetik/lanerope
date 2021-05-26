@@ -60,7 +60,7 @@ class _AdminPanelState extends State<AdminPanel> {
   Icon _searchIcon = new Icon(Icons.search);
   Widget _appBarTitle = new Text('Admin Panel');
 
-  _ExamplePageState() {
+  _AdminPanelState() {
     _filter.addListener(() {
       if (_filter.text.isEmpty) {
         setState(() {
@@ -93,7 +93,7 @@ class _AdminPanelState extends State<AdminPanel> {
         this._appBarTitle = TextField(
           controller: _filter,
           decoration: InputDecoration(
-              prefixIcon: Icon(Icons.search), hintText: 'Find an athlete'),
+              hintText: 'Find an athlete'),
         );
       } else {
         this._searchIcon = Icon(Icons.search);
@@ -158,7 +158,7 @@ class SelectionCard extends StatelessWidget {
                 children: <Widget>[
                   ScrollOnExpand(
                     scrollOnExpand: true,
-                    scrollOnCollapse: false,
+                    scrollOnCollapse: true,
                     child: ExpandablePanel(
                       theme: const ExpandableThemeData(
                         headerAlignment: ExpandablePanelHeaderAlignment.center,
@@ -227,6 +227,9 @@ class GroupCard extends StatelessWidget {
               scrollOnExpand: true,
               scrollOnCollapse: true,
               child: ExpandablePanel(
+                controller: ExpandableController(
+                    initialExpanded: true
+                ),
                 theme: const ExpandableThemeData(
                   headerAlignment: ExpandablePanelHeaderAlignment.center,
                   tapBodyToCollapse: true,
