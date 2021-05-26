@@ -1,6 +1,8 @@
 import 'dart:ffi';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+// add name, gender, pronouns
+
 class AddUser {
   final String uid;
   final String firstName;

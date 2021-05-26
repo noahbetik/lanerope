@@ -45,19 +45,85 @@ getCards() async {
   });
 }
 
-class AdminPanel extends StatelessWidget {
+class AdminPanel extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("Admin Panel")),
-      floatingActionButton: AddButton(),
-      body: ExpandableTheme(
+  State<StatefulWidget> createState() {
+    return _AdminPanelState();
+  }
+}
+
+class _AdminPanelState extends State<AdminPanel> {
+  final TextEditingController _filter = new TextEditingController();
+  String _searchText = '';
+  List<String> names = [];
+  List<String> filteredNames = [];
+  Icon _searchIcon = new Icon(Icons.search);
+  Widget _appBarTitle = new Text('Admin Panel');
+
+  _ExamplePageState() {
+    _filter.addListener(() {
+      if (_filter.text.isEmpty) {
+        setState(() {
+          _searchText = "";
+          filteredNames = names;
+        });
+      } else {
+        setState(() {
+          _searchText = _filter.text;
+        });
+      }
+    });
+  }
+
+  PreferredSizeWidget _buildBar(BuildContext context) {
+    return new AppBar(
+      centerTitle: true,
+      title: _appBarTitle,
+      actions: [new IconButton(
+        icon: _searchIcon,
+        onPressed: _searchPressed,
+      ),]
+    );
+  }
+
+  void _searchPressed() {
+    setState(() {
+      if (this._searchIcon.icon == Icons.search) {
+        this._searchIcon = Icon(Icons.close);
+        this._appBarTitle = TextField(
+          controller: _filter,
+          decoration: InputDecoration(
+              prefixIcon: Icon(Icons.search), hintText: 'Find an athlete'),
+        );
+      } else {
+        this._searchIcon = Icon(Icons.search);
+        this._appBarTitle = Text('Admin Panel');
+        filteredNames = names;
+        _filter.clear();
+      }
+    });
+  }
+
+  Widget view() {
+    if (this._searchIcon.icon == Icons.search) {
+      return ExpandableTheme(
           data: const ExpandableThemeData(
               iconColor: Colors.blue, useInkWell: true),
           child: ListView(
             physics: const BouncingScrollPhysics(),
             children: cards,
-          )),
+          ));
+    } else {
+      return AthleteList();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: _buildBar(context),
+      floatingActionButton: AddButton(),
+      body: view(),
       drawer: pd.PagesDrawer().importDrawer(context),
     );
   }
@@ -151,7 +217,6 @@ class GroupCard extends StatelessWidget {
               height: 150,
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.red,
                   image: DecorationImage(
                       fit: BoxFit.cover, image: AssetImage("images/bun.JPG")),
                   shape: BoxShape.rectangle,
@@ -176,7 +241,9 @@ class GroupCard extends StatelessWidget {
                   "",
                 ),
                 expanded: ListView(
+                  shrinkWrap: true,
                     padding: const EdgeInsets.all(0), children: <Widget>[]),
+                // Athlete List goes here
                 builder: (_, collapsed, expanded) {
                   return Padding(
                     padding: EdgeInsets.only(left: 10, right: 10, bottom: 10),
@@ -289,3 +356,5 @@ class AddButton extends StatelessWidget {
     );
   }
 }
+
+// want a card for all athletes
