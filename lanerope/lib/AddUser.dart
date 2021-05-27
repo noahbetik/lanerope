@@ -5,11 +5,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AddUser {
   final String uid;
+  final String role;
   final String firstName;
   final String lastName;
-  final String role;
+  final String gender;
+  int age;
+  final DateTime birthday;
 
-  AddUser(this.uid, this.firstName, this.lastName, this.role);
+  AddUser(this.uid, this.role, this.firstName, this.lastName, this.gender, this.age, this.birthday);
 
   // Create a CollectionReference called users that references the firestore collection
   CollectionReference users = FirebaseFirestore.instance.collection('users');
@@ -20,9 +23,12 @@ class AddUser {
         .doc(uid)
         .set({
           'uid': uid,
+          'role': role,
           'first_name': firstName,
           'last_name': lastName,
-          'role': role,
+          'gender' : gender,
+          'age' : age,
+          'birthday' : birthday,
           'groups' : <String>[],
           // want nested something for parent/athlete/coach/relations
         })

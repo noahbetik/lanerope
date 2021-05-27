@@ -1,10 +1,12 @@
 import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lanerope/AddUser.dart';
 import 'package:string_validator/string_validator.dart';
-
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart' as dt;
+import 'package:intl/intl.dart';
 import 'login.dart';
 
 bool ios = Platform.isIOS;
@@ -19,11 +21,13 @@ class Account extends StatefulWidget {
 class _AccountState extends State<Account> {
   String name = '';
   String role = "Athlete";
+  String gender = 'Non-Binary/Prefer not to say';
   final _accountKey = GlobalKey<FormState>();
   final emailGrabber = TextEditingController();
   final passGrabber = TextEditingController();
   final fNameGrabber = TextEditingController();
   final lNameGrabber = TextEditingController();
+  final dateGrabber = TextEditingController();
 
   bool checkLength(String text, int min, int max) {
     if (text.length < min || text.length > max) {
@@ -43,11 +47,13 @@ class _AccountState extends State<Account> {
     passGrabber.dispose();
     fNameGrabber.dispose();
     lNameGrabber.dispose();
+    dateGrabber.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final format = DateFormat("yyyy-MM-dd");
     return Scaffold(
         appBar: AppBar(
           title: Text("Create an account"),
@@ -59,7 +65,8 @@ class _AccountState extends State<Account> {
               key: _accountKey,
               child: Column(
                 children: <Widget>[
-                  TextFormField( // do space scrubbing
+                  TextFormField(
+                      // do space scrubbing
                       controller: fNameGrabber,
                       decoration: InputDecoration(hintText: 'Given name'),
                       validator: (name) {
@@ -71,7 +78,8 @@ class _AccountState extends State<Account> {
                         }
                         return null;
                       }),
-                  TextFormField( // do space scrubbing
+                  TextFormField(
+                      // do space scrubbing
                       controller: lNameGrabber,
                       decoration: InputDecoration(hintText: 'Family name'),
                       validator: (name) {
@@ -93,16 +101,6 @@ class _AccountState extends State<Account> {
                         }
                         return null;
                       }),
-                  /*TextFormField(
-                      decoration:
-                          InputDecoration(hintText: 'Please choose a username'),
-                      validator: (user) {
-                        if (user == null || checkLength(user, 2, 40)) {
-                          return "Must be between 2 and 40 characters";
-                        } // should probably restrict special characters to underscore and period
-                        return null;
-                      }),*/
-                  // firebase only has implementation for email sign-up
                   TextFormField(
                       controller: passGrabber,
                       decoration: InputDecoration(
@@ -147,6 +145,40 @@ class _AccountState extends State<Account> {
                       },
                     ),
                   ),
+                  Container(
+                    alignment: Alignment.bottomLeft,
+                    padding: EdgeInsets.only(top: 8.0, bottom: 3.0),
+                    child: DropdownButton<String>(
+                      hint: Text("Please choose your gender"),
+                      value: gender,
+                      items: <String>[
+                        'Male',
+                        'Female',
+                        'Non-Binary/Prefer not to say',
+                      ].map<DropdownMenuItem<String>>((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                      onChanged: (String? setGender) {
+                        setState(() {
+                          gender = setGender!;
+                        });
+                      },
+                    ),
+                  ),
+                  dt.DateTimeField(
+                    controller: dateGrabber,
+                    format: format,
+                    onShowPicker: (context, currentValue) {
+                      return showDatePicker(
+                          context: context,
+                          firstDate: DateTime(1900),
+                          initialDate: currentValue ?? DateTime.now(),
+                          lastDate: DateTime.now());
+                    },
+                  ),
                   Spacer(),
                   ElevatedButton(
                     onPressed: () async {
@@ -168,9 +200,24 @@ class _AccountState extends State<Account> {
                           print(e);
                         }
 
+                        DateTime birthday = DateTime.parse(dateGrabber.text);
+
+                        int yearsSince(DateTime from) {
+                          from = DateTime(from.year, from.month, from.day);
+                          DateTime to = DateTime.now();
+                          return ((to.difference(from).inHours / 24).round() / 365).floor();
+                        }
+
                         String uid = auth.currentUser!.uid;
                         AddUser dbAdd = AddUser(
-                            uid, fNameGrabber.text, lNameGrabber.text, role);
+                          uid,
+                          role,
+                          fNameGrabber.text,
+                          lNameGrabber.text,
+                          gender,
+                          yearsSince(birthday),
+                          birthday,
+                        );
                         dbAdd.addUser();
 
                         ScaffoldMessenger.of(context).showSnackBar(
