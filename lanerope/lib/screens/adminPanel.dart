@@ -21,6 +21,10 @@ List<Widget> groupBoxes = [];
 List<Widget> cards = [];
 List<String> subs = [];
 
+String searchText = '';
+List<String> names = [];
+List<String> filteredNames = [];
+
 getGroups() async {
   groupBoxes.clear();
   await groupWrangler.get().then((snapshot) {
@@ -54,9 +58,6 @@ class AdminPanel extends StatefulWidget {
 
 class _AdminPanelState extends State<AdminPanel> {
   final TextEditingController _filter = new TextEditingController();
-  String _searchText = '';
-  List<String> names = [];
-  List<String> filteredNames = [];
   Icon _searchIcon = new Icon(Icons.search);
   Widget _appBarTitle = new Text('Admin Panel');
 
@@ -64,12 +65,12 @@ class _AdminPanelState extends State<AdminPanel> {
     _filter.addListener(() {
       if (_filter.text.isEmpty) {
         setState(() {
-          _searchText = "";
+          searchText = "";
           filteredNames = names;
         });
       } else {
         setState(() {
-          _searchText = _filter.text;
+          searchText = _filter.text;
         });
       }
     });
@@ -114,7 +115,7 @@ class _AdminPanelState extends State<AdminPanel> {
             children: cards,
           ));
     } else {
-      return AthleteList();
+      return AthleteList('all');
     }
   }
 
@@ -198,7 +199,7 @@ class SelectionCard extends StatelessWidget {
 class GroupCard extends StatelessWidget {
   final String cardName;
 
-  GroupCard(String name) : cardName = name;
+  GroupCard(this.cardName);
 
   /*List<String> getAthletes(){ // maybe eventually get this locally to only connect to db once per session
     groupWrangler.get();
