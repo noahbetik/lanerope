@@ -74,7 +74,7 @@ class _AthleteListState extends State<AthleteList> {
           if (admin.filteredNames[i][0]
               .toLowerCase()
               .contains(admin.searchText.toLowerCase())) {
-            temp.add([admin.filteredNames[i][0]]);
+            temp.add(admin.filteredNames[i]);
           }
         }
         admin.filteredNames = temp;
