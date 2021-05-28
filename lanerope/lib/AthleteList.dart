@@ -4,45 +4,60 @@ import 'package:lanerope/screens/adminPanel.dart' as admin;
 import 'package:lanerope/screens/athleteInfo.dart' as info;
 
 class AthleteList extends StatefulWidget {
-
   final String inclGroups;
 
-  AthleteList(this.inclGroups){
+  AthleteList(this.inclGroups) {
     createState();
   }
 
   @override
-  State<StatefulWidget> createState(){
+  State<StatefulWidget> createState() {
     return _AthleteListState();
   }
 }
 
 class _AthleteListState extends State<AthleteList> {
+  List<List<String>> groupAthletes = [];
 
   void _getNames() async {
     CollectionReference users = FirebaseFirestore.instance.collection('users');
-    CollectionReference groups = FirebaseFirestore.instance.collection('groups');
+    CollectionReference groups =
+        FirebaseFirestore.instance.collection('groups');
     List<List<String>> temp = [];
-
-    if (widget.inclGroups == 'all'){
-      users.get().then((snapshot){
+    if (widget.inclGroups == 'all') {
+      users.get().then((snapshot) {
         snapshot.docs.forEach((element) {
-          temp.add([element.get("first_name") + " " + element.get("last_name"), element.get("age") + element.get("gender"), "X"]);
-          //tempAG.add(element.get("age") + element.get("gender"));
-          //tempPN.add(""); //fix once properly supported in account creation
-          });
+          temp.add([
+            element.get("first_name") + " " + element.get("last_name"),
+            element.get("age") + element.get("gender"),
+            "ab/cd"
+          ]);
+        });
       });
       setState(() {
         admin.names = temp;
         admin.filteredNames = admin.names;
       });
-    }
-    else {
-      // read from group db
-      return;
+    } else {
+      List<dynamic> temp2 = [];
+      List<List<String>> temp3 = [];
+      groups.doc(widget.inclGroups).get().then((snapshot) {
+        temp2 = snapshot.get("athletes");
+        for (int i = 0; i < temp2.length; i++) {
+          users.doc(temp2[i]).get().then((element) {
+            temp3.add([
+              element.get("first_name") + " " + element.get("last_name"),
+              element.get("age") + element.get("gender"),
+              "ab/cd"
+            ]);
+            setState(() {
+              groupAthletes = temp3;
+            });
+          });
+        }
+      });
     }
   }
-
 
   @override
   void initState() {
@@ -52,24 +67,36 @@ class _AthleteListState extends State<AthleteList> {
 
   @override
   Widget build(BuildContext context) {
-
-    if (admin.searchText.isNotEmpty) {
-      List<List<String>> temp = [];
-      for (int i = 0; i < admin.filteredNames.length; i++) {
-        if (admin.filteredNames[i][0].toLowerCase().contains(admin.searchText.toLowerCase())) {
-          temp.add([admin.filteredNames[i][0]]);
+    if (widget.inclGroups == "all") {
+      if (admin.searchText.isNotEmpty) {
+        List<List<String>> temp = [];
+        for (int i = 0; i < admin.filteredNames.length; i++) {
+          if (admin.filteredNames[i][0]
+              .toLowerCase()
+              .contains(admin.searchText.toLowerCase())) {
+            temp.add([admin.filteredNames[i][0]]);
+          }
         }
+        admin.filteredNames = temp;
       }
-      admin.filteredNames = temp;
+      return ListView.builder(
+        itemCount: admin.filteredNames.length,
+        itemBuilder: (BuildContext context, int index) {
+          return AthleteTile(admin.filteredNames[index][0],
+              admin.filteredNames[index][1], admin.filteredNames[index][2]);
+        },
+      );
+    } else {
+      print("length is " + groupAthletes.length.toString());
+      return ListView.builder(
+        shrinkWrap: true,
+        itemCount: groupAthletes.length,
+        itemBuilder: (BuildContext context, int index) {
+          return AthleteTile(groupAthletes[index][0], groupAthletes[index][1],
+              groupAthletes[index][2]);
+        },
+      );
     }
-    return ListView.builder(
-      itemCount: admin.filteredNames.length,
-      itemBuilder: (BuildContext context, int index) {
-
-        return AthleteTile(admin.filteredNames[index][0], admin.filteredNames[index][1], admin.filteredNames[index][2]);
-      },
-    );
-
   }
 }
 
@@ -83,9 +110,7 @@ class AthleteTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
+      title: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
         Text(aG), // age/gender
         Text(fullName),
         Text(
@@ -93,7 +118,6 @@ class AthleteTile extends StatelessWidget {
           style: TextStyle(color: Colors.grey), // pronouns
         ),
       ]),
-
       trailing: IconButton(
         icon: const Icon(Icons.edit_sharp),
         onPressed: () {

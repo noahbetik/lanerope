@@ -204,10 +204,6 @@ class GroupCard extends StatelessWidget {
 
   GroupCard(this.cardName);
 
-  /*List<String> getAthletes(){ // maybe eventually get this locally to only connect to db once per session
-    groupWrangler.get();
-  }*/
-
   @override
   Widget build(BuildContext context) {
     return ExpandableNotifier(
@@ -247,9 +243,10 @@ class GroupCard extends StatelessWidget {
                 collapsed: Text(
                   "",
                 ),
-                expanded: ListView(
+                expanded: AthleteList(cardName)
+                /*ListView(
                   shrinkWrap: true,
-                    padding: const EdgeInsets.all(0), children: <Widget>[]),
+                    padding: const EdgeInsets.all(0), children: <Widget>[])*/,
                 // Athlete List goes here
                 builder: (_, collapsed, expanded) {
                   return Padding(
