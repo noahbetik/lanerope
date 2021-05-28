@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 String currentUID = '';
 String role = '';
@@ -12,4 +13,8 @@ Future<String> findRole() async {
   print(currentUID);
   print(role);
   return role;
+}
+
+void getUID () {
+  currentUID = FirebaseAuth.instance.currentUser!.uid;
 }

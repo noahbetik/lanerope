@@ -202,10 +202,11 @@ class _AccountState extends State<Account> {
 
                         DateTime birthday = DateTime.parse(dateGrabber.text);
 
-                        int yearsSince(DateTime from) {
+                        String yearsSince(DateTime from) {
                           from = DateTime(from.year, from.month, from.day);
                           DateTime to = DateTime.now();
-                          return ((to.difference(from).inHours / 24).round() / 365).floor();
+                          int result = ((to.difference(from).inHours / 24).round() / 365).floor();
+                          return result.toString();
                         }
 
                         String uid = auth.currentUser!.uid;

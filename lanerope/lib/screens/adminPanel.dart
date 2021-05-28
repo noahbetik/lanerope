@@ -22,8 +22,8 @@ List<Widget> cards = [];
 List<String> subs = [];
 
 String searchText = '';
-List<String> names = [];
-List<String> filteredNames = [];
+List<List<String>> names = [];
+List<List<String>> filteredNames = [];
 
 getGroups() async {
   groupBoxes.clear();
@@ -37,9 +37,12 @@ getGroups() async {
 getCards() async {
   cards.clear();
   cards.add(SelectionCard());
+  if (globals.currentUID == ''){
+    globals.getUID();
+  }
   await FirebaseFirestore.instance
       .collection('users')
-      .doc(globals.currentUID)
+      .doc(globals.currentUID) // sometimes null, fix
       .get()
       .then((snapshot) {
     List<dynamic> myGroups = snapshot.get("groups");

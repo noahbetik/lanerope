@@ -9,7 +9,7 @@ class AddUser {
   final String firstName;
   final String lastName;
   final String gender;
-  int age;
+  String age;
   final DateTime birthday;
 
   AddUser(this.uid, this.role, this.firstName, this.lastName, this.gender, this.age, this.birthday);

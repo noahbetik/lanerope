@@ -22,12 +22,14 @@ class _AthleteListState extends State<AthleteList> {
   void _getNames() async {
     CollectionReference users = FirebaseFirestore.instance.collection('users');
     CollectionReference groups = FirebaseFirestore.instance.collection('groups');
-    List<String> temp = [];
+    List<List<String>> temp = [];
 
     if (widget.inclGroups == 'all'){
       users.get().then((snapshot){
         snapshot.docs.forEach((element) {
-          temp.add(element.get("first_name") + " " + element.get("last_name"));
+          temp.add([element.get("first_name") + " " + element.get("last_name"), element.get("age") + element.get("gender"), "X"]);
+          //tempAG.add(element.get("age") + element.get("gender"));
+          //tempPN.add(""); //fix once properly supported in account creation
           });
       });
       setState(() {
@@ -52,10 +54,10 @@ class _AthleteListState extends State<AthleteList> {
   Widget build(BuildContext context) {
 
     if (admin.searchText.isNotEmpty) {
-      List<String> temp = [];
+      List<List<String>> temp = [];
       for (int i = 0; i < admin.filteredNames.length; i++) {
-        if (admin.filteredNames[i].toLowerCase().contains(admin.searchText.toLowerCase())) {
-          temp.add(admin.filteredNames[i]);
+        if (admin.filteredNames[i][0].toLowerCase().contains(admin.searchText.toLowerCase())) {
+          temp.add([admin.filteredNames[i][0]]);
         }
       }
       admin.filteredNames = temp;
@@ -63,7 +65,8 @@ class _AthleteListState extends State<AthleteList> {
     return ListView.builder(
       itemCount: admin.filteredNames.length,
       itemBuilder: (BuildContext context, int index) {
-        return AthleteTile(admin.filteredNames[index]);
+
+        return AthleteTile(admin.filteredNames[index][0], admin.filteredNames[index][1], admin.filteredNames[index][2]);
       },
     );
 
@@ -72,8 +75,10 @@ class _AthleteListState extends State<AthleteList> {
 
 class AthleteTile extends StatelessWidget {
   final String fullName;
+  final String aG;
+  final String pronouns;
 
-  AthleteTile(String name) : fullName = name;
+  AthleteTile(this.fullName, this.aG, this.pronouns);
 
   @override
   Widget build(BuildContext context) {
@@ -81,10 +86,10 @@ class AthleteTile extends StatelessWidget {
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-        Text("19M"), // age/gender
+        Text(aG), // age/gender
         Text(fullName),
         Text(
-          "he/him",
+          pronouns,
           style: TextStyle(color: Colors.grey), // pronouns
         ),
       ]),
