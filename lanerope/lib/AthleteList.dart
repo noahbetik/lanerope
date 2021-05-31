@@ -27,9 +27,32 @@ class _AthleteListState extends State<AthleteList> {
     if (widget.inclGroups == 'all') {
       users.get().then((snapshot) {
         snapshot.docs.forEach((element) {
+          String gender;
+          switch (element.get("gender")) {
+            case "Male":
+              {
+                gender = "M";
+              }
+              break;
+            case "Female":
+              {
+                gender = "F";
+              }
+              break;
+            case "Non-Binary/Prefer not to say":
+              {
+                gender = "X";
+              }
+              break;
+            default:
+              {
+                gender = "X";
+              }
+              break;
+          }
           temp.add([
             element.get("first_name") + " " + element.get("last_name"),
-            element.get("age") + element.get("gender"),
+            element.get("age") + gender,
             "ab/cd"
           ]);
         });
@@ -45,9 +68,33 @@ class _AthleteListState extends State<AthleteList> {
         temp2 = snapshot.get("athletes");
         for (int i = 0; i < temp2.length; i++) {
           users.doc(temp2[i]).get().then((element) {
+            String gender;
+            switch (element.get("gender")) {
+              case "Male":
+                {
+                  gender = "M";
+                }
+                break;
+              case "Female":
+                {
+                  gender = "F";
+                }
+                break;
+              case "Non-Binary/Prefer not to say":
+                {
+                  gender = "X";
+                }
+                break;
+              default:
+                {
+                  gender = "X";
+                }
+                break;
+            }
+
             temp3.add([
               element.get("first_name") + " " + element.get("last_name"),
-              element.get("age") + element.get("gender"),
+              element.get("age") + gender,
               "ab/cd"
             ]);
             setState(() {
