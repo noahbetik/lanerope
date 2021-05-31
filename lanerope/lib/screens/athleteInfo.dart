@@ -17,11 +17,11 @@ String thisGroup = '';
 String thisGender = '';
 String thisBirthday = '';
 
-void getInfo(String uid) async {
-  await athleteWrangler.doc(uid).get().then((DocumentSnapshot snapshot) {
+Future<void> getInfo(String uid) async {
+  athleteWrangler.doc(uid).get().then((DocumentSnapshot snapshot) {
     thisFName = snapshot.get("first_name");
     thisLName = snapshot.get("last_name");
-    thisFullName = thisFName + thisLName;
+    thisFullName = thisFName + " " + thisLName;
     thisAge = snapshot.get("age");
     thisGender = snapshot.get("gender");
     thisGroup = List.from(snapshot.get("groups"))[0];

@@ -124,6 +124,8 @@ class _AdminPanelState extends State<AdminPanel> {
 
   @override
   Widget build(BuildContext context) {
+    getGroups();
+    getCards();
     return Scaffold(
       appBar: _buildBar(context),
       floatingActionButton: AddButton(),
@@ -349,7 +351,7 @@ class AddButton extends StatelessWidget {
                           )
                         ]))));
       },
-      child: const Icon(Icons.person_add_rounded),
+      child: const Icon(Icons.add_comment_rounded),
       backgroundColor: Colors.green,
     );
   }

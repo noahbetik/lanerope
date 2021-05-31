@@ -119,10 +119,10 @@ class _LoginState extends State<Login> {
               Text("New here? Create an account"),
               ElevatedButton(
                   onPressed: () {
-                    Navigator.pushAndRemoveUntil(
+                    Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => Account()),
-                        (Route<dynamic> route) => false);
+                        );
                   },
                   child: Text("Create an account"))
             ])));

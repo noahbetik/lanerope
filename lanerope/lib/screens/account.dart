@@ -7,7 +7,7 @@ import 'package:lanerope/AddUser.dart';
 import 'package:string_validator/string_validator.dart';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart' as dt;
 import 'package:intl/intl.dart';
-import 'login.dart';
+import 'home.dart';
 
 bool ios = Platform.isIOS;
 bool android = Platform.isAndroid;
@@ -225,7 +225,7 @@ class _AccountState extends State<Account> {
                             SnackBar(content: Text('Creating account...')));
                         Navigator.pushAndRemoveUntil(
                             context,
-                            MaterialPageRoute(builder: (context) => Login()),
+                            MaterialPageRoute(builder: (context) => Home()),
                             (Route<dynamic> route) => false);
                       }
                     },
