@@ -9,19 +9,24 @@ bool android = Platform.isAndroid;
 CollectionReference athleteWrangler =
     FirebaseFirestore.instance.collection('users');
 
-String currentFName = '';
-String currentLName = '';
-String currentGroup = '';
+String thisFName = '';
+String thisLName = '';
+String thisFullName = '';
+String thisAge = '';
+String thisGroup = '';
+String thisGender = '';
+String thisBirthday = '';
 
 void getInfo(String uid) async {
   await athleteWrangler.doc(uid).get().then((DocumentSnapshot snapshot) {
-    currentFName = snapshot.get("first_name");
-    currentLName = snapshot.get("last_name");
-    currentGroup = List.from(snapshot.get("groups"))[0];
+    thisFName = snapshot.get("first_name");
+    thisLName = snapshot.get("last_name");
+    thisFullName = thisFName + thisLName;
+    thisAge = snapshot.get("age");
+    thisGender = snapshot.get("gender");
+    thisGroup = List.from(snapshot.get("groups"))[0];
+    thisBirthday = snapshot.get("birthday").toString();
   });
-  print(currentFName);
-  print(currentLName);
-  print(currentGroup);
 }
 
 class AthleteInfo extends StatelessWidget {

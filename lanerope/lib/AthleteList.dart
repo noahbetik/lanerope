@@ -53,7 +53,8 @@ class _AthleteListState extends State<AthleteList> {
           temp.add([
             element.get("first_name") + " " + element.get("last_name"),
             element.get("age") + gender,
-            "ab/cd"
+            "ab/cd",
+            element.id
           ]);
         });
       });
@@ -95,7 +96,8 @@ class _AthleteListState extends State<AthleteList> {
             temp3.add([
               element.get("first_name") + " " + element.get("last_name"),
               element.get("age") + gender,
-              "ab/cd"
+              "ab/cd",
+              element.id
             ]);
             setState(() {
               groupAthletes = temp3;
@@ -129,18 +131,20 @@ class _AthleteListState extends State<AthleteList> {
       return ListView.builder(
         itemCount: admin.filteredNames.length,
         itemBuilder: (BuildContext context, int index) {
-          return AthleteTile(admin.filteredNames[index][0],
-              admin.filteredNames[index][1], admin.filteredNames[index][2]);
+          return AthleteTile(
+              admin.filteredNames[index][0],
+              admin.filteredNames[index][1],
+              admin.filteredNames[index][2],
+              admin.filteredNames[index][3]);
         },
       );
     } else {
-      print("length is " + groupAthletes.length.toString());
       return ListView.builder(
         shrinkWrap: true,
         itemCount: groupAthletes.length,
         itemBuilder: (BuildContext context, int index) {
           return AthleteTile(groupAthletes[index][0], groupAthletes[index][1],
-              groupAthletes[index][2]);
+              groupAthletes[index][2], groupAthletes[index][3]);
         },
       );
     }
@@ -151,8 +155,9 @@ class AthleteTile extends StatelessWidget {
   final String fullName;
   final String aG;
   final String pronouns;
+  final String uid;
 
-  AthleteTile(this.fullName, this.aG, this.pronouns);
+  AthleteTile(this.fullName, this.aG, this.pronouns, this.uid);
 
   @override
   Widget build(BuildContext context) {
@@ -168,16 +173,25 @@ class AthleteTile extends StatelessWidget {
       trailing: IconButton(
         icon: const Icon(Icons.edit_sharp),
         onPressed: () {
+          info.getInfo(uid);
           showDialog(
               context: context,
               builder: (context) => AlertDialog(
                   title: Text("Athlete Info"),
                   content: Container(
+                    padding: const EdgeInsets.all(0.0),
                       width: double.maxFinite,
-                      height: 100,
-                      child: ListView(padding: const EdgeInsets.all(8),
-                          // shrinkWrap: true, // probably not necessary
-                          children: <Widget>[]))));
+                      height: 400, // auto adjust better
+                      child: ListView(padding: const EdgeInsets.all(0),
+                          //shrinkWrap: true, // probably not necessary
+                          children: <Widget>[
+                            ListTile(title: Text("Name: " + info.thisFullName)),
+                            ListTile(title: Text("Age: " + info.thisAge)),
+                            ListTile(title: Text("Birthday: " + info.thisBirthday)),
+                            ListTile(title: Text("Gender: " + info.thisGender)),
+                            ListTile(title: Text("Current Group: " + info.thisGroup)),
+
+                          ]))));
         },
       ),
     );

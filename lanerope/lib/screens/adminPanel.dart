@@ -175,7 +175,7 @@ class SelectionCard extends StatelessWidget {
                             "Group Selection",
                             style: Theme.of(context).textTheme.bodyText1,
                           )),
-                      collapsed: Container(),
+                      collapsed: SizedBox.shrink(),
                       expanded: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: subWidgets),
@@ -228,7 +228,7 @@ class GroupCard extends StatelessWidget {
               scrollOnCollapse: true,
               child: ExpandablePanel(
                 controller: ExpandableController(
-                    initialExpanded: true
+                    initialExpanded: false
                 ),
                 theme: const ExpandableThemeData(
                   headerAlignment: ExpandablePanelHeaderAlignment.center,
@@ -240,17 +240,11 @@ class GroupCard extends StatelessWidget {
                       cardName,
                       style: Theme.of(context).textTheme.bodyText1,
                     )),
-                collapsed: Text(
-                  "",
-                ),
-                expanded: AthleteList(cardName)
-                /*ListView(
-                  shrinkWrap: true,
-                    padding: const EdgeInsets.all(0), children: <Widget>[])*/,
-                // Athlete List goes here
+                collapsed: SizedBox.shrink(),
+                expanded: AthleteList(cardName),
                 builder: (_, collapsed, expanded) {
                   return Padding(
-                    padding: EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                    padding: EdgeInsets.all(0.0),
                     child: Expandable(
                       collapsed: collapsed,
                       expanded: expanded,
