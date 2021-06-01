@@ -18,6 +18,7 @@ String thisGender = '';
 String thisBirthday = '';
 
 Future<void> getInfo(String uid) async {
+  print("getting info for " + uid);
   athleteWrangler.doc(uid).get().then((DocumentSnapshot snapshot) {
     thisFName = snapshot.get("first_name");
     thisLName = snapshot.get("last_name");
@@ -26,6 +27,8 @@ Future<void> getInfo(String uid) async {
     thisGender = snapshot.get("gender");
     thisGroup = List.from(snapshot.get("groups"))[0];
     thisBirthday = snapshot.get("birthday").toString();
+
+    print("info complete for " + thisFullName);
   });
 }
 

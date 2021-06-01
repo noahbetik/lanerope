@@ -8,6 +8,7 @@ CollectionReference groups = FirebaseFirestore.instance.collection('groups');
 List<String> managedGroups = [];
 
 Future<void> allGroups() async {
+  CircularProgressIndicator(); // idk
   groups.get().then((snapshot) {
     managedGroups.clear();
     snapshot.docs.forEach((element) {
@@ -180,8 +181,14 @@ class AthleteTile extends StatefulWidget {
 class _AthleteTileState extends State<AthleteTile> {
   String group = info.thisGroup;
 
+  void bigMoneyBitches() async {
+    await info.getInfo(widget.uid);
+    await allGroups();
+  }
+
   @override
   Widget build(BuildContext context) {
+    print("current group is " + group);
 
     return ListTile(
       title: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -195,8 +202,10 @@ class _AthleteTileState extends State<AthleteTile> {
       trailing: IconButton(
         icon: const Icon(Icons.edit_sharp),
         onPressed: () async {
-          await info.getInfo(widget.uid);
-          await allGroups();
+          print("inside button, current group is " + group);
+          print(widget.uid);
+          bigMoneyBitches();
+          print(info.thisFullName);
           showDialog(
               context: context,
               builder: (context) => AlertDialog(
@@ -216,17 +225,15 @@ class _AthleteTileState extends State<AthleteTile> {
                             ListTile(
                                 title:
                                     Text("Current Group: " + info.thisGroup)),
-                            Container(
+                            /*Container(
                               alignment: Alignment.bottomLeft,
                               padding: EdgeInsets.only(top: 8.0, bottom: 3.0),
                               child: DropdownButton<String>(
                                 hint: Text('dumb?'),
                                 value: group,
-                                items: managedGroups
+                                items: ['AG1', 'AG2', 'AG3', "Elite", 'Novice 2']
                                     .map<DropdownMenuItem<String>>(
                                         (String value) {
-                                          print(managedGroups);
-                                          print("inside function");
                                   return DropdownMenuItem<String>(
                                     value: value,
                                     child: Text(value),
@@ -238,7 +245,7 @@ class _AthleteTileState extends State<AthleteTile> {
                                   });
                                 },
                               ),
-                            ),
+                            ),*/
                             ElevatedButton(
                                 onPressed: () {}, child: Text("Submit"))
                           ]))));
