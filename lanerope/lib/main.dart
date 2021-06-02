@@ -44,7 +44,7 @@ class _LaneropeState extends State<Lanerope> {
 
   void getAthletes(String thisUID){
     if (globals.role == 'Coach/Admin'){
-
+      globals.allInfo();
     }
   }
 
@@ -53,7 +53,7 @@ class _LaneropeState extends State<Lanerope> {
     print("inside build widget");
     return FutureBuilder(
       // Initialize FlutterFire:
-      future: Future.wait([_initialization, _login, info.allInfo()]),
+      future: Future.wait([_initialization, _login, globals.allInfo()]),
       builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
         // Check for errors
         if (snapshot.hasError) {

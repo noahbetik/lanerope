@@ -173,7 +173,7 @@ class _AthleteTileState extends State<AthleteTile> {
 
   @override
   Widget build(BuildContext context) {
-    List<String> localInfo = info.allAthletes[widget.uid];
+    List<String> localInfo = globals.allAthletes[widget.uid];
     print(localInfo);
     String group = localInfo[4]; // feels sketchy to do this with list indices
     return ListTile(
