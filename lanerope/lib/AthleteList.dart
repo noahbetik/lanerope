@@ -2,20 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lanerope/screens/adminPanel.dart' as admin;
 import 'package:lanerope/screens/athleteInfo.dart' as info;
+import 'package:lanerope/globals.dart' as globals;
 
 CollectionReference users = FirebaseFirestore.instance.collection('users');
 CollectionReference groups = FirebaseFirestore.instance.collection('groups');
-List<String> managedGroups = [];
 
-Future<void> allGroups() async {
-  CircularProgressIndicator(); // idk
-  groups.get().then((snapshot) {
-    managedGroups.clear();
-    snapshot.docs.forEach((element) {
-      managedGroups.add(element.id);
-    });
-  });
-}
 
 class AthleteList extends StatefulWidget {
   final String inclGroups;
@@ -33,7 +24,7 @@ class AthleteList extends StatefulWidget {
 class _AthleteListState extends State<AthleteList> {
   List<List<String>> groupAthletes = [];
 
-  void _getNames() async {
+  void _getNames() async { // maybe can do this with local copy
     List<List<String>> temp = [];
     if (widget.inclGroups == 'all') {
       users.get().then((snapshot) {
@@ -179,17 +170,12 @@ class AthleteTile extends StatefulWidget {
 }
 
 class _AthleteTileState extends State<AthleteTile> {
-  String group = info.thisGroup;
-
-  void bigMoneyBitches() async {
-    await info.getInfo(widget.uid);
-    await allGroups();
-  }
 
   @override
   Widget build(BuildContext context) {
-    print("current group is " + group);
-
+    List<String> localInfo = info.allAthletes[widget.uid];
+    print(localInfo);
+    String group = localInfo[4]; // feels sketchy to do this with list indices
     return ListTile(
       title: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
         Text(widget.aG), // age/gender
@@ -202,53 +188,66 @@ class _AthleteTileState extends State<AthleteTile> {
       trailing: IconButton(
         icon: const Icon(Icons.edit_sharp),
         onPressed: () async {
-          print("inside button, current group is " + group);
-          print(widget.uid);
-          bigMoneyBitches();
-          print(info.thisFullName);
           showDialog(
               context: context,
               builder: (context) => AlertDialog(
                   title: Text("Athlete Info"),
-                  content: Container(
-                      padding: const EdgeInsets.all(0.0),
-                      width: double.maxFinite,
-                      height: 500, // auto adjust better
-                      child: ListView(padding: const EdgeInsets.all(0),
-                          //shrinkWrap: true, // probably not necessary
-                          children: <Widget>[
-                            ListTile(title: Text("Name: " + info.thisFullName)),
-                            ListTile(title: Text("Age: " + info.thisAge)),
-                            ListTile(
-                                title: Text("Birthday: " + info.thisBirthday)),
-                            ListTile(title: Text("Gender: " + info.thisGender)),
-                            ListTile(
-                                title:
-                                    Text("Current Group: " + info.thisGroup)),
-                            /*Container(
-                              alignment: Alignment.bottomLeft,
-                              padding: EdgeInsets.only(top: 8.0, bottom: 3.0),
-                              child: DropdownButton<String>(
-                                hint: Text('dumb?'),
-                                value: group,
-                                items: ['AG1', 'AG2', 'AG3', "Elite", 'Novice 2']
-                                    .map<DropdownMenuItem<String>>(
-                                        (String value) {
-                                  return DropdownMenuItem<String>(
-                                    value: value,
-                                    child: Text(value),
-                                  );
-                                }).toList(),
-                                onChanged: (String? newGroup) {
-                                  setState(() {
-                                    group = newGroup!;
-                                  });
-                                },
-                              ),
-                            ),*/
-                            ElevatedButton(
-                                onPressed: () {}, child: Text("Submit"))
-                          ]))));
+                  content: StatefulBuilder(
+                      builder: (BuildContext context, StateSetter setState) {
+                          return Container(
+                              padding: const EdgeInsets.all(0.0),
+                              width: double.maxFinite,
+                              height: 500, // auto adjust better
+                              child: ListView(padding: const EdgeInsets.all(0),
+                                  //shrinkWrap: true, // probably not necessary
+                                  children: <Widget>[
+                                    ListTile(
+                                        title:
+                                            Text("Name: " + localInfo[2])),
+                                    ListTile(
+                                        title: Text("Age: " + localInfo[3])),
+                                    ListTile(
+                                        title: Text(
+                                            "Birthday: " + localInfo[6])),
+                                    ListTile(
+                                        title:
+                                            Text("Gender: " + localInfo[5])),
+                                    ListTile(
+                                        title: Text("Current Group: " +
+                                            localInfo[4])),
+                                    /*Container(
+                                      alignment: Alignment.bottomLeft,
+                                      padding: EdgeInsets.only(
+                                          top: 8.0, bottom: 3.0),
+                                      child: DropdownButton<String>(
+                                        hint: Text('dumb?'),
+                                        value: group,
+                                        items: [
+                                          'AG1',
+                                          'AG2',
+                                          'AG3',
+                                          "Elite",
+                                          'Novice 2'
+                                        ].map<DropdownMenuItem<String>>(
+                                            (String value) {
+                                          return DropdownMenuItem<String>(
+                                            value: value,
+                                            child: Text(value),
+                                          );
+                                        }).toList(),
+                                        onChanged: (String? newGroup) {
+                                          setState(() {
+                                            group = newGroup!;
+                                          });
+                                        },
+                                      ),
+                                    ),*/
+                                    ElevatedButton(
+                                        onPressed: () {
+                                        },
+                                        child: Text("Submit"))
+                                  ]));
+                      })));
         },
       ),
     );

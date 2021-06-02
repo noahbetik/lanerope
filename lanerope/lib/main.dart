@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:lanerope/globals.dart' as globals;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:lanerope/screens/adminPanel.dart';
+import 'package:lanerope/screens/athleteInfo.dart' as info;
 
 import './screens/home.dart';
 import "./screens/login.dart";
+import 'globals.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,6 +24,7 @@ Future<bool> loginState() async {
   globals.role = prefs.getString("role") ?? "";
   return _status;
 }
+
 
 class Lanerope extends StatefulWidget {
   // Create the initialization Future outside of `build`:
@@ -39,17 +42,23 @@ class _LaneropeState extends State<Lanerope> {
   final Future<FirebaseApp> _initialization = Firebase.initializeApp();
   final Future<bool> _login = loginState();
 
+  void getAthletes(String thisUID){
+    if (globals.role == 'Coach/Admin'){
+
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     print("inside build widget");
     return FutureBuilder(
       // Initialize FlutterFire:
-      future: Future.wait([_initialization, _login]),
+      future: Future.wait([_initialization, _login, info.allInfo()]),
       builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
         // Check for errors
-        /*if (snapshot.hasError) {
-          return SomethingWentWrong();
-        }*/
+        if (snapshot.hasError) {
+          return Text("we got a problem");
+        }
         print("waiting for future");
 
         // Once complete, show your application
@@ -58,6 +67,7 @@ class _LaneropeState extends State<Lanerope> {
           bool login = false;
           getGroups();
           getCards();
+          globals.allGroups();
           var current = FirebaseAuth.instance.currentUser;
           if (snapshot.data![1] == true) {
             globals.currentUID = current!.uid;

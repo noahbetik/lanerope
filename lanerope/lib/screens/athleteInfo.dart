@@ -8,28 +8,39 @@ bool ios = Platform.isIOS;
 bool android = Platform.isAndroid;
 CollectionReference athleteWrangler =
     FirebaseFirestore.instance.collection('users');
+Map allAthletes = new Map();
 
-String thisFName = '';
-String thisLName = '';
-String thisFullName = '';
-String thisAge = '';
-String thisGroup = '';
-String thisGender = '';
-String thisBirthday = '';
-
-Future<void> getInfo(String uid) async {
+List<String> getInfo(String uid) {
+  String fName = '';
+  String lName = '';
+  String fullName = '';
+  String age = '';
+  String group = '';
+  String gender = '';
+  String birthday = '';
   print("getting info for " + uid);
   athleteWrangler.doc(uid).get().then((DocumentSnapshot snapshot) {
-    thisFName = snapshot.get("first_name");
-    thisLName = snapshot.get("last_name");
-    thisFullName = thisFName + " " + thisLName;
-    thisAge = snapshot.get("age");
-    thisGender = snapshot.get("gender");
-    thisGroup = List.from(snapshot.get("groups"))[0];
-    thisBirthday = snapshot.get("birthday").toString();
+    fName = snapshot.get("first_name");
+    lName = snapshot.get("last_name");
+    fullName = fName + " " + lName;
+    age = snapshot.get("age");
+    gender = snapshot.get("gender");
+    group = List.from(snapshot.get("groups"))[0];
+    birthday = snapshot.get("birthday").toString();
 
-    print("info complete for " + thisFullName);
+    print("info complete for " + fullName);
   });
+  return [fName, lName, fullName, age, group, gender, birthday];
+}
+
+Future<void> allInfo() async {
+  if (globals.role == 'Coach/Admin'){
+    athleteWrangler.get().then((snapshot) {
+      snapshot.docs.forEach((element) {
+        allAthletes[element.id] = getInfo(element.id);
+      });
+    });
+  }
 }
 
 class AthleteInfo extends StatelessWidget {
