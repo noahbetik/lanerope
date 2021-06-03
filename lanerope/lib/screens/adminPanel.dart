@@ -31,8 +31,6 @@ Future<void> getGroups() async {
   snapshot.docs.forEach((element) {
     groupBoxes.add(GroupBox(groupName: element.id));
   });
-  print("all groups: ");
-  print(groupBoxes);
 }
 
 Future<void> getCards() async {
@@ -106,15 +104,22 @@ class _AdminPanelState extends State<AdminPanel> {
     });
   }
 
+  Future<void> _refresh() async {
+    ctrl.add(true);
+    print("refresh");
+  }
+
   Widget view() {
     if (this._searchIcon.icon == Icons.search) {
       return ExpandableTheme(
           data: const ExpandableThemeData(
               iconColor: Colors.blue, useInkWell: true),
-          child: ListView(
-            physics: const BouncingScrollPhysics(),
-            children: cards,
-          ));
+          child: RefreshIndicator(
+              onRefresh: _refresh,
+              child: ListView(
+                physics: const BouncingScrollPhysics(),
+                children: cards,
+              )));
     } else {
       return AthleteList('all');
     }
@@ -147,8 +152,6 @@ class _AdminPanelState extends State<AdminPanel> {
 class SelectionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    print("inside selection card");
-    print(groupBoxes);
     return StreamBuilder<bool>(
         stream: redraw,
         builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {

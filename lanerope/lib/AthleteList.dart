@@ -176,6 +176,7 @@ class _AthleteTileState extends State<AthleteTile> {
     List<String> localInfo = globals.allAthletes[widget.uid];
     print(localInfo);
     String group = localInfo[4]; // feels sketchy to do this with list indices
+    String assignedGroup = '';
     return ListTile(
       title: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
         Text(widget.aG), // age/gender
@@ -197,7 +198,7 @@ class _AthleteTileState extends State<AthleteTile> {
                           return Container(
                               padding: const EdgeInsets.all(0.0),
                               width: double.maxFinite,
-                              height: 500, // auto adjust better
+                              height: 400, // auto adjust better if possible
                               child: ListView(padding: const EdgeInsets.all(0),
                                   //shrinkWrap: true, // probably not necessary
                                   children: <Widget>[
@@ -222,13 +223,7 @@ class _AthleteTileState extends State<AthleteTile> {
                                       child: DropdownButton<String>(
                                         hint: Text('dumb?'),
                                         value: group,
-                                        items: [
-                                          'AG1',
-                                          'AG2',
-                                          'AG3',
-                                          "Elite",
-                                          'Novice 2'
-                                        ].map<DropdownMenuItem<String>>(
+                                        items: globals.managedGroups.map<DropdownMenuItem<String>>(
                                             (String value) {
                                           return DropdownMenuItem<String>(
                                             value: value,
@@ -238,12 +233,32 @@ class _AthleteTileState extends State<AthleteTile> {
                                         onChanged: (String? newGroup) {
                                           setState(() {
                                             group = newGroup!;
+                                            assignedGroup = newGroup;
                                           });
                                         },
                                       ),
                                     ),
                                     ElevatedButton(
-                                        onPressed: () {
+                                        onPressed: () async {
+                                          Center(child: CircularProgressIndicator.adaptive());
+                                          DocumentSnapshot snap1 = await users.doc(widget.uid).get();
+                                          List<dynamic> thisGroups = snap1.get("groups");
+                                          DocumentSnapshot snap3 = await groups.doc(assignedGroup).get();
+                                          List<dynamic> groupToAdd = snap3.get("athletes");
+
+                                          if (thisGroups.isNotEmpty){
+                                            DocumentSnapshot snap2 = await groups.doc(localInfo[4]).get();
+                                            List<dynamic> groupToRemove = snap2.get("athletes");
+                                            thisGroups.remove(localInfo[4]);
+                                            groupToRemove.remove(widget.uid);
+                                            groups.doc(localInfo[4]).update({"athletes" : groupToRemove});
+                                          }
+                                          thisGroups.add(assignedGroup);
+                                          groupToAdd.add(widget.uid);
+                                          groups.doc(assignedGroup).update({"athletes" : groupToAdd});
+                                          users.doc(widget.uid).update({"groups" : thisGroups});
+                                          globals.allAthletes[widget.uid] = await globals.getInfo(widget.uid);
+                                          Navigator.pop(context);
                                         },
                                         child: Text("Submit"))
                                   ]));
