@@ -240,7 +240,14 @@ class _AthleteTileState extends State<AthleteTile> {
                                     ),
                                     ElevatedButton(
                                         onPressed: () async {
-                                          Center(child: CircularProgressIndicator.adaptive());
+                                          showDialog(
+                                              context: context,
+                                              builder: (context) => AlertDialog( // not ideal
+                                                content: Center(child: CircularProgressIndicator.adaptive(),
+                                                widthFactor: 1,
+                                                  heightFactor: 1,
+                                                )
+                                              ));
                                           DocumentSnapshot snap1 = await users.doc(widget.uid).get();
                                           List<dynamic> thisGroups = snap1.get("groups");
                                           DocumentSnapshot snap3 = await groups.doc(assignedGroup).get();
@@ -258,6 +265,7 @@ class _AthleteTileState extends State<AthleteTile> {
                                           groups.doc(assignedGroup).update({"athletes" : groupToAdd});
                                           users.doc(widget.uid).update({"groups" : thisGroups});
                                           globals.allAthletes[widget.uid] = await globals.getInfo(widget.uid);
+                                          Navigator.pop(context);
                                           Navigator.pop(context);
                                         },
                                         child: Text("Submit"))
