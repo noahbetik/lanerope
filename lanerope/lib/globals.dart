@@ -3,6 +3,8 @@ library lanerope.globals;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
 
 String currentUID = '';
 String role = '';
@@ -52,8 +54,9 @@ Future<List<String>> getInfo(String uid) async {
   age = snapshot.get("age");
   gender = snapshot.get("gender");
   group = List.from(snapshot.get("groups"))[0];
-  birthday = snapshot.get("birthday").toString();
-  //print("info complete for " + fullName);
+  int timestamp = snapshot.get("birthday").seconds;
+  final DateFormat formatter = DateFormat('yyyy-MM-dd');
+  birthday = formatter.format(DateTime.fromMillisecondsSinceEpoch(timestamp * 1000));
   print([fName, lName, fullName, age, group, gender, birthday]);
   return [fName, lName, fullName, age, group, gender, birthday];
 }

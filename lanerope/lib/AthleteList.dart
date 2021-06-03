@@ -215,7 +215,7 @@ class _AthleteTileState extends State<AthleteTile> {
                                     ListTile(
                                         title: Text("Current Group: " +
                                             localInfo[4])),
-                                    /*Container(
+                                    Container(
                                       alignment: Alignment.bottomLeft,
                                       padding: EdgeInsets.only(
                                           top: 8.0, bottom: 3.0),
@@ -241,7 +241,7 @@ class _AthleteTileState extends State<AthleteTile> {
                                           });
                                         },
                                       ),
-                                    ),*/
+                                    ),
                                     ElevatedButton(
                                         onPressed: () {
                                         },
