@@ -127,24 +127,28 @@ class _AdminPanelState extends State<AdminPanel> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: Future.wait([getGroups(), getCards()]),
-        builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            return Scaffold(
-              appBar: _buildBar(context),
-              floatingActionButton: AddButton(),
-              body: view(),
-              drawer: pd.PagesDrawer().importDrawer(context),
-            );
-          } else {
-            return Scaffold(
-              appBar: _buildBar(context),
-              body: Center(child: CircularProgressIndicator.adaptive()),
-              // make it look less stupid
-              drawer: pd.PagesDrawer().importDrawer(context),
-            );
-          }
+    return StreamBuilder<bool>(
+        stream: redraw,
+        builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+          return FutureBuilder(
+              future: Future.wait([getGroups(), getCards()]),
+              builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  return Scaffold(
+                    appBar: _buildBar(context),
+                    floatingActionButton: AddButton(),
+                    body: view(),
+                    drawer: pd.PagesDrawer().importDrawer(context),
+                  );
+                } else {
+                  return Scaffold(
+                    appBar: _buildBar(context),
+                    body: Center(child: CircularProgressIndicator.adaptive()),
+                    // make it look less stupid
+                    drawer: pd.PagesDrawer().importDrawer(context),
+                  );
+                }
+              });
         });
   }
 }
