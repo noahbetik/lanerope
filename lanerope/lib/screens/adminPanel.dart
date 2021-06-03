@@ -25,19 +25,20 @@ String searchText = '';
 List<List<String>> names = [];
 List<List<String>> filteredNames = [];
 
-getGroups() async {
+Future<void> getGroups() async {
   groupBoxes.clear();
-  await groupWrangler.get().then((snapshot) {
-    snapshot.docs.forEach((element) {
-      groupBoxes.add(GroupBox(groupName: element.id));
-    });
+  QuerySnapshot snapshot = await groupWrangler.get();
+  snapshot.docs.forEach((element) {
+    groupBoxes.add(GroupBox(groupName: element.id));
   });
+  print("all groups: ");
+  print(groupBoxes);
 }
 
-getCards() async {
+Future<void> getCards() async {
   cards.clear();
   cards.add(SelectionCard());
-  if (globals.currentUID == ''){
+  if (globals.currentUID == '') {
     globals.getUID();
   }
   await FirebaseFirestore.instance
@@ -80,14 +81,12 @@ class _AdminPanelState extends State<AdminPanel> {
   }
 
   PreferredSizeWidget _buildBar(BuildContext context) {
-    return new AppBar(
-      centerTitle: true,
-      title: _appBarTitle,
-      actions: [new IconButton(
+    return new AppBar(centerTitle: true, title: _appBarTitle, actions: [
+      new IconButton(
         icon: _searchIcon,
         onPressed: _searchPressed,
-      ),]
-    );
+      ),
+    ]);
   }
 
   void _searchPressed() {
@@ -96,8 +95,7 @@ class _AdminPanelState extends State<AdminPanel> {
         this._searchIcon = Icon(Icons.close);
         this._appBarTitle = TextField(
           controller: _filter,
-          decoration: InputDecoration(
-              hintText: 'Find an athlete'),
+          decoration: InputDecoration(hintText: 'Find an athlete'),
         );
       } else {
         this._searchIcon = Icon(Icons.search);
@@ -124,20 +122,33 @@ class _AdminPanelState extends State<AdminPanel> {
 
   @override
   Widget build(BuildContext context) {
-    getGroups();
-    getCards();
-    return Scaffold(
-      appBar: _buildBar(context),
-      floatingActionButton: AddButton(),
-      body: view(),
-      drawer: pd.PagesDrawer().importDrawer(context),
-    );
+    return FutureBuilder(
+        future: Future.wait([getGroups(), getCards()]),
+        builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return Scaffold(
+              appBar: _buildBar(context),
+              floatingActionButton: AddButton(),
+              body: view(),
+              drawer: pd.PagesDrawer().importDrawer(context),
+            );
+          } else {
+            return Scaffold(
+              appBar: _buildBar(context),
+              body: Center(child: CircularProgressIndicator.adaptive()),
+              // make it look less stupid
+              drawer: pd.PagesDrawer().importDrawer(context),
+            );
+          }
+        });
   }
 }
 
 class SelectionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    print("inside selection card");
+    print(groupBoxes);
     return StreamBuilder<bool>(
         stream: redraw,
         builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
@@ -229,9 +240,7 @@ class GroupCard extends StatelessWidget {
               scrollOnExpand: true,
               scrollOnCollapse: true,
               child: ExpandablePanel(
-                controller: ExpandableController(
-                    initialExpanded: false
-                ),
+                controller: ExpandableController(initialExpanded: false),
                 theme: const ExpandableThemeData(
                   headerAlignment: ExpandablePanelHeaderAlignment.center,
                   tapBodyToCollapse: true,

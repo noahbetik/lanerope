@@ -53,11 +53,11 @@ class _LaneropeState extends State<Lanerope> {
     print("inside build widget");
     return FutureBuilder(
       // Initialize FlutterFire:
-      future: Future.wait([_initialization, _login, globals.allInfo()]),
+      future: Future.wait([_initialization, _login]),
       builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
         // Check for errors
         if (snapshot.hasError) {
-          return Text("we got a problem");
+          return CircularProgressIndicator.adaptive(); // do something better
         }
         print("waiting for future");
 
@@ -65,9 +65,8 @@ class _LaneropeState extends State<Lanerope> {
         if (snapshot.connectionState == ConnectionState.done) {
           print("database connected");
           bool login = false;
-          getGroups();
-          getCards();
           globals.allGroups();
+          globals.allInfo();
           var current = FirebaseAuth.instance.currentUser;
           if (snapshot.data![1] == true) {
             globals.currentUID = current!.uid;
