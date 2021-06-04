@@ -11,6 +11,7 @@ import 'home.dart';
 
 bool ios = Platform.isIOS;
 bool android = Platform.isAndroid;
+final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
 class Login extends StatefulWidget {
   @override
@@ -38,6 +39,7 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
         appBar: AppBar(
           title: Text("Login"),
           backgroundColor: Colors.blueAccent,
@@ -91,7 +93,7 @@ class _LoginState extends State<Login> {
                           }
                           log.authStateChanges().listen((User? user) async {
                             if (user != null) {
-                              ScaffoldMessenger.of(context).showSnackBar(
+                              ScaffoldMessenger.of(_scaffoldKey.currentContext!).showSnackBar(
                                   SnackBar(content: Text('Welcome back!')));
                               var current = log.currentUser;
                               globals.currentUID = current!.uid;
@@ -101,7 +103,7 @@ class _LoginState extends State<Login> {
                               prefs.setBool("login", true);
                               prefs.setString("role", globals.role);
                               Navigator.pushAndRemoveUntil(
-                                  context,
+                                  _scaffoldKey.currentContext!,
                                   MaterialPageRoute(
                                       builder: (context) => Home()),
                                   (Route<dynamic> route) => false);

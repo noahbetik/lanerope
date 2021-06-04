@@ -13,7 +13,6 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: globals.
       appBar: AppBar(title: Text("Lanerope")),
       body: Material(
         color: Colors.white,
