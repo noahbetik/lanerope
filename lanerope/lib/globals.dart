@@ -56,7 +56,12 @@ Future<List<String>> getInfo(String uid) async {
   fullName = fName + " " + lName;
   age = snapshot.get("age");
   gender = snapshot.get("gender");
-  group = List.from(snapshot.get("groups"))[0];
+  try{
+    group = List.from(snapshot.get("groups"))[0]; // gonna have to fix for multiple groups
+  }
+  catch (RangeError) {
+    print("no group assigned yet");
+  }
   int timestamp = snapshot.get("birthday").seconds;
   final DateFormat formatter = DateFormat('yyyy-MM-dd');
   birthday = formatter.format(DateTime.fromMillisecondsSinceEpoch(timestamp * 1000));

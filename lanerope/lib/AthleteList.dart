@@ -6,11 +6,11 @@ import 'package:lanerope/screens/adminPanel.dart' as admin;
 CollectionReference users = FirebaseFirestore.instance.collection('users');
 CollectionReference groups = FirebaseFirestore.instance.collection('groups');
 
-
 class AthleteList extends StatefulWidget {
   final String inclGroups;
 
   AthleteList(this.inclGroups) {
+    print("creating athlete list with " + this.inclGroups);
     createState();
   }
 
@@ -23,89 +23,75 @@ class AthleteList extends StatefulWidget {
 class _AthleteListState extends State<AthleteList> {
   List<List<String>> groupAthletes = [];
 
-  void _getNames() async { // maybe can do this with local copy
+  void _getNames() async {
+    // maybe can do this with local copy
     List<List<String>> temp = [];
     if (widget.inclGroups == 'all') {
-      users.get().then((snapshot) {
-        snapshot.docs.forEach((element) {
-          String gender;
-          switch (element.get("gender")) {
-            case "Male":
-              {
-                gender = "M";
-              }
-              break;
-            case "Female":
-              {
-                gender = "F";
-              }
-              break;
-            case "Non-Binary/Prefer not to say":
-              {
-                gender = "X";
-              }
-              break;
-            default:
-              {
-                gender = "X";
-              }
-              break;
-          }
-          temp.add([
-            element.get("first_name") + " " + element.get("last_name"),
-            element.get("age") + gender,
-            "ab/cd",
-            element.id
-          ]);
-        });
+      globals.allAthletes.forEach((element, value) {
+        String gender;
+        switch (value[5]) {
+          case "Male":
+            {
+              gender = "M";
+            }
+            break;
+          case "Female":
+            {
+              gender = "F";
+            }
+            break;
+          case "Non-Binary/Prefer not to say":
+            {
+              gender = "X";
+            }
+            break;
+          default:
+            {
+              gender = "X";
+            }
+            break;
+        }
+        temp.add(
+            [value[0] + " " + value[1], value[3] + gender, "ab/cd", element]);
       });
       setState(() {
         admin.names = temp;
         admin.filteredNames = admin.names;
       });
     } else {
-      List<dynamic> temp2 = [];
       List<List<String>> temp3 = [];
-      groups.doc(widget.inclGroups).get().then((snapshot) {
-        temp2 = snapshot.get("athletes");
-        for (int i = 0; i < temp2.length; i++) {
-          users.doc(temp2[i]).get().then((element) {
-            String gender;
-            switch (element.get("gender")) {
-              case "Male":
-                {
-                  gender = "M";
-                }
-                break;
-              case "Female":
-                {
-                  gender = "F";
-                }
-                break;
-              case "Non-Binary/Prefer not to say":
-                {
-                  gender = "X";
-                }
-                break;
-              default:
-                {
-                  gender = "X";
-                }
-                break;
+      globals.allAthletes.forEach((element, value) {
+        if(value[4] == widget.inclGroups){
+        String gender;
+        switch (value[5]) {
+          case "Male":
+            {
+              gender = "M";
             }
-
-            temp3.add([
-              element.get("first_name") + " " + element.get("last_name"),
-              element.get("age") + gender,
-              "ab/cd",
-              element.id
-            ]);
-            setState(() {
-              groupAthletes = temp3;
-            });
-          });
+            break;
+          case "Female":
+            {
+              gender = "F";
+            }
+            break;
+          case "Non-Binary/Prefer not to say":
+            {
+              gender = "X";
+            }
+            break;
+          default:
+            {
+              gender = "X";
+            }
+            break;
         }
-      });
+
+        temp3.add(
+            [value[0] + " " + value[1], value[3] + gender, "ab/cd", element]);
+        setState(() {
+          groupAthletes = temp3;
+        });
+      }});
     }
   }
 
@@ -169,7 +155,6 @@ class AthleteTile extends StatefulWidget {
 }
 
 class _AthleteTileState extends State<AthleteTile> {
-
   Future<void> _refresh() async {
     admin.ctrl.add(true);
     print("refresh");
@@ -199,83 +184,92 @@ class _AthleteTileState extends State<AthleteTile> {
                   title: Text("Athlete Info"),
                   content: StatefulBuilder(
                       builder: (BuildContext context, StateSetter setState) {
-                          return Container(
-                              padding: const EdgeInsets.all(0.0),
-                              width: double.maxFinite,
-                              height: 400, // auto adjust better if possible
-                              child: ListView(padding: const EdgeInsets.all(0),
-                                  //shrinkWrap: true, // probably not necessary
-                                  children: <Widget>[
-                                    ListTile(
-                                        title:
-                                            Text("Name: " + localInfo[2])),
-                                    ListTile(
-                                        title: Text("Age: " + localInfo[3])),
-                                    ListTile(
-                                        title: Text(
-                                            "Birthday: " + localInfo[6])),
-                                    ListTile(
-                                        title:
-                                            Text("Gender: " + localInfo[5])),
-                                    ListTile(
-                                        title: Text("Current Group: " +
-                                            localInfo[4])),
-                                    Container(
-                                      alignment: Alignment.bottomLeft,
-                                      padding: EdgeInsets.only(
-                                          top: 8.0, bottom: 3.0),
-                                      child: DropdownButton<String>(
-                                        hint: Text('dumb?'),
-                                        value: group,
-                                        items: globals.managedGroups.map<DropdownMenuItem<String>>(
-                                            (String value) {
-                                          return DropdownMenuItem<String>(
-                                            value: value,
-                                            child: Text(value),
-                                          );
-                                        }).toList(),
-                                        onChanged: (String? newGroup) {
-                                          setState(() {
-                                            group = newGroup!;
-                                            assignedGroup = newGroup;
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                    ElevatedButton(
-                                        onPressed: () async {
-                                          showDialog(
-                                              context: context,
-                                              builder: (context) => AlertDialog( // not ideal
-                                                content: Center(child: CircularProgressIndicator.adaptive(),
-                                                widthFactor: 1,
-                                                  heightFactor: 1,
-                                                )
-                                              ));
-                                          DocumentSnapshot snap1 = await users.doc(widget.uid).get();
-                                          List<dynamic> thisGroups = snap1.get("groups");
-                                          DocumentSnapshot snap3 = await groups.doc(assignedGroup).get();
-                                          List<dynamic> groupToAdd = snap3.get("athletes");
+                    return Container(
+                        padding: const EdgeInsets.all(0.0),
+                        width: double.maxFinite,
+                        height: 400, // auto adjust better if possible
+                        child: ListView(padding: const EdgeInsets.all(0),
+                            //shrinkWrap: true, // probably not necessary
+                            children: <Widget>[
+                              ListTile(title: Text("Name: " + localInfo[2])),
+                              ListTile(title: Text("Age: " + localInfo[3])),
+                              ListTile(
+                                  title: Text("Birthday: " + localInfo[6])),
+                              ListTile(title: Text("Gender: " + localInfo[5])),
+                              ListTile(
+                                  title:
+                                      Text("Current Group: " + localInfo[4])),
+                              Container(
+                                alignment: Alignment.bottomLeft,
+                                padding: EdgeInsets.only(top: 8.0, bottom: 3.0),
+                                child: DropdownButton<String>(
+                                  hint: Text('dumb?'),
+                                  value: group,
+                                  items: globals.managedGroups
+                                      .map<DropdownMenuItem<String>>(
+                                          (String value) {
+                                    return DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Text(value),
+                                    );
+                                  }).toList(),
+                                  onChanged: (String? newGroup) {
+                                    setState(() {
+                                      group = newGroup!;
+                                      assignedGroup = newGroup;
+                                    });
+                                  },
+                                ),
+                              ),
+                              ElevatedButton(
+                                  onPressed: () async {
+                                    showDialog(
+                                        context: context,
+                                        builder: (context) => AlertDialog(
+                                                // not ideal
+                                                content: Center(
+                                              child: CircularProgressIndicator
+                                                  .adaptive(),
+                                              widthFactor: 1,
+                                              heightFactor: 1,
+                                            )));
+                                    DocumentSnapshot snap1 =
+                                        await users.doc(widget.uid).get();
+                                    List<dynamic> thisGroups =
+                                        snap1.get("groups");
+                                    DocumentSnapshot snap3 =
+                                        await groups.doc(assignedGroup).get();
+                                    List<dynamic> groupToAdd =
+                                        snap3.get("athletes");
 
-                                          if (thisGroups.isNotEmpty){
-                                            DocumentSnapshot snap2 = await groups.doc(localInfo[4]).get();
-                                            List<dynamic> groupToRemove = snap2.get("athletes");
-                                            thisGroups.remove(localInfo[4]);
-                                            groupToRemove.remove(widget.uid);
-                                            groups.doc(localInfo[4]).update({"athletes" : groupToRemove});
-                                          }
-                                          thisGroups.add(assignedGroup);
-                                          groupToAdd.add(widget.uid);
-                                          groups.doc(assignedGroup).update({"athletes" : groupToAdd});
-                                          users.doc(widget.uid).update({"groups" : thisGroups});
-                                          globals.allAthletes[widget.uid] = await globals.getInfo(widget.uid);
-                                          _refresh();
-                                          Navigator.pop(context);
-                                          Navigator.pop(context);
-                                        },
-                                        child: Text("Submit"))
-                                  ]));
-                      })));
+                                    if (thisGroups.isNotEmpty) {
+                                      DocumentSnapshot snap2 =
+                                          await groups.doc(localInfo[4]).get();
+                                      List<dynamic> groupToRemove =
+                                          snap2.get("athletes");
+                                      thisGroups.remove(localInfo[4]);
+                                      groupToRemove.remove(widget.uid);
+                                      groups
+                                          .doc(localInfo[4])
+                                          .update({"athletes": groupToRemove});
+                                    }
+                                    thisGroups.add(assignedGroup);
+                                    groupToAdd.add(widget.uid);
+                                    groups
+                                        .doc(assignedGroup)
+                                        .update({"athletes": groupToAdd});
+                                    users
+                                        .doc(widget.uid)
+                                        .update({"groups": thisGroups});
+                                    globals.allAthletes[widget.uid] =
+                                        await globals.getInfo(widget.uid);
+                                    _refresh();
+                                    Navigator.pop(context);
+                                    Navigator.pop(context);
+                                  },
+                                  child: Text("Submit"))
+                            ]));
+                  })));
         },
       ),
     );

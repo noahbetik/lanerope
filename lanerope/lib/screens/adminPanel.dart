@@ -115,6 +115,7 @@ class _AdminPanelState extends State<AdminPanel> {
                 children: cards,
               ));
     } else {
+      print('lookin for people');
       return AthleteList('all');
     }
   }
