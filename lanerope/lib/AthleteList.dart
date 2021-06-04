@@ -61,37 +61,38 @@ class _AthleteListState extends State<AthleteList> {
     } else {
       List<List<String>> temp3 = [];
       globals.allAthletes.forEach((element, value) {
-        if(value[4] == widget.inclGroups){
-        String gender;
-        switch (value[5]) {
-          case "Male":
-            {
-              gender = "M";
-            }
-            break;
-          case "Female":
-            {
-              gender = "F";
-            }
-            break;
-          case "Non-Binary/Prefer not to say":
-            {
-              gender = "X";
-            }
-            break;
-          default:
-            {
-              gender = "X";
-            }
-            break;
-        }
+        if (value[4] == widget.inclGroups) {
+          String gender;
+          switch (value[5]) {
+            case "Male":
+              {
+                gender = "M";
+              }
+              break;
+            case "Female":
+              {
+                gender = "F";
+              }
+              break;
+            case "Non-Binary/Prefer not to say":
+              {
+                gender = "X";
+              }
+              break;
+            default:
+              {
+                gender = "X";
+              }
+              break;
+          }
 
-        temp3.add(
-            [value[0] + " " + value[1], value[3] + gender, "ab/cd", element]);
-        setState(() {
-          groupAthletes = temp3;
-        });
-      }});
+          temp3.add(
+              [value[0] + " " + value[1], value[3] + gender, "ab/cd", element]);
+          setState(() {
+            groupAthletes = temp3;
+          });
+        }
+      });
     }
   }
 
@@ -203,7 +204,7 @@ class _AthleteTileState extends State<AthleteTile> {
                                 alignment: Alignment.bottomLeft,
                                 padding: EdgeInsets.only(top: 8.0, bottom: 3.0),
                                 child: DropdownButton<String>(
-                                  hint: Text('dumb?'),
+                                  hint: Text('Please select a group'),
                                   value: group,
                                   items: globals.managedGroups
                                       .map<DropdownMenuItem<String>>(
@@ -243,15 +244,16 @@ class _AthleteTileState extends State<AthleteTile> {
                                         snap3.get("athletes");
 
                                     if (thisGroups.isNotEmpty) {
-                                      DocumentSnapshot snap2 =
-                                          await groups.doc(localInfo[4]).get();
-                                      List<dynamic> groupToRemove =
-                                          snap2.get("athletes");
+                                      if(thisGroups[0] != "unassigned"){
+                                        DocumentSnapshot snap2 =
+                                            await groups.doc(localInfo[4]).get();
+                                        List<dynamic> groupToRemove =
+                                            snap2.get("athletes");
+                                        groupToRemove.remove(widget.uid);
+                                        groups
+                                            .doc(localInfo[4])
+                                            .update({"athletes": groupToRemove});}
                                       thisGroups.remove(localInfo[4]);
-                                      groupToRemove.remove(widget.uid);
-                                      groups
-                                          .doc(localInfo[4])
-                                          .update({"athletes": groupToRemove});
                                     }
                                     thisGroups.add(assignedGroup);
                                     groupToAdd.add(widget.uid);

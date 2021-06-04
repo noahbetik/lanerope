@@ -10,7 +10,7 @@ import 'package:intl/intl.dart';
 String currentUID = '';
 String role = '';
 String name = '';
-List<String> managedGroups = [];
+List<String> managedGroups = ['unassigned'];
 Map allAthletes = new Map();
 
 
@@ -35,6 +35,7 @@ void getUID() {
 void allGroups() {
   groups.get().then((snapshot) {
     managedGroups.clear();
+    managedGroups.add('unassigned');
     snapshot.docs.forEach((element) {
       managedGroups.add(element.id);
     });

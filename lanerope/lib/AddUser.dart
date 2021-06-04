@@ -29,7 +29,7 @@ class AddUser {
           'gender' : gender,
           'age' : age,
           'birthday' : birthday,
-          'groups' : <String>[],
+          'groups' : <String>['unassigned'],
           // want nested something for parent/athlete/coach/relations
         })
         .then((value) => print("User Added"))
