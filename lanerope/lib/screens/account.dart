@@ -1,12 +1,13 @@
 import 'dart:io';
 
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart' as dt;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:lanerope/AddUser.dart';
 import 'package:string_validator/string_validator.dart';
-import 'package:datetime_picker_formfield/datetime_picker_formfield.dart' as dt;
-import 'package:intl/intl.dart';
+
 import 'home.dart';
 
 bool ios = Platform.isIOS;
@@ -37,7 +38,13 @@ class _AccountState extends State<Account> {
   }
 
   bool alphaOnly(String text) {
-    return !isAlpha(text);
+    RegExp check = new RegExp(r'[^a-z. ]', caseSensitive: false);
+
+    if (check.allMatches(text).length > 0){
+      return true;
+    }
+
+    return false;
   }
 
   @override
@@ -74,7 +81,7 @@ class _AccountState extends State<Account> {
                           return "Must be between 2 and 40 characters";
                         }
                         if (alphaOnly(name)) {
-                          return "Please use only lowercase and capital letters";
+                          return "Please use only letters and spaces";
                         }
                         return null;
                       }),
@@ -87,7 +94,7 @@ class _AccountState extends State<Account> {
                           return "Must be between 2 and 40 characters";
                         }
                         if (alphaOnly(name)) {
-                          return "Please use only lowercase and capital letters";
+                          return "Please use only letters and spaces";
                         }
                         return null;
                       }),
@@ -187,8 +194,8 @@ class _AccountState extends State<Account> {
                           UserCredential userCredential = await FirebaseAuth
                               .instance
                               .createUserWithEmailAndPassword(
-                            email: emailGrabber.text, // pull from forms
-                            password: passGrabber.text,
+                            email: emailGrabber.text.trim(), // pull from forms
+                            password: passGrabber.text.trim(),
                           );
                         } on FirebaseAuthException catch (e) {
                           if (e.code == 'weak-password') {
@@ -213,8 +220,8 @@ class _AccountState extends State<Account> {
                         AddUser dbAdd = AddUser(
                           uid,
                           role,
-                          fNameGrabber.text,
-                          lNameGrabber.text,
+                          fNameGrabber.text.trim(),
+                          lNameGrabber.text.trim(),
                           gender,
                           yearsSince(birthday),
                           birthday,

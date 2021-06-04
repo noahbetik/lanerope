@@ -1,8 +1,8 @@
 import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:lanerope/pagesDrawer.dart' as pd;
-import 'package:lanerope/globals.dart' as globals;
 
 bool ios = Platform.isIOS;
 bool android = Platform.isAndroid;

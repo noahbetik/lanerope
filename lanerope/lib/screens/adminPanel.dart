@@ -1,14 +1,14 @@
 import 'dart:async';
 import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:expandable/expandable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:lanerope/AthleteList.dart';
-import 'package:lanerope/screens/athleteInfo.dart';
-import 'package:lanerope/pagesDrawer.dart' as pd;
-import 'package:expandable/expandable.dart';
 import 'package:lanerope/AddGroup.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:lanerope/AthleteList.dart';
 import 'package:lanerope/globals.dart' as globals;
+import 'package:lanerope/pagesDrawer.dart' as pd;
 
 bool ios = Platform.isIOS;
 bool android = Platform.isAndroid;

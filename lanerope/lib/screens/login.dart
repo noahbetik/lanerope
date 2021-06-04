@@ -53,6 +53,7 @@ class _LoginState extends State<Login> {
                         controller: emailGrabber,
                         decoration: InputDecoration(hintText: 'Email address'),
                         validator: (user) {
+                          user = user!.trim();
                           if (user == null || checkLength(user, 2, 40)) {
                             return "Must be between 2 and 40 characters";
                           }
@@ -72,13 +73,11 @@ class _LoginState extends State<Login> {
                         }),
                     ElevatedButton(
                       onPressed: () async {
-                        int errorCode = 0;
                         if (_accountKey.currentState!.validate()) {
                           try {
-                            UserCredential userCredential =
-                                await log.signInWithEmailAndPassword(
-                                    email: emailGrabber.text,
-                                    password: passGrabber.text);
+                            await log.signInWithEmailAndPassword(
+                                    email: emailGrabber.text.trim(),
+                                    password: passGrabber.text.trim());
                           } on FirebaseAuthException catch (e) {
                             if (e.code == 'user-not-found') {
                               ScaffoldMessenger.of(context).showSnackBar(SnackBar(

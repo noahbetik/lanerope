@@ -1,8 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:lanerope/screens/adminPanel.dart' as admin;
-import 'package:lanerope/screens/athleteInfo.dart' as info;
+import 'package:flutter/material.dart';
 import 'package:lanerope/globals.dart' as globals;
+import 'package:lanerope/screens/adminPanel.dart' as admin;
 
 CollectionReference users = FirebaseFirestore.instance.collection('users');
 CollectionReference groups = FirebaseFirestore.instance.collection('groups');
