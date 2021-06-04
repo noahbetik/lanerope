@@ -171,6 +171,11 @@ class AthleteTile extends StatefulWidget {
 
 class _AthleteTileState extends State<AthleteTile> {
 
+  Future<void> _refresh() async {
+    admin.ctrl.add(true);
+    print("refresh");
+  }
+
   @override
   Widget build(BuildContext context) {
     List<String> localInfo = globals.allAthletes[widget.uid];
@@ -265,6 +270,7 @@ class _AthleteTileState extends State<AthleteTile> {
                                           groups.doc(assignedGroup).update({"athletes" : groupToAdd});
                                           users.doc(widget.uid).update({"groups" : thisGroups});
                                           globals.allAthletes[widget.uid] = await globals.getInfo(widget.uid);
+                                          _refresh();
                                           Navigator.pop(context);
                                           Navigator.pop(context);
                                         },

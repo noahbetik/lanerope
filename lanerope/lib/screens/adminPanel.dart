@@ -104,22 +104,16 @@ class _AdminPanelState extends State<AdminPanel> {
     });
   }
 
-  Future<void> _refresh() async {
-    ctrl.add(true);
-    print("refresh");
-  }
 
   Widget view() {
     if (this._searchIcon.icon == Icons.search) {
       return ExpandableTheme(
           data: const ExpandableThemeData(
               iconColor: Colors.blue, useInkWell: true),
-          child: RefreshIndicator(
-              onRefresh: _refresh,
-              child: ListView(
+          child: ListView(
                 physics: const BouncingScrollPhysics(),
                 children: cards,
-              )));
+              ));
     } else {
       return AthleteList('all');
     }
@@ -129,7 +123,7 @@ class _AdminPanelState extends State<AdminPanel> {
   Widget build(BuildContext context) {
     return StreamBuilder<bool>(
         stream: redraw,
-        builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+        builder: (BuildContext context, AsyncSnapshot<bool> snapshot) { // can maybe rebuild less
           return FutureBuilder(
               future: Future.wait([getGroups(), getCards()]),
               builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
