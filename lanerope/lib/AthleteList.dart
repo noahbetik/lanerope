@@ -176,7 +176,7 @@ class _AthleteTileState extends State<AthleteTile> {
           style: TextStyle(color: Colors.grey), // pronouns
         ),
       ]),
-      trailing: IconButton(
+      leading: IconButton(
         icon: const Icon(Icons.edit_sharp),
         onPressed: () async {
           showDialog(

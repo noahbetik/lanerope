@@ -22,6 +22,7 @@ final CollectionReference groups =
 Future<String> findRole() async {
   await users.doc(currentUID).get().then((DocumentSnapshot snapshot) {
     role = snapshot.get("role");
+    name = snapshot.get("first_name");
   });
   print(currentUID);
   print(role);
