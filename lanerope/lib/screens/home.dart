@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:lanerope/globals.dart' as globals;
 import 'package:lanerope/pagesDrawer.dart' as pd;
+import 'package:lanerope/screens/AnnouncementEditor.dart';
 
 bool ios = Platform.isIOS;
 bool android = Platform.isAndroid;
@@ -44,11 +45,7 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(title: Text("Lanerope")),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            print("yuh");
-          },
-        ),
+        floatingActionButton: globals.role == "Coach/Admin" ? CreateAnnouncement() : null,
         body: ListView.builder(
           padding: EdgeInsets.all(8.0),
           itemCount: announcementList.length,
@@ -64,6 +61,7 @@ class Announcement extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+        // all just filler in here right now
         child: Container(
             padding: EdgeInsets.all(8.0),
             child: Column(children: [
@@ -74,5 +72,20 @@ class Announcement extends StatelessWidget {
                   textDirection: TextDirection.ltr,
                   style: Theme.of(context).textTheme.bodyText1),
             ])));
+  }
+}
+
+class CreateAnnouncement extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return FloatingActionButton(
+        backgroundColor: Colors.redAccent,
+        child: const Icon(Icons.note_add_rounded),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AnnouncementEditor()),
+          );
+        });
   }
 }

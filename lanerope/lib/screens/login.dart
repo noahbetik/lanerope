@@ -64,6 +64,7 @@ class _LoginState extends State<Login> {
                     TextFormField(
                         controller: passGrabber,
                         decoration: InputDecoration(hintText: 'Password'),
+                        obscureText: true,
                         validator: (pass) {
                           if (pass == null || checkLength(pass, 8, 40)) {
                             return "Must be between 8 and 40 characters";
@@ -82,10 +83,13 @@ class _LoginState extends State<Login> {
                                     password: passGrabber.text.trim());
                           } on FirebaseAuthException catch (e) {
                             if (e.code == 'user-not-found') {
+                              emailGrabber.clear();
+                              passGrabber.clear();
                               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                                   content: Text(
                                       "An account doesn't exist with that email...")));
                             } else if (e.code == 'wrong-password') {
+                              passGrabber.clear();
                               ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                       content: Text('Incorrect password!')));
