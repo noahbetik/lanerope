@@ -32,3 +32,8 @@ InputDecoration formBorder(String hint, String helper) {
       helperText: helper == '' ? null : helper
   );
 }
+
+TextStyle announcementTitle = new TextStyle(
+  color: Colors.black,
+  fontSize: 36.0,
+);
