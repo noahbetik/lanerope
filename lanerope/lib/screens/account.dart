@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lanerope/AddUser.dart';
 import 'package:string_validator/string_validator.dart';
+import 'package:lanerope/DesignChoices.dart' as dc;
 
 import 'home.dart';
 
@@ -40,7 +41,7 @@ class _AccountState extends State<Account> {
   bool alphaOnly(String text) {
     RegExp check = new RegExp(r'[^a-z. ]', caseSensitive: false);
 
-    if (check.allMatches(text).length > 0){
+    if (check.allMatches(text).length > 0) {
       return true;
     }
 
@@ -70,12 +71,12 @@ class _AccountState extends State<Account> {
             padding: EdgeInsets.all(15.0),
             child: Form(
               key: _accountKey,
-              child: Column(
+              child: ListView(
                 children: <Widget>[
-                  TextFormField(
+                  TextFormField( // need spacing between input boxes
                       // do space scrubbing
                       controller: fNameGrabber,
-                      decoration: InputDecoration(hintText: 'Given name'),
+                      decoration: dc.formBorder("Given Name", ''),
                       validator: (name) {
                         if (name == null || checkLength(name, 2, 40)) {
                           return "Must be between 2 and 40 characters";
@@ -85,10 +86,11 @@ class _AccountState extends State<Account> {
                         }
                         return null;
                       }),
+                  Padding(padding: EdgeInsets.only(bottom: 8.0)),
                   TextFormField(
                       // do space scrubbing
                       controller: lNameGrabber,
-                      decoration: InputDecoration(hintText: 'Family name'),
+                      decoration: dc.formBorder("Family Name", ''),
                       validator: (name) {
                         if (name == null || checkLength(name, 2, 40)) {
                           return "Must be between 2 and 40 characters";
@@ -98,9 +100,10 @@ class _AccountState extends State<Account> {
                         }
                         return null;
                       }),
+                  Padding(padding: EdgeInsets.only(bottom: 8.0)),
                   TextFormField(
                       controller: emailGrabber,
-                      decoration: InputDecoration(hintText: 'Email address'),
+                      decoration: dc.formBorder("Email Address", ''),
                       validator: (email) {
                         if (email == null || !isEmail(email)) {
                           // need a better email checking method with null safety
@@ -108,12 +111,11 @@ class _AccountState extends State<Account> {
                         }
                         return null;
                       }),
+                  Padding(padding: EdgeInsets.only(bottom: 8.0)),
                   TextFormField(
                       controller: passGrabber,
-                      decoration: InputDecoration(
-                          hintText: 'Please choose a password',
-                          helperText:
-                              '8-40 characters\nMust include at least one capital letter and one number'),
+                      decoration: dc.formBorder("Password",
+                          '8-40 characters\nMust include at least one capital letter and one number'),
                       validator: (pass) {
                         if (pass == null || checkLength(pass, 8, 40)) {
                           return "Must be between 8 and 40 characters";
@@ -131,7 +133,7 @@ class _AccountState extends State<Account> {
                       }),
                   Container(
                     alignment: Alignment.bottomLeft,
-                    padding: EdgeInsets.only(top: 8.0, bottom: 3.0),
+                    padding: EdgeInsets.only(bottom: 8.0),
                     child: DropdownButton<String>(
                       value: role,
                       items: <String>[
@@ -154,7 +156,7 @@ class _AccountState extends State<Account> {
                   ),
                   Container(
                     alignment: Alignment.bottomLeft,
-                    padding: EdgeInsets.only(top: 8.0, bottom: 3.0),
+                    padding: EdgeInsets.only(bottom: 8.0),
                     child: DropdownButton<String>(
                       hint: Text("Please choose your gender"),
                       value: gender,
@@ -178,6 +180,7 @@ class _AccountState extends State<Account> {
                   dt.DateTimeField(
                     controller: dateGrabber,
                     format: format,
+                    decoration: dc.formBorder('Please enter your birthday', ''),
                     onShowPicker: (context, currentValue) {
                       return showDatePicker(
                           context: context,
@@ -186,7 +189,7 @@ class _AccountState extends State<Account> {
                           lastDate: DateTime.now());
                     },
                   ),
-                  Spacer(),
+                  Padding(padding: EdgeInsets.only(bottom: 8.0)),
                   ElevatedButton(
                     onPressed: () async {
                       if (_accountKey.currentState!.validate()) {
@@ -212,7 +215,9 @@ class _AccountState extends State<Account> {
                         String yearsSince(DateTime from) {
                           from = DateTime(from.year, from.month, from.day);
                           DateTime to = DateTime.now();
-                          int result = ((to.difference(from).inHours / 24).round() / 365).floor();
+                          int result =
+                              ((to.difference(from).inHours / 24).round() / 365)
+                                  .floor();
                           return result.toString();
                         }
 
