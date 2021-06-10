@@ -11,7 +11,6 @@ import 'package:lanerope/screens/AnnouncementEditor.dart';
 import 'package:lanerope/DesignChoices.dart' as dc;
 import 'package:lanerope/screens/AnnouncementView.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:convert';
 
 bool ios = Platform.isIOS;
 bool android = Platform.isAndroid;
@@ -68,38 +67,47 @@ class Home extends StatelessWidget {
   }
 }
 
-class Announcement extends StatelessWidget {
+class Announcement extends StatelessWidget { // wanna make it look like the athletic-ish
   final String title;
   final String mainText;
+  final File coverImage;
 
-  Announcement(this.title, this.mainText);
+  Announcement(this.title, this.mainText, this.coverImage);
 
   @override
   Widget build(BuildContext context) {
     return Card(
-        // all just filler in here right now
-        child: Container(
-          height: 400.0, // should be less for landscape
-            padding: EdgeInsets.all(8.0),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+        child: ClipRRect(
+            borderRadius: BorderRadius.circular(8.0),
             child: Column(children: [
-              Text(this.title, style: dc.announcementTitle),
-              Text("the subtitle is optional perhaps",
-                  style: Theme.of(context).textTheme.subtitle1),
-              Expanded(child: Text(this.mainText,
-                  textDirection: TextDirection.ltr,
-                  overflow: TextOverflow.fade,
-                  style: dc.announcementText)),
               Container(
-                  alignment: Alignment.bottomRight,
-                  child: TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                AnnouncementView(this.title, this.mainText)));
-                  },
-                  child: Text("VIEW FULL")))
+                  height: 200, // arbitrary for now
+                  width: double.infinity,
+                  child: Image.file(this.coverImage, fit: BoxFit.cover)),
+              Container(
+                // should be less for landscape
+                  padding: EdgeInsets.all(8.0),
+                  child: Column(children: [
+                    Text(this.title, style: dc.announcementTitle),
+                    Text("the subtitle is optional perhaps",
+                        style: Theme.of(context).textTheme.subtitle1),
+                    Text(this.mainText,
+                            textDirection: TextDirection.ltr,
+                            overflow: TextOverflow.fade,
+                            style: dc.announcementText),
+                    Container(
+                        alignment: Alignment.bottomLeft,
+                        child: TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => AnnouncementView(
+                                          this.title, this.mainText, this.coverImage)));
+                            },
+                            child: Text("VIEW FULL")))
+                  ]))
             ])));
   }
 }
