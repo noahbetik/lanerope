@@ -37,3 +37,8 @@ TextStyle announcementTitle = new TextStyle(
   color: Colors.black,
   fontSize: 36.0,
 );
+
+TextStyle announcementText = new TextStyle(
+  color: Colors.black,
+  fontSize: 12.0
+);

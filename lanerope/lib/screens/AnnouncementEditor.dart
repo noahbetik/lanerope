@@ -34,7 +34,7 @@ class AnnouncementEditor extends StatelessWidget {
                         scrollPadding: EdgeInsets.zero,
                         maxLines: 10, // idk
                         controller: mainText,
-                        decoration: dc.formBorder('', '')),
+                        decoration: dc.formBorder('Announcement Text', '')),
                   ),
                   ElevatedButton(
                     onPressed: () {
