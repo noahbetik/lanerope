@@ -108,10 +108,13 @@ class Announcement extends StatelessWidget {
                   child: Column(children: [
                     Text("the subtitle is optional perhaps",
                         style: Theme.of(context).textTheme.subtitle1),
-                    Text(this.mainText,
-                        textDirection: TextDirection.ltr,
-                        overflow: TextOverflow.fade,
-                        style: dc.announcementText),
+                    Text(
+                      this.mainText,
+                      textDirection: TextDirection.ltr,
+                      overflow: TextOverflow.fade,
+                      style: dc.announcementText,
+                      maxLines: 20,
+                    ),
                     Container(
                         alignment: Alignment.bottomLeft,
                         child: TextButton(
