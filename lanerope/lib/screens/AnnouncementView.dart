@@ -19,7 +19,7 @@ class AnnouncementView extends StatelessWidget {
         child: Column(
           children: [
             Image.file(this.coverImage),
-            Text(title, style: dc.announcementTitle),
+            Text(title, style: dc.singleAnnouncementTitle),
             Text(mainText, style: dc.announcementText)
           ]
         )

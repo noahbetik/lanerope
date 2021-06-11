@@ -17,6 +17,8 @@ bool android = Platform.isAndroid;
 FirebaseAuth auth = FirebaseAuth.instance;
 final CollectionReference users =
     FirebaseFirestore.instance.collection('users');
+final CollectionReference announcements =
+    FirebaseFirestore.instance.collection('announcements');
 
 StreamController<bool> ctrl = StreamController<bool>.broadcast();
 Stream<bool> redraw = ctrl.stream; // maybe wanna make this global some day
@@ -67,7 +69,8 @@ class Home extends StatelessWidget {
   }
 }
 
-class Announcement extends StatelessWidget { // wanna make it look like the athletic-ish
+class Announcement extends StatelessWidget {
+  // wanna make it look like the athletic-ish
   final String title;
   final String mainText;
   final File coverImage;
@@ -84,18 +87,31 @@ class Announcement extends StatelessWidget { // wanna make it look like the athl
               Container(
                   height: 200, // arbitrary for now
                   width: double.infinity,
-                  child: Image.file(this.coverImage, fit: BoxFit.cover)),
+                  child: Stack(children: [
+                    Container(
+                        width: double.infinity,
+                        child: ColorFiltered(
+                            child:
+                                Image.file(this.coverImage, fit: BoxFit.cover),
+                            colorFilter: ColorFilter.mode(
+                                Colors.black.withOpacity(0.4),
+                                BlendMode.darken))),
+                    Container(
+                      child: Text(this.title, style: dc.announcementTitle),
+                      alignment: Alignment.bottomLeft,
+                      padding: EdgeInsets.all(8.0),
+                    )
+                  ])),
               Container(
-                // should be less for landscape
+                  // should be less for landscape
                   padding: EdgeInsets.all(8.0),
                   child: Column(children: [
-                    Text(this.title, style: dc.announcementTitle),
                     Text("the subtitle is optional perhaps",
                         style: Theme.of(context).textTheme.subtitle1),
                     Text(this.mainText,
-                            textDirection: TextDirection.ltr,
-                            overflow: TextOverflow.fade,
-                            style: dc.announcementText),
+                        textDirection: TextDirection.ltr,
+                        overflow: TextOverflow.fade,
+                        style: dc.announcementText),
                     Container(
                         alignment: Alignment.bottomLeft,
                         child: TextButton(
@@ -104,7 +120,9 @@ class Announcement extends StatelessWidget { // wanna make it look like the athl
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => AnnouncementView(
-                                          this.title, this.mainText, this.coverImage)));
+                                          this.title,
+                                          this.mainText,
+                                          this.coverImage)));
                             },
                             child: Text("VIEW FULL")))
                   ]))
