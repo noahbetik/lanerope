@@ -14,7 +14,7 @@ FirebaseStorage storage = FirebaseStorage.instance;
 
 class AnnouncementEditor extends StatefulWidget {
   @protected
-  static int x = 0;
+  static int x = 0; // this should be database level
   static DateTime lastUpdate = DateTime.now();
   final String docTitle = DateTime.now().year.toString() +
       "-" +
@@ -27,8 +27,12 @@ class AnnouncementEditor extends StatefulWidget {
   static void dateCheck() {
     if (DateTime.now().difference(lastUpdate) > Duration(hours: 24)) {
       x = 0;
-    } else
+    } else {
       x++;
+      print(x);
+    }
+    lastUpdate = DateTime.now();
+    print(x);
   }
 
   @override
@@ -93,7 +97,8 @@ class EditorState extends State<AnnouncementEditor> {
                     padding: EdgeInsets.zero,
                     child: TextFormField(
                         scrollPadding: EdgeInsets.zero,
-                        maxLines: 10, // idk
+                        maxLines: 10,
+                        // idk
                         controller: mainText,
                         keyboardType: TextInputType.multiline,
                         decoration: dc.formBorder('Announcement Text', '')),
@@ -121,11 +126,24 @@ class EditorState extends State<AnnouncementEditor> {
                             "main_text": mainText.text
                           },
                         );
+                        showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                                    // not ideal
+                                    content: Center(
+                                  child: CircularProgressIndicator.adaptive(),
+                                  widthFactor: 1,
+                                  heightFactor: 1,
+                                )));
                         await saveImage(image, widget.docTitle);
-                        announcementList.add(
-                            Announcement(titleText.text, mainText.text, image));
+                        print("image uploaded");
+                        announcementList.add(Announcement(
+                            titleText.text, mainText.text, Image.file(image, fit: BoxFit.cover)));
+                        print("announcement added");
                         AnnouncementEditor.dateCheck();
+                        print("some behind the scenes magic");
                         ctrl.add(true);
+                        Navigator.pop(context);
                         Navigator.pop(context);
                       },
                       child: Text("Publish"))

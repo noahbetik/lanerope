@@ -6,7 +6,7 @@ import 'package:lanerope/DesignChoices.dart' as dc;
 class AnnouncementView extends StatelessWidget {
   final String title;
   final String mainText;
-  final File coverImage;
+  final Image coverImage;
 
   AnnouncementView(this.title, this.mainText, this.coverImage);
 
@@ -17,7 +17,7 @@ class AnnouncementView extends StatelessWidget {
           title: Text("Lanerope"),
         ),
         body: ListView(children: [
-          Image.file(this.coverImage),
+          this.coverImage,
           Container(
               child: Text(title, style: dc.singleAnnouncementTitle),
               padding: EdgeInsets.all(8.0)),

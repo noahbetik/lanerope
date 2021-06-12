@@ -41,30 +41,50 @@ String sayHi() {
   return hello + "\nYou are a " + globals.role;
 }
 
-List<Widget> announcementList = [
-  Text(sayHi(),
+List<Widget> announcementList = [];
+
+Future<void> getAnnouncements() async {
+  announcementList.clear();
+  announcementList.add(Text(sayHi(),
       textDirection: TextDirection.ltr,
-      style: TextStyle(color: Colors.black, fontSize: 36.0)),
-];
+      style: TextStyle(color: Colors.black, fontSize: 36.0)));
+  ctrl.add(true);
+}
 
 class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<bool>(
-        stream: redraw,
-        builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-          return Scaffold(
-              appBar: AppBar(title: Text("Lanerope")),
-              floatingActionButton:
-                  globals.role == "Coach/Admin" ? CreateAnnouncement() : null,
-              body: ListView.builder(
-                padding: EdgeInsets.all(8.0),
-                itemCount: announcementList.length,
-                itemBuilder: (context, index) {
-                  return announcementList[index];
-                },
-              ),
-              drawer: pd.PagesDrawer().importDrawer(context));
+    getAnnouncements();
+    print(announcementList);
+    return FutureBuilder(
+        future: Future.wait([getAnnouncements()]),
+        builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return StreamBuilder<bool>(
+                stream: redraw,
+                builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                  return Scaffold(
+                      appBar: AppBar(title: Text("Lanerope")),
+                      floatingActionButton: globals.role == "Coach/Admin"
+                          ? CreateAnnouncement()
+                          : null,
+                      body: ListView.builder(
+                        padding: EdgeInsets.all(8.0),
+                        itemCount: announcementList.length,
+                        itemBuilder: (context, index) {
+                          return announcementList[index];
+                        },
+                      ),
+                      drawer: pd.PagesDrawer().importDrawer(context));
+                });
+          } else {
+            return Scaffold(
+                appBar: AppBar(title: Text("Lanerope")),
+                floatingActionButton:
+                    globals.role == "Coach/Admin" ? CreateAnnouncement() : null,
+                body: Center(child: CircularProgressIndicator.adaptive()),
+                drawer: pd.PagesDrawer().importDrawer(context));
+          }
         });
   }
 }
@@ -73,7 +93,7 @@ class Announcement extends StatelessWidget {
   // wanna make it look like the athletic-ish
   final String title;
   final String mainText;
-  final File coverImage;
+  final Image coverImage;
 
   Announcement(this.title, this.mainText, this.coverImage);
 
@@ -91,8 +111,7 @@ class Announcement extends StatelessWidget {
                     Container(
                         width: double.infinity,
                         child: ColorFiltered(
-                            child:
-                                Image.file(this.coverImage, fit: BoxFit.cover),
+                            child: this.coverImage,
                             colorFilter: ColorFilter.mode(
                                 Colors.black.withOpacity(0.4),
                                 BlendMode.darken))),

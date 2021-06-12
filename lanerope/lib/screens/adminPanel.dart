@@ -104,7 +104,6 @@ class _AdminPanelState extends State<AdminPanel> {
     });
   }
 
-
   Widget view() {
     if (this._searchIcon.icon == Icons.search) {
       return ExpandableTheme(
@@ -115,7 +114,6 @@ class _AdminPanelState extends State<AdminPanel> {
                 children: cards,
               ));
     } else {
-      print('lookin for people');
       return AthleteList('all');
     }
   }
