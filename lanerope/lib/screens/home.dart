@@ -43,26 +43,40 @@ String sayHi() {
 
 List<Widget> announcementList = [];
 
-Future<void> getAnnouncements() async {
+Future<List<dynamic>> _getAnnouncement(String docTitle) async {
+  DocumentSnapshot snap = await announcements.doc(docTitle).get();
+  String title = await snap.get("title_text");
+  String text = await snap.get("main_text");
+  String imgURL = await snap.get("header_image");
+  Image img = Image.network(imgURL, fit: BoxFit.cover);
+  return [title, text, img];
+}
+
+Future<void> allAnnouncements() async { // it still feels stupid to do it this way but whatever
   announcementList.clear();
   announcementList.add(Text(sayHi(),
       textDirection: TextDirection.ltr,
       style: TextStyle(color: Colors.black, fontSize: 36.0)));
-  ctrl.add(true);
+
+  announcements.get().then((snapshot) {
+    snapshot.docs.forEach((element) async {
+      List<dynamic> info = await _getAnnouncement(element.id);
+      announcementList.add(Announcement(info[0], info[1], info[2]));
+    });
+  });
 }
 
 class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    getAnnouncements();
-    print(announcementList);
     return FutureBuilder(
-        future: Future.wait([getAnnouncements()]),
+        future: Future.wait([allAnnouncements()]),
         builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             return StreamBuilder<bool>(
                 stream: redraw,
                 builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                  ctrl.add(true);
                   return Scaffold(
                       appBar: AppBar(title: Text("Lanerope")),
                       floatingActionButton: globals.role == "Coach/Admin"

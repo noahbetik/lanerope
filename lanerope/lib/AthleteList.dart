@@ -10,7 +10,6 @@ class AthleteList extends StatefulWidget {
   final String inclGroups;
 
   AthleteList(this.inclGroups) {
-    print("creating athlete list with " + this.inclGroups);
     createState();
   }
 
@@ -158,13 +157,11 @@ class AthleteTile extends StatefulWidget {
 class _AthleteTileState extends State<AthleteTile> {
   Future<void> _refresh() async {
     admin.ctrl.add(true);
-    print("refresh");
   }
 
   @override
   Widget build(BuildContext context) {
     List<String> localInfo = globals.allAthletes[widget.uid];
-    print(localInfo);
     String group = localInfo[4]; // feels sketchy to do this with list indices
     String assignedGroup = '';
     return ListTile(
