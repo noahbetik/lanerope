@@ -24,6 +24,8 @@ final CollectionReference groups =
     FirebaseFirestore.instance.collection('groups');
 final CollectionReference announcements =
 FirebaseFirestore.instance.collection('announcements');
+final CollectionReference stats =
+FirebaseFirestore.instance.collection('stats');
 
 Future<String> findRole() async {
   await users.doc(currentUID).get().then((DocumentSnapshot snapshot) {
@@ -58,7 +60,6 @@ Future<List<String>> getInfo(String uid) async {
   String group = '';
   String gender = '';
   String birthday = '';
-  print("getting info for " + uid);
   DocumentSnapshot snapshot = await users.doc(uid).get();
   fName = snapshot.get("first_name");
   lName = snapshot.get("last_name");
@@ -74,7 +75,6 @@ Future<List<String>> getInfo(String uid) async {
   int timestamp = snapshot.get("birthday").seconds;
   final DateFormat formatter = DateFormat('yyyy-MM-dd');
   birthday = formatter.format(DateTime.fromMillisecondsSinceEpoch(timestamp * 1000));
-  print([fName, lName, fullName, age, group, gender, birthday]);
   return [fName, lName, fullName, age, group, gender, birthday];
 }
 
@@ -83,16 +83,17 @@ Future<void> allInfo() async {
     users.get().then((snapshot) {
       snapshot.docs.forEach((element) async {
         allAthletes[element.id] = await getInfo(element.id);
-        print(allAthletes);
       });
     });
   }
 }
 
 Future<int> announcementID() async {
-  final prefs = await SharedPreferences.getInstance();
-  int _annID = prefs.getInt("annID") ?? 0; // future bool is true if logged in
-  int temp = _annID++;
-  prefs.setInt("annID", temp);
-  return _annID;
+  int id = 0;
+  await stats.doc("announcements").get().then((snap) {
+    id = snap.get("count");
+  });
+  int temp = id;
+  stats.doc("announcements").set({"count" : ++temp});
+  return id;
 }

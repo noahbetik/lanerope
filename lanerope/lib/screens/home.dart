@@ -23,7 +23,7 @@ final CollectionReference announcements =
 StreamController<bool> ctrl = StreamController<bool>.broadcast();
 Stream<bool> redraw = ctrl.stream; // maybe wanna make this global some day
 
-List<Widget> announcementList = [];
+List<Announcement> announcementList = [];
 
 Future<List<dynamic>> _getAnnouncement(String docTitle) async {
   DocumentSnapshot snap = await announcements.doc(docTitle).get();
@@ -32,23 +32,38 @@ Future<List<dynamic>> _getAnnouncement(String docTitle) async {
   String imgURL = await snap.get("header_image");
   String author = await snap.get("author");
   String date = await snap.get("date");
+  int id = await snap.get("id");
   Image img = Image.network(imgURL, fit: BoxFit.cover);
-  return [title, text, img, author, date];
+  return [title, text, img, author, date, id];
 }
 
-Future<void> allAnnouncements() async { // it still feels stupid to do it this way but whatever
-  announcementList.clear();
-  announcementList.add(Text(sayHi(),
-      style: TextStyle(color: Colors.black, fontSize: 36.0)));
+void sort(List<Announcement> ans) { // do a better sorting algorithm
+  int n = ans.length;
+  for (int i=0; i<n-1; i++){
+    for (int j=0; j<n-i-1; j++){
+      if (ans[j].id > ans[j+1].id){
+        Announcement temp = ans[j];
+        ans[j] = ans[j+1];
+        ans[j+1] = temp;
+      }
+    }
+  }
+  print(announcementList);
+}
 
+Future<void> allAnnouncements() async {
+  // it still feels stupid to do it this way but whatever
+  announcementList.clear();
   announcements.get().then((snapshot) {
     snapshot.docs.forEach((element) async {
+      // what if there's a ton of documents?
       List<dynamic> info = await _getAnnouncement(element.id);
-      announcementList.add(Announcement(info[0], info[1], info[2], info[3], info[4]));
+      announcementList
+          .add(Announcement(info[0], info[1], info[2], info[3], info[4], info[5]));
     });
   });
+  sort(announcementList);
 }
-
 
 String sayHi() {
   String hello;
@@ -112,8 +127,10 @@ class Announcement extends StatelessWidget {
   final String author;
   final String date;
   final Image coverImage;
+  final int id;
 
-  Announcement(this.title, this.mainText, this.coverImage, this.author, this.date);
+  Announcement(
+      this.title, this.mainText, this.coverImage, this.author, this.date, this.id);
 
   @override
   Widget build(BuildContext context) {
@@ -163,8 +180,8 @@ class Announcement extends StatelessWidget {
                                           this.title,
                                           this.mainText,
                                           this.coverImage,
-                                      this.author,
-                                      this.date)));
+                                          this.author,
+                                          this.date)));
                             },
                             child: Text("VIEW FULL")))
                   ]))

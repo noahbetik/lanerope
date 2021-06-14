@@ -110,13 +110,15 @@ class EditorState extends State<AnnouncementEditor> {
                       onPressed: () async {
                         String pubDate = DateTime.now().toString();
                         String dbTitle = await AnnouncementEditor.getTitle();
+                        int startIndex = dbTitle.indexOf('_') + 1;
                         announcements.doc(dbTitle).set(
                           {
                             "header_image": null,
                             "title_text": titleText.text,
                             "main_text": mainText.text,
                             "author": globals.fullName,
-                            "date": pubDate
+                            "date": pubDate,
+                            "id" : int.parse(dbTitle.substring(startIndex))
                           },
                         );
                         showDialog(
@@ -136,7 +138,8 @@ class EditorState extends State<AnnouncementEditor> {
                             mainText.text,
                             Image.file(image, fit: BoxFit.cover),
                             globals.fullName,
-                            pubDate));
+                            pubDate,
+                        int.parse(dbTitle.substring(startIndex))));
                         print("announcement added");
                         ctrl.add(true);
                         Navigator.pop(context);
