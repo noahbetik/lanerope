@@ -23,6 +23,33 @@ final CollectionReference announcements =
 StreamController<bool> ctrl = StreamController<bool>.broadcast();
 Stream<bool> redraw = ctrl.stream; // maybe wanna make this global some day
 
+List<Widget> announcementList = [];
+
+Future<List<dynamic>> _getAnnouncement(String docTitle) async {
+  DocumentSnapshot snap = await announcements.doc(docTitle).get();
+  String title = await snap.get("title_text");
+  String text = await snap.get("main_text");
+  String imgURL = await snap.get("header_image");
+  String author = await snap.get("author");
+  String date = await snap.get("date");
+  Image img = Image.network(imgURL, fit: BoxFit.cover);
+  return [title, text, img, author, date];
+}
+
+Future<void> allAnnouncements() async { // it still feels stupid to do it this way but whatever
+  announcementList.clear();
+  announcementList.add(Text(sayHi(),
+      style: TextStyle(color: Colors.black, fontSize: 36.0)));
+
+  announcements.get().then((snapshot) {
+    snapshot.docs.forEach((element) async {
+      List<dynamic> info = await _getAnnouncement(element.id);
+      announcementList.add(Announcement(info[0], info[1], info[2], info[3], info[4]));
+    });
+  });
+}
+
+
 String sayHi() {
   String hello;
   DateTime now = new DateTime.now();
@@ -39,31 +66,6 @@ String sayHi() {
     hello = "good evening " + name;
   }
   return hello + "\nYou are a " + globals.role;
-}
-
-List<Widget> announcementList = [];
-
-Future<List<dynamic>> _getAnnouncement(String docTitle) async {
-  DocumentSnapshot snap = await announcements.doc(docTitle).get();
-  String title = await snap.get("title_text");
-  String text = await snap.get("main_text");
-  String imgURL = await snap.get("header_image");
-  Image img = Image.network(imgURL, fit: BoxFit.cover);
-  return [title, text, img];
-}
-
-Future<void> allAnnouncements() async { // it still feels stupid to do it this way but whatever
-  announcementList.clear();
-  announcementList.add(Text(sayHi(),
-      textDirection: TextDirection.ltr,
-      style: TextStyle(color: Colors.black, fontSize: 36.0)));
-
-  announcements.get().then((snapshot) {
-    snapshot.docs.forEach((element) async {
-      List<dynamic> info = await _getAnnouncement(element.id);
-      announcementList.add(Announcement(info[0], info[1], info[2]));
-    });
-  });
 }
 
 class Home extends StatelessWidget {
@@ -107,9 +109,11 @@ class Announcement extends StatelessWidget {
   // wanna make it look like the athletic-ish
   final String title;
   final String mainText;
+  final String author;
+  final String date;
   final Image coverImage;
 
-  Announcement(this.title, this.mainText, this.coverImage);
+  Announcement(this.title, this.mainText, this.coverImage, this.author, this.date);
 
   @override
   Widget build(BuildContext context) {
@@ -158,7 +162,9 @@ class Announcement extends StatelessWidget {
                                       builder: (context) => AnnouncementView(
                                           this.title,
                                           this.mainText,
-                                          this.coverImage)));
+                                          this.coverImage,
+                                      this.author,
+                                      this.date)));
                             },
                             child: Text("VIEW FULL")))
                   ]))

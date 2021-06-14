@@ -7,8 +7,11 @@ class AnnouncementView extends StatelessWidget {
   final String title;
   final String mainText;
   final Image coverImage;
+  final String author;
+  final String date;
 
-  AnnouncementView(this.title, this.mainText, this.coverImage);
+  AnnouncementView(
+      this.title, this.mainText, this.coverImage, this.author, this.date);
 
   @override
   Widget build(BuildContext context) {
@@ -20,6 +23,12 @@ class AnnouncementView extends StatelessWidget {
           this.coverImage,
           Container(
               child: Text(title, style: dc.singleAnnouncementTitle),
+              padding: EdgeInsets.all(8.0)),
+          Container(
+              child: Row(children: [
+                Text(author, style: dc.announcementText),
+                Text(date, style: dc.announcementText),
+              ]),
               padding: EdgeInsets.all(8.0)),
           Container(
               child: Text(mainText, style: dc.announcementText),

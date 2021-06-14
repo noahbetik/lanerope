@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:lanerope/DesignChoices.dart' as dc;
 import 'package:lanerope/screens/home.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:lanerope/globals.dart' as globals;
 
 final CollectionReference announcements =
     FirebaseFirestore.instance.collection('announcements');
@@ -14,8 +15,10 @@ FirebaseStorage storage = FirebaseStorage.instance;
 
 class AnnouncementEditor extends StatefulWidget {
 
+
   static Future<String> getTitle() async {
-    int x = 0;
+    int id = await globals.announcementID();
+
     DateTime now = DateTime.now();
     String docTitle = now.year.toString() +
         "-" +
@@ -23,16 +26,8 @@ class AnnouncementEditor extends StatefulWidget {
         "-" +
         now.day.toString() +
         "_" +
-        x.toString();
-    while (true) {
-      var doc = await announcements.doc(docTitle).get();
-      if (doc.exists) {
-        x++;
-      }
-      else {
-        return docTitle;
-      }
-    }
+        id.toString();
+    return docTitle;
   }
 
   @override
@@ -76,18 +71,12 @@ class EditorState extends State<AnnouncementEditor> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-        onTap: () {
-          FocusScopeNode currentFocus = FocusScope.of(context);
-          if (!currentFocus.hasPrimaryFocus) {
-            currentFocus.unfocus();
-          }
-        },
-        child: Scaffold(
+    return Scaffold( // maybe put gesture detector bck here once it's better under control
             appBar: AppBar(title: Text("Create an Announcement")),
             body: Container(
-                padding: EdgeInsets.all(8.0),
-                child: Column(children: [
+                padding: EdgeInsets.only(left: 8.0, right: 8.0, top: 8.0),
+                child: SingleChildScrollView(
+                    child: Column(children: [
                   TextField(
                       // eventually wanna replace these with app-level theme constants
                       maxLength: 100, // idk
@@ -116,15 +105,18 @@ class EditorState extends State<AnnouncementEditor> {
                             child: Image.file(image, fit: BoxFit.cover))
                         : Text('No image selected'),
                   ]),
-                  Spacer(),
+                  //Spacer(),
                   ElevatedButton(
                       onPressed: () async {
+                        String pubDate = DateTime.now().toString();
                         String dbTitle = await AnnouncementEditor.getTitle();
                         announcements.doc(dbTitle).set(
                           {
                             "header_image": null,
                             "title_text": titleText.text,
-                            "main_text": mainText.text
+                            "main_text": mainText.text,
+                            "author": globals.fullName,
+                            "date": pubDate
                           },
                         );
                         showDialog(
@@ -137,9 +129,14 @@ class EditorState extends State<AnnouncementEditor> {
                                   heightFactor: 1,
                                 )));
                         await saveImage(image, dbTitle);
+                        //await allAnnouncements();
                         print("image uploaded");
                         announcementList.add(Announcement(
-                            titleText.text, mainText.text, Image.file(image, fit: BoxFit.cover)));
+                            titleText.text,
+                            mainText.text,
+                            Image.file(image, fit: BoxFit.cover),
+                            globals.fullName,
+                            pubDate));
                         print("announcement added");
                         ctrl.add(true);
                         Navigator.pop(context);

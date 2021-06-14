@@ -2,14 +2,18 @@ library lanerope.globals;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:lanerope/screens/home.dart';
 import 'package:intl/intl.dart';
 
 
 String currentUID = '';
 String role = '';
 String name = '';
+String fullName = '';
+int annID = 0;
 List<String> managedGroups = ['unassigned'];
 Map allAthletes = new Map();
 
@@ -18,11 +22,14 @@ final CollectionReference users =
     FirebaseFirestore.instance.collection('users');
 final CollectionReference groups =
     FirebaseFirestore.instance.collection('groups');
+final CollectionReference announcements =
+FirebaseFirestore.instance.collection('announcements');
 
 Future<String> findRole() async {
   await users.doc(currentUID).get().then((DocumentSnapshot snapshot) {
     role = snapshot.get("role");
     name = snapshot.get("first_name");
+    fullName = name + snapshot.get("last_name");
   });
   print(currentUID);
   print(role);
@@ -80,4 +87,12 @@ Future<void> allInfo() async {
       });
     });
   }
+}
+
+Future<int> announcementID() async {
+  final prefs = await SharedPreferences.getInstance();
+  int _annID = prefs.getInt("annID") ?? 0; // future bool is true if logged in
+  int temp = _annID++;
+  prefs.setInt("annID", temp);
+  return _annID;
 }
