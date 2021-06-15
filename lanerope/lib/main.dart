@@ -64,6 +64,7 @@ class _LaneropeState extends State<Lanerope> {
           bool login = false;
           globals.allGroups();
           globals.allInfo();
+          globals.allAnnouncements();
           var current = FirebaseAuth.instance.currentUser;
           if (snapshot.data![1] == true) {
             globals.currentUID = current!.uid;

@@ -23,48 +23,6 @@ final CollectionReference announcements =
 StreamController<bool> ctrl = StreamController<bool>.broadcast();
 Stream<bool> redraw = ctrl.stream; // maybe wanna make this global some day
 
-List<Announcement> announcementList = [];
-
-Future<List<dynamic>> _getAnnouncement(String docTitle) async {
-  DocumentSnapshot snap = await announcements.doc(docTitle).get();
-  String title = await snap.get("title_text");
-  String text = await snap.get("main_text");
-  String imgURL = await snap.get("header_image");
-  String author = await snap.get("author");
-  String date = await snap.get("date");
-  int id = await snap.get("id");
-  Image img = Image.network(imgURL, fit: BoxFit.cover);
-  return [title, text, img, author, date, id];
-}
-
-void sort(List<Announcement> ans) { // do a better sorting algorithm
-  int n = ans.length;
-  for (int i=0; i<n-1; i++){
-    for (int j=0; j<n-i-1; j++){
-      if (ans[j].id < ans[j+1].id){
-        Announcement temp = ans[j];
-        ans[j] = ans[j+1];
-        ans[j+1] = temp;
-        print("swap em");
-      }
-    }
-  }
-  //print(announcementList);
-}
-
-Future<void> allAnnouncements() async {
-  // it still feels stupid to do it this way but whatever
-  announcementList.clear();
-  announcements.get().then((snapshot) {
-    snapshot.docs.forEach((element) async {
-      // what if there's a ton of documents?
-      List<dynamic> info = await _getAnnouncement(element.id);
-      announcementList
-          .add(Announcement(info[0], info[1], info[2], info[3], info[4], info[5]));
-    });
-  });
-}
-
 String sayHi() {
   String hello;
   DateTime now = new DateTime.now();
@@ -86,41 +44,31 @@ String sayHi() {
 class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: Future.wait([allAnnouncements()]),
-        builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            return StreamBuilder<bool>(
-                stream: redraw,
-                builder: (BuildContext context, AsyncSnapshot<bool> snap) {
-                  ctrl.add(true);
-                  if (announcementList.isNotEmpty){
-                    sort(announcementList);
-                  }
-                  return Scaffold(
-                      appBar: AppBar(title: Text("Lanerope")),
-                      floatingActionButton: globals.role == "Coach/Admin"
-                          ? CreateAnnouncement()
-                          : null,
-                      body: ListView.builder(
-                        padding: EdgeInsets.all(8.0),
-                        itemCount: announcementList.length,
-                        itemBuilder: (context, index) {
-                          //print(announcementList);
-                          return announcementList[index];
-                        },
-                      ),
-                      drawer: pd.PagesDrawer().importDrawer(context));
-                });
-          } else {
-            return Scaffold(
-                appBar: AppBar(title: Text("Lanerope")),
-                floatingActionButton:
-                    globals.role == "Coach/Admin" ? CreateAnnouncement() : null,
-                body: Center(child: CircularProgressIndicator.adaptive()),
-                drawer: pd.PagesDrawer().importDrawer(context));
-          }
-        });
+    return StreamBuilder(
+        stream: globals.redraw,
+        builder: (BuildContext context, AsyncSnapshot snapshot){
+      if (globals.loaded != true) {
+        globals.complete.add(true);
+        return Scaffold(
+            appBar: AppBar(title: Text("Lanerope")),
+            floatingActionButton:
+            globals.role == "Coach/Admin" ? CreateAnnouncement() : null,
+            body: Center(child: CircularProgressIndicator.adaptive()),
+            drawer: pd.PagesDrawer().importDrawer(context));
+
+      }
+
+      globals.sort(globals.announcementList);
+      return Scaffold(
+          appBar: AppBar(title: Text("Lanerope")),
+          floatingActionButton:
+          globals.role == "Coach/Admin" ? CreateAnnouncement() : null,
+          body: ListView(padding: EdgeInsets.all(8.0),
+              children: globals.announcementList),
+          drawer: pd.PagesDrawer().importDrawer(context));
+
+    });
+
   }
 }
 
@@ -133,8 +81,8 @@ class Announcement extends StatelessWidget {
   final Image coverImage;
   final int id;
 
-  Announcement(
-      this.title, this.mainText, this.coverImage, this.author, this.date, this.id);
+  Announcement(this.title, this.mainText, this.coverImage, this.author,
+      this.date, this.id);
 
   @override
   Widget build(BuildContext context) {

@@ -43,7 +43,7 @@ class EditorState extends State<AnnouncementEditor> {
   var image;
 
   Future getImage() async {
-    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+    final pickedFile = await picker.getImage(source: ImageSource.gallery, imageQuality: 25);
 
     setState(() {
       if (pickedFile != null) {
@@ -133,7 +133,7 @@ class EditorState extends State<AnnouncementEditor> {
                         await saveImage(image, dbTitle);
                         //await allAnnouncements();
                         print("image uploaded");
-                        announcementList.add(Announcement(
+                        globals.announcementList.add(Announcement(
                             titleText.text,
                             mainText.text,
                             Image.file(image, fit: BoxFit.cover),
@@ -141,7 +141,7 @@ class EditorState extends State<AnnouncementEditor> {
                             pubDate,
                         int.parse(dbTitle.substring(startIndex))));
                         print("announcement added");
-                        ctrl.add(true);
+                        globals.complete.add(true);
                         Navigator.pop(context);
                         Navigator.pop(context);
                       },
