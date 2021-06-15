@@ -45,10 +45,11 @@ void sort(List<Announcement> ans) { // do a better sorting algorithm
         Announcement temp = ans[j];
         ans[j] = ans[j+1];
         ans[j+1] = temp;
+        print("swap em");
       }
     }
   }
-  print(announcementList);
+  //print(announcementList);
 }
 
 Future<void> allAnnouncements() async {
@@ -62,7 +63,6 @@ Future<void> allAnnouncements() async {
           .add(Announcement(info[0], info[1], info[2], info[3], info[4], info[5]));
     });
   });
-  sort(announcementList);
 }
 
 String sayHi() {
@@ -92,8 +92,11 @@ class Home extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.done) {
             return StreamBuilder<bool>(
                 stream: redraw,
-                builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                builder: (BuildContext context, AsyncSnapshot<bool> snap) {
                   ctrl.add(true);
+                  if (announcementList.isNotEmpty){
+                    sort(announcementList);
+                  }
                   return Scaffold(
                       appBar: AppBar(title: Text("Lanerope")),
                       floatingActionButton: globals.role == "Coach/Admin"
@@ -103,6 +106,7 @@ class Home extends StatelessWidget {
                         padding: EdgeInsets.all(8.0),
                         itemCount: announcementList.length,
                         itemBuilder: (context, index) {
+                          //print(announcementList);
                           return announcementList[index];
                         },
                       ),
