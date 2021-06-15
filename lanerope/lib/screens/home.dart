@@ -41,7 +41,7 @@ void sort(List<Announcement> ans) { // do a better sorting algorithm
   int n = ans.length;
   for (int i=0; i<n-1; i++){
     for (int j=0; j<n-i-1; j++){
-      if (ans[j].id > ans[j+1].id){
+      if (ans[j].id < ans[j+1].id){
         Announcement temp = ans[j];
         ans[j] = ans[j+1];
         ans[j+1] = temp;
