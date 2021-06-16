@@ -152,7 +152,7 @@ class CreateAnnouncement extends StatelessWidget {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => TextEditor()),
+            MaterialPageRoute(builder: (context) => AnnouncementEditor()),
           );
         });
   }

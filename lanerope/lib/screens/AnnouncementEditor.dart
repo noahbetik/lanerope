@@ -133,7 +133,7 @@ class EditorState extends State<AnnouncementEditor> {
                         await saveImage(image, dbTitle);
                         //await allAnnouncements();
                         print("image uploaded");
-                        globals.announcementList.add(Announcement(
+                        globals.announcementList.insert(0, Announcement(
                             titleText.text,
                             mainText.text,
                             Image.file(image, fit: BoxFit.cover),

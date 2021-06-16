@@ -138,7 +138,7 @@ class EditorProvider extends ChangeNotifier {
 
   EditorProvider(){
     selectedType = SmartTextType.T;
-    insert(index: 0, text: '');
+    insert(index: 0, text: '', type: SmartTextType.H1);
   }
 
   int get length => _text.length;
