@@ -12,6 +12,8 @@ import 'package:lanerope/DesignChoices.dart' as dc;
 import 'package:lanerope/screens/AnnouncementView.dart';
 import 'package:image_picker/image_picker.dart';
 
+import 'AnnouncementEditorV2.dart';
+
 bool ios = Platform.isIOS;
 bool android = Platform.isAndroid;
 FirebaseAuth auth = FirebaseAuth.instance;
@@ -23,7 +25,7 @@ final CollectionReference announcements =
 StreamController<bool> ctrl = StreamController<bool>.broadcast();
 Stream<bool> redraw = ctrl.stream; // maybe wanna make this global some day
 
-String sayHi() {
+List<Widget> sayHi() {
   String hello;
   DateTime now = new DateTime.now();
   int hour = now.hour;
@@ -38,7 +40,7 @@ String sayHi() {
   } else {
     hello = "good evening " + name;
   }
-  return hello + "\nYou are a " + globals.role;
+  return [Text(hello + "\nYou are a " + globals.role)];
 }
 
 class Home extends StatelessWidget {
@@ -64,7 +66,7 @@ class Home extends StatelessWidget {
           floatingActionButton:
           globals.role == "Coach/Admin" ? CreateAnnouncement() : null,
           body: ListView(padding: EdgeInsets.all(8.0),
-              children: globals.announcementList),
+              children: sayHi() + globals.announcementList),
           drawer: pd.PagesDrawer().importDrawer(context));
 
     });
@@ -150,7 +152,7 @@ class CreateAnnouncement extends StatelessWidget {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => AnnouncementEditor()),
+            MaterialPageRoute(builder: (context) => TextEditor()),
           );
         });
   }
