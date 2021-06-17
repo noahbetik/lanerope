@@ -1,4 +1,4 @@
-import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lanerope/DesignChoices.dart' as dc;
@@ -24,8 +24,16 @@ class AnnouncementView extends StatelessWidget {
               padding: articlePadding),
           Container(
               child: Row(children: [
-                Text("Posted By: " + author, style: dc.announcementText),
-                Text("\t\t\t" + date, style: dc.announcementText),
+                Text("Posted By: " + author, style: TextStyle(
+                  fontFamily: "Oxygen",
+                  fontSize: 14.0,
+                  fontWeight: FontWeight.bold
+                )),
+                Text("\t\t\t" + date, style: TextStyle(
+                    fontFamily: "Oxygen",
+                    fontSize: 14.0,
+                    fontWeight: FontWeight.w100
+                )),
               ]),
               padding: articlePadding),
           Container(

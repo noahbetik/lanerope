@@ -5,12 +5,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:lanerope/DesignChoices.dart' as dc;
 import 'package:lanerope/globals.dart' as globals;
 import 'package:lanerope/pagesDrawer.dart' as pd;
 import 'package:lanerope/screens/AnnouncementEditor.dart';
-import 'package:lanerope/DesignChoices.dart' as dc;
 import 'package:lanerope/screens/AnnouncementView.dart';
-import 'package:image_picker/image_picker.dart';
 
 
 bool ios = Platform.isIOS;
@@ -51,7 +50,6 @@ class Home extends StatelessWidget {
       if (globals.loaded != true) {
         globals.complete.add(true);
         return Scaffold(
-            appBar: AppBar(title: Text("Lanerope")),
             floatingActionButton:
             globals.role == "Coach/Admin" ? CreateAnnouncement() : null,
             body: Center(child: CircularProgressIndicator.adaptive()),

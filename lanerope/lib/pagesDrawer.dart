@@ -20,9 +20,6 @@ class PagesDrawer extends Drawer {
           DrawerHeader(
             child: Text('Pages',
                 style: TextStyle(color: Colors.black, fontSize: 24.0)),
-            decoration: BoxDecoration(
-              color: Colors.lightBlueAccent,
-            ),
           ),
           ListTile(
             title: Text('Home'),

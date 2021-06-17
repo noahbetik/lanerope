@@ -1,14 +1,16 @@
 import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:path/path.dart' as path;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lanerope/DesignChoices.dart' as dc;
-import 'package:lanerope/screens/home.dart';
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:lanerope/globals.dart' as globals;
 import 'package:intl/intl.dart';
+import 'package:lanerope/DesignChoices.dart' as dc;
+import 'package:lanerope/globals.dart' as globals;
+import 'package:lanerope/screens/home.dart';
+import 'package:path/path.dart' as path;
 
 final CollectionReference announcements =
     FirebaseFirestore.instance.collection('announcements');
@@ -45,9 +47,10 @@ class EditorState extends State<AnnouncementEditor> {
     final pickedFile =
         await picker.getImage(source: ImageSource.gallery, imageQuality: 25);
 
-    setState(() {
+    setState(() async {
       if (pickedFile != null) {
-        image = File(pickedFile.path);
+        File? croppedFile = await ImageCropper.cropImage(sourcePath: pickedFile.path, aspectRatio: CropAspectRatio(ratioX: 4, ratioY: 3));
+        image = croppedFile;
       } else {
         print('No image selected.');
       }
@@ -101,8 +104,8 @@ class EditorState extends State<AnnouncementEditor> {
                 Text('Selected Cover Image'),
                 image != null
                     ? Container(
-                        height: 200, // arbitrary for now
-                        width: 200,
+                        height: 300, // arbitrary for now
+                        width: 400,
                         child: Image.file(image, fit: BoxFit.cover))
                     : Text('No image selected'),
               ]),

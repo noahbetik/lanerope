@@ -24,7 +24,7 @@ InputDecoration formBorder(String hint, String helper) {
 
 ThemeData appTheme = ThemeData(
   brightness: Brightness.light,
-  primaryColor: Colors.lightBlueAccent,
+  primaryColor: Colors.white,
   fontFamily: 'Oxygen'
 );
 
@@ -38,4 +38,4 @@ TextStyle singleAnnouncementTitle = new TextStyle(
   fontSize: 36.0,
 );
 
-TextStyle announcementText = new TextStyle(color: Colors.black, fontSize: 16.0);
+TextStyle announcementText = new TextStyle(color: Colors.black, fontSize: 18.0);
