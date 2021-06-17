@@ -46,10 +46,10 @@ class EditorState extends State<AnnouncementEditor> {
   Future getImage() async {
     final pickedFile =
         await picker.getImage(source: ImageSource.gallery, imageQuality: 25);
+    final croppedFile = await ImageCropper.cropImage(sourcePath: pickedFile!.path, aspectRatio: CropAspectRatio(ratioX: 4, ratioY: 3));
 
-    setState(() async {
-      if (pickedFile != null) {
-        File? croppedFile = await ImageCropper.cropImage(sourcePath: pickedFile.path, aspectRatio: CropAspectRatio(ratioX: 4, ratioY: 3));
+    setState(() {
+      if (croppedFile != null) {
         image = croppedFile;
       } else {
         print('No image selected.');
@@ -104,8 +104,8 @@ class EditorState extends State<AnnouncementEditor> {
                 Text('Selected Cover Image'),
                 image != null
                     ? Container(
-                        height: 300, // arbitrary for now
-                        width: 400,
+                        height: 150, // arbitrary for now
+                        width: 200,
                         child: Image.file(image, fit: BoxFit.cover))
                     : Text('No image selected'),
               ]),
