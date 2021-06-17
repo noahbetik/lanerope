@@ -79,12 +79,16 @@ class _AdminPanelState extends State<AdminPanel> {
   }
 
   PreferredSizeWidget _buildBar(BuildContext context) {
-    return new AppBar(centerTitle: true, title: _appBarTitle, actions: [
-      new IconButton(
-        icon: _searchIcon,
-        onPressed: _searchPressed,
-      ),
-    ]);
+    return new AppBar(
+        centerTitle: true,
+        elevation: 0,
+        title: _appBarTitle,
+        actions: [
+          new IconButton(
+            icon: _searchIcon,
+            onPressed: _searchPressed,
+          ),
+        ]);
   }
 
   void _searchPressed() {
@@ -110,9 +114,9 @@ class _AdminPanelState extends State<AdminPanel> {
           data: const ExpandableThemeData(
               iconColor: Colors.blue, useInkWell: true),
           child: ListView(
-                physics: const BouncingScrollPhysics(),
-                children: cards,
-              ));
+            physics: const BouncingScrollPhysics(),
+            children: cards,
+          ));
     } else {
       return AthleteList('all');
     }
@@ -122,7 +126,8 @@ class _AdminPanelState extends State<AdminPanel> {
   Widget build(BuildContext context) {
     return StreamBuilder<bool>(
         stream: redraw,
-        builder: (BuildContext context, AsyncSnapshot<bool> snapshot) { // can maybe rebuild less
+        builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
+          // can maybe rebuild less
           return FutureBuilder(
               future: Future.wait([getGroups(), getCards()]),
               builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
@@ -361,7 +366,7 @@ class AddButton extends StatelessWidget {
                         ]))));
       },
       child: const Icon(Icons.add_comment_rounded),
-      backgroundColor: Colors.green,
+      backgroundColor: Colors.redAccent,
     );
   }
 }

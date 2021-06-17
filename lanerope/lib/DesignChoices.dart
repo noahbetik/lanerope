@@ -22,10 +22,19 @@ InputDecoration formBorder(String hint, String helper) {
       helperText: helper == '' ? null : helper);
 }
 
+AppBar bar(String title) {
+  return AppBar(
+    title: Text(title),
+    elevation: 0,
+  );
+}
+
 ThemeData appTheme = ThemeData(
   brightness: Brightness.light,
   primaryColor: Colors.white,
-  fontFamily: 'Oxygen'
+  accentColor: Colors.lightBlueAccent,
+  buttonColor: Colors.redAccent,
+  fontFamily: 'Oxygen',
 );
 
 TextStyle announcementTitle = new TextStyle(

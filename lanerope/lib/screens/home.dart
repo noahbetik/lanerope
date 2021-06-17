@@ -50,16 +50,19 @@ class Home extends StatelessWidget {
       if (globals.loaded != true) {
         globals.complete.add(true);
         return Scaffold(
+          appBar: dc.bar("Lanerope"),
             floatingActionButton:
             globals.role == "Coach/Admin" ? CreateAnnouncement() : null,
             body: Center(child: CircularProgressIndicator.adaptive()),
-            drawer: pd.PagesDrawer().importDrawer(context));
+            drawer: pd.PagesDrawer().importDrawer(context)
+            );
 
       }
 
       globals.sort(globals.announcementList);
       return Scaffold(
-          appBar: AppBar(title: Text("Lanerope")),
+          appBar: dc.bar("Lanerope"),
+          backgroundColor: Colors.white,
           floatingActionButton:
           globals.role == "Coach/Admin" ? CreateAnnouncement() : null,
           body: ListView(padding: EdgeInsets.all(8.0),
