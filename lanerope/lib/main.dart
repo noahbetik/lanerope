@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:lanerope/globals.dart' as globals;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:lanerope/DesignChoices.dart' as dc;
 
 import './screens/home.dart';
 import "./screens/login.dart";
@@ -74,9 +75,7 @@ class _LaneropeState extends State<Lanerope> {
           return new MaterialApp(
               debugShowCheckedModeBanner: false,
               title: "Lanerope",
-              theme: ThemeData(
-                primarySwatch: Colors.blue,
-              ),
+              theme: dc.appTheme,
               home: login == true ? Home() : Login(),
               routes: <String, WidgetBuilder>{
                 '/home': (BuildContext context) => new Home(),

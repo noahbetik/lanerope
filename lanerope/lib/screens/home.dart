@@ -12,7 +12,6 @@ import 'package:lanerope/DesignChoices.dart' as dc;
 import 'package:lanerope/screens/AnnouncementView.dart';
 import 'package:image_picker/image_picker.dart';
 
-import 'AnnouncementEditorV2.dart';
 
 bool ios = Platform.isIOS;
 bool android = Platform.isAndroid;
@@ -113,15 +112,14 @@ class Announcement extends StatelessWidget {
               Container(
                   // should be less for landscape
                   padding: EdgeInsets.all(8.0),
+                  width: double.infinity,
                   child: Column(children: [
-                    Text("the subtitle is optional perhaps",
-                        style: Theme.of(context).textTheme.subtitle1),
                     Text(
                       this.mainText,
                       textDirection: TextDirection.ltr,
                       overflow: TextOverflow.fade,
                       style: dc.announcementText,
-                      maxLines: 20,
+                      maxLines: 10,
                     ),
                     Container(
                         alignment: Alignment.bottomLeft,

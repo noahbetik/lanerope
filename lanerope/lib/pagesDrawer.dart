@@ -19,9 +19,9 @@ class PagesDrawer extends Drawer {
         children: <Widget>[
           DrawerHeader(
             child: Text('Pages',
-                style: TextStyle(color: Colors.white, fontSize: 24.0)),
+                style: TextStyle(color: Colors.black, fontSize: 24.0)),
             decoration: BoxDecoration(
-              color: Colors.blue,
+              color: Colors.lightBlueAccent,
             ),
           ),
           ListTile(

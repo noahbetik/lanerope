@@ -9,6 +9,7 @@ class AnnouncementView extends StatelessWidget {
   final Image coverImage;
   final String author;
   final String date;
+  final EdgeInsets articlePadding = EdgeInsets.all(12.0);
 
   AnnouncementView(
       this.title, this.mainText, this.coverImage, this.author, this.date);
@@ -16,23 +17,20 @@ class AnnouncementView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text("Lanerope"),
-        ),
         body: ListView(children: [
           this.coverImage,
           Container(
               child: Text(title, style: dc.singleAnnouncementTitle),
-              padding: EdgeInsets.all(8.0)),
+              padding: articlePadding),
           Container(
               child: Row(children: [
-                Text(author, style: dc.announcementText),
-                Text(date, style: dc.announcementText),
+                Text("Posted By: " + author, style: dc.announcementText),
+                Text("\t\t\t" + date, style: dc.announcementText),
               ]),
-              padding: EdgeInsets.all(8.0)),
+              padding: articlePadding),
           Container(
               child: Text(mainText, style: dc.announcementText),
-              padding: EdgeInsets.all(8.0))
+              padding: articlePadding)
         ]));
   }
 }

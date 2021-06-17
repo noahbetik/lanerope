@@ -33,7 +33,7 @@ Future<String> findRole() async {
   await users.doc(currentUID).get().then((DocumentSnapshot snapshot) {
     role = snapshot.get("role");
     name = snapshot.get("first_name");
-    fullName = name + snapshot.get("last_name");
+    fullName = name + " " + snapshot.get("last_name");
   });
   print(currentUID);
   print(role);
@@ -135,7 +135,6 @@ void sort(List<Announcement> ans) {
 
 void allAnnouncements() async {
   // it still feels stupid to do it this way but whatever
-  print("hewwo?");
   announcementList.clear();
   QuerySnapshot snap = await announcements.get();
   List items = snap.docs;
