@@ -17,6 +17,13 @@ final CollectionReference announcements =
 FirebaseStorage storage = FirebaseStorage.instance;
 
 class AnnouncementEditor extends StatefulWidget {
+
+  final String givenTitle;
+  final String givenText;
+
+  AnnouncementEditor({this.givenTitle = '', this.givenText = ''});
+
+
   static Future<String> getTitle() async {
     int id = await globals.announcementID();
 
@@ -33,13 +40,21 @@ class AnnouncementEditor extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return EditorState();
+    return EditorState(givenTitle: givenTitle, givenText: givenText);
   }
 }
 
 class EditorState extends State<AnnouncementEditor> {
-  final titleText = TextEditingController();
-  final mainText = TextEditingController();
+
+  final String givenTitle;
+  final String givenText;
+  var titleText;
+  var mainText;
+
+  EditorState({this.givenTitle = '', this.givenText = ''}){
+    titleText = TextEditingController(text: givenTitle);
+    mainText = TextEditingController(text: givenText);
+  }
   final picker = ImagePicker();
   var image;
 

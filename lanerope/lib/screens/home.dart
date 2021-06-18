@@ -11,7 +11,6 @@ import 'package:lanerope/pagesDrawer.dart' as pd;
 import 'package:lanerope/screens/AnnouncementEditor.dart';
 import 'package:lanerope/screens/AnnouncementView.dart';
 
-
 bool ios = Platform.isIOS;
 bool android = Platform.isAndroid;
 FirebaseAuth auth = FirebaseAuth.instance;
@@ -46,31 +45,28 @@ class Home extends StatelessWidget {
   Widget build(BuildContext context) {
     return StreamBuilder(
         stream: globals.redraw,
-        builder: (BuildContext context, AsyncSnapshot snapshot){
-      if (globals.loaded != true) {
-        globals.complete.add(true);
-        return Scaffold(
-          appBar: dc.bar("Lanerope"),
-            floatingActionButton:
-            globals.role == "Coach/Admin" ? CreateAnnouncement() : null,
-            body: Center(child: CircularProgressIndicator.adaptive()),
-            drawer: pd.PagesDrawer().importDrawer(context)
-            );
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (globals.loaded != true) {
+            globals.complete.add(true);
+            return Scaffold(
+                appBar: dc.bar("Lanerope"),
+                floatingActionButton:
+                    globals.role == "Coach/Admin" ? CreateAnnouncement() : null,
+                body: Center(child: CircularProgressIndicator.adaptive()),
+                drawer: pd.PagesDrawer().importDrawer(context));
+          }
 
-      }
-
-      globals.sort(globals.announcementList);
-      return Scaffold(
-          appBar: dc.bar("Lanerope"),
-          backgroundColor: Colors.white,
-          floatingActionButton:
-          globals.role == "Coach/Admin" ? CreateAnnouncement() : null,
-          body: ListView(padding: EdgeInsets.all(8.0),
-              children: sayHi() + globals.announcementList),
-          drawer: pd.PagesDrawer().importDrawer(context));
-
-    });
-
+          globals.sort(globals.announcementList);
+          return Scaffold(
+              appBar: dc.bar("Lanerope"),
+              backgroundColor: Colors.white,
+              floatingActionButton:
+                  globals.role == "Coach/Admin" ? CreateAnnouncement() : null,
+              body: ListView(
+                  padding: EdgeInsets.all(8.0),
+                  children: sayHi() + globals.announcementList),
+              drawer: pd.PagesDrawer().importDrawer(context));
+        });
   }
 }
 
@@ -124,19 +120,49 @@ class Announcement extends StatelessWidget {
                     ),
                     Container(
                         alignment: Alignment.bottomLeft,
-                        child: TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => AnnouncementView(
-                                          this.title,
-                                          this.mainText,
-                                          this.coverImage,
-                                          this.author,
-                                          this.date)));
-                            },
-                            child: Text("VIEW FULL")))
+                        child: Row(
+                            children: globals.role == 'Coach/Admin'
+                                ? [
+                                    TextButton(
+                                        onPressed: () {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      AnnouncementView(
+                                                          this.title,
+                                                          this.mainText,
+                                                          this.coverImage,
+                                                          this.author,
+                                                          this.date)));
+                                        },
+                                        child: Text("VIEW FULL")),
+                                    IconButton(
+                                        onPressed: () {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      AnnouncementEditor(givenTitle: this.title, givenText: this.mainText,)));
+                                        },
+                                        icon: const Icon(Icons.edit))
+                                  ]
+                                : [
+                                    TextButton(
+                                        onPressed: () {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      AnnouncementView(
+                                                          this.title,
+                                                          this.mainText,
+                                                          this.coverImage,
+                                                          this.author,
+                                                          this.date)));
+                                        },
+                                        child: Text("VIEW FULL"))
+                                  ]))
                   ]))
             ])));
   }
