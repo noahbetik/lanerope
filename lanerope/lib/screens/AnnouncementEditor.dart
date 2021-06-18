@@ -17,12 +17,11 @@ final CollectionReference announcements =
 FirebaseStorage storage = FirebaseStorage.instance;
 
 class AnnouncementEditor extends StatefulWidget {
-
   final String givenTitle;
   final String givenText;
+  final String db;
 
-  AnnouncementEditor({this.givenTitle = '', this.givenText = ''});
-
+  AnnouncementEditor({this.givenTitle = '', this.givenText = '', this.db = ''});
 
   static Future<String> getTitle() async {
     int id = await globals.announcementID();
@@ -45,23 +44,26 @@ class AnnouncementEditor extends StatefulWidget {
 }
 
 class EditorState extends State<AnnouncementEditor> {
-
   final String givenTitle;
   final String givenText;
+  final String db;
   var titleText;
   var mainText;
 
-  EditorState({this.givenTitle = '', this.givenText = ''}){
+  EditorState({this.givenTitle = '', this.givenText = '', this.db = ''}) {
     titleText = TextEditingController(text: givenTitle);
     mainText = TextEditingController(text: givenText);
   }
+
   final picker = ImagePicker();
   var image;
 
   Future getImage() async {
     final pickedFile =
         await picker.getImage(source: ImageSource.gallery, imageQuality: 25);
-    final croppedFile = await ImageCropper.cropImage(sourcePath: pickedFile!.path, aspectRatio: CropAspectRatio(ratioX: 4, ratioY: 3));
+    final croppedFile = await ImageCropper.cropImage(
+        sourcePath: pickedFile!.path,
+        aspectRatio: CropAspectRatio(ratioX: 4, ratioY: 3));
 
     setState(() {
       if (croppedFile != null) {
@@ -127,48 +129,57 @@ class EditorState extends State<AnnouncementEditor> {
               //Spacer(),
               ElevatedButton(
                   onPressed: () async {
-                    DateTime now = DateTime.now();
-                    String pubDate =
-                        DateFormat.yMd().format(now) +
-                            " - " +
-                            DateFormat.Hm().format(now);
-                    String dbTitle = await AnnouncementEditor.getTitle();
-                    int startIndex = dbTitle.indexOf('_') + 1;
-                    announcements.doc(dbTitle).set(
-                      {
-                        "header_image": null,
-                        "title_text": titleText.text,
-                        "main_text": mainText.text,
-                        "author": globals.fullName,
-                        "date": pubDate,
-                        "id": int.parse(dbTitle.substring(startIndex))
-                      },
-                    );
-                    showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                                // not ideal
-                                content: Center(
-                              child: CircularProgressIndicator.adaptive(),
-                              widthFactor: 1,
-                              heightFactor: 1,
-                            )));
-                    await saveImage(image, dbTitle);
-                    //await allAnnouncements();
-                    print("image uploaded");
-                    globals.announcementList.insert(
-                        0,
-                        Announcement(
-                            titleText.text,
-                            mainText.text,
-                            Image.file(image, fit: BoxFit.cover),
-                            globals.fullName,
-                            pubDate,
-                            int.parse(dbTitle.substring(startIndex))));
-                    print("announcement added");
-                    globals.complete.add(true);
-                    Navigator.pop(context);
-                    Navigator.pop(context);
+                    if (db != '') {
+                      announcements.doc(db).update(
+                        {
+                          "title_text": titleText.text,
+                          "main_text": mainText.text,
+                        },
+                      );
+                    } else {
+                      DateTime now = DateTime.now();
+                      String pubDate = DateFormat.yMd().format(now) +
+                          " - " +
+                          DateFormat.Hm().format(now);
+                      String dbTitle = await AnnouncementEditor.getTitle();
+                      int startIndex = dbTitle.indexOf('_') + 1;
+                      announcements.doc(dbTitle).set(
+                        {
+                          "header_image": null,
+                          "title_text": titleText.text,
+                          "main_text": mainText.text,
+                          "author": globals.fullName,
+                          "date": pubDate,
+                          "id": int.parse(dbTitle.substring(startIndex))
+                        },
+                      );
+                      showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                                  // not ideal
+                                  content: Center(
+                                child: CircularProgressIndicator.adaptive(),
+                                widthFactor: 1,
+                                heightFactor: 1,
+                              )));
+                      await saveImage(image, dbTitle);
+                      //await allAnnouncements();
+                      print("image uploaded");
+                      globals.announcementList.insert(
+                          0,
+                          Announcement(
+                              titleText.text,
+                              mainText.text,
+                              Image.file(image, fit: BoxFit.cover),
+                              globals.fullName,
+                              pubDate,
+                              int.parse(dbTitle.substring(startIndex)),
+                              dbTitle));
+                      print("announcement added");
+                      globals.complete.add(true);
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                    }
                   },
                   child: Text("Publish"))
             ]))));

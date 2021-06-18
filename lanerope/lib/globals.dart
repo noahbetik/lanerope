@@ -141,8 +141,9 @@ void allAnnouncements() async {
   List items = snap.docs;
   for(int i=0; i<items.length; i++){
     List<dynamic> info = await _getAnnouncement(items[i].id);
+    info.add(items[i].id);
     announcementList.add(
-        Announcement(info[0], info[1], info[2], info[3], info[4], info[5]));
+        Announcement(info[0], info[1], info[2], info[3], info[4], info[5], info[6]));
   }
 
   print("did it reflect?");

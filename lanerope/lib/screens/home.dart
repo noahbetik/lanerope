@@ -78,9 +78,10 @@ class Announcement extends StatelessWidget {
   final String date;
   final Image coverImage;
   final int id;
+  final String dbTitle;
 
   Announcement(this.title, this.mainText, this.coverImage, this.author,
-      this.date, this.id);
+      this.date, this.id, this.dbTitle);
 
   @override
   Widget build(BuildContext context) {
@@ -143,7 +144,12 @@ class Announcement extends StatelessWidget {
                                               context,
                                               MaterialPageRoute(
                                                   builder: (context) =>
-                                                      AnnouncementEditor(givenTitle: this.title, givenText: this.mainText,)));
+                                                      AnnouncementEditor(
+                                                          givenTitle:
+                                                              this.title,
+                                                          givenText:
+                                                              this.mainText,
+                                                          db: this.dbTitle)));
                                         },
                                         icon: const Icon(Icons.edit))
                                   ]
