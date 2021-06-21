@@ -105,7 +105,7 @@ Future<int> announcementID() async {
 
 List<Announcement> announcementList = [];
 
-Future<List<dynamic>> _getAnnouncement(String docTitle) async {
+Future<List<dynamic>> getAnnouncement(String docTitle) async {
   print("getting announcement " + docTitle);
   DocumentSnapshot snap = await announcements.doc(docTitle).get();
   String title = await snap.get("title_text");
@@ -140,7 +140,7 @@ void allAnnouncements() async {
   QuerySnapshot snap = await announcements.get();
   List items = snap.docs;
   for(int i=0; i<items.length; i++){
-    List<dynamic> info = await _getAnnouncement(items[i].id);
+    List<dynamic> info = await getAnnouncement(items[i].id);
     info.add(items[i].id);
     announcementList.add(
         Announcement(info[0], info[1], info[2], info[3], info[4], info[5], info[6]));

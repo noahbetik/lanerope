@@ -140,6 +140,7 @@ class Announcement extends StatelessWidget {
                                         child: Text("VIEW FULL")),
                                     IconButton(
                                         onPressed: () {
+                                          print("editing " + this.dbTitle);
                                           Navigator.push(
                                               context,
                                               MaterialPageRoute(

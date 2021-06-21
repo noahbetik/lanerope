@@ -39,7 +39,7 @@ class AnnouncementEditor extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return EditorState(givenTitle: givenTitle, givenText: givenText);
+    return EditorState(givenTitle: givenTitle, givenText: givenText, db: db);
   }
 }
 
@@ -114,7 +114,7 @@ class EditorState extends State<AnnouncementEditor> {
                     decoration: dc.formBorder('Announcement Text', '')),
               ),
               Container(
-                  alignment: Alignment.bottomLeft,
+                  alignment: Alignment.centerLeft,
                   child: TextButton(
                       onPressed: getImage, child: Text("ADD IMAGE"))),
               Column(children: [
@@ -126,62 +126,97 @@ class EditorState extends State<AnnouncementEditor> {
                         child: Image.file(image, fit: BoxFit.cover))
                     : Text('No image selected'),
               ]),
-              //Spacer(),
-              ElevatedButton(
-                  onPressed: () async {
-                    if (db != '') {
-                      announcements.doc(db).update(
-                        {
-                          "title_text": titleText.text,
-                          "main_text": mainText.text,
-                        },
-                      );
-                    } else {
-                      DateTime now = DateTime.now();
-                      String pubDate = DateFormat.yMd().format(now) +
-                          " - " +
-                          DateFormat.Hm().format(now);
-                      String dbTitle = await AnnouncementEditor.getTitle();
-                      int startIndex = dbTitle.indexOf('_') + 1;
-                      announcements.doc(dbTitle).set(
-                        {
-                          "header_image": null,
-                          "title_text": titleText.text,
-                          "main_text": mainText.text,
-                          "author": globals.fullName,
-                          "date": pubDate,
-                          "id": int.parse(dbTitle.substring(startIndex))
-                        },
-                      );
+              Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                ElevatedButton(
+                    onPressed: () async {
+                      if (db != '') {
+                        announcements.doc(db).update(
+                          {
+                            "title_text": titleText.text,
+                            "main_text": mainText.text,
+                          },
+                        );
+                        globals.allAnnouncements();
+                        Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Announcement updated')));
+                      } else {
+                        DateTime now = DateTime.now();
+                        String pubDate = DateFormat.yMd().format(now) +
+                            " - " +
+                            DateFormat.Hm().format(now);
+                        String dbTitle = await AnnouncementEditor.getTitle();
+                        int startIndex = dbTitle.indexOf('_') + 1;
+                        announcements.doc(dbTitle).set(
+                          {
+                            "header_image": null,
+                            "title_text": titleText.text,
+                            "main_text": mainText.text,
+                            "author": globals.fullName,
+                            "date": pubDate,
+                            "id": int.parse(dbTitle.substring(startIndex))
+                          },
+                        );
+                        showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                                    // not ideal
+                                    content: Center(
+                                  child: CircularProgressIndicator.adaptive(),
+                                  widthFactor: 1,
+                                  heightFactor: 1,
+                                )));
+                        await saveImage(image, dbTitle);
+                        //await allAnnouncements();
+                        print("image uploaded");
+                        globals.announcementList.insert(
+                            0,
+                            Announcement(
+                                titleText.text,
+                                mainText.text,
+                                Image.file(image, fit: BoxFit.cover),
+                                globals.fullName,
+                                pubDate,
+                                int.parse(dbTitle.substring(startIndex)),
+                                dbTitle));
+                        print("announcement added");
+                        globals.complete.add(true);
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                      }
+                    },
+                    child: Text("Publish")),
+                OutlinedButton(
+                    onPressed: () {
                       showDialog(
                           context: context,
                           builder: (context) => AlertDialog(
-                                  // not ideal
-                                  content: Center(
-                                child: CircularProgressIndicator.adaptive(),
-                                widthFactor: 1,
-                                heightFactor: 1,
-                              )));
-                      await saveImage(image, dbTitle);
-                      //await allAnnouncements();
-                      print("image uploaded");
-                      globals.announcementList.insert(
-                          0,
-                          Announcement(
-                              titleText.text,
-                              mainText.text,
-                              Image.file(image, fit: BoxFit.cover),
-                              globals.fullName,
-                              pubDate,
-                              int.parse(dbTitle.substring(startIndex)),
-                              dbTitle));
-                      print("announcement added");
-                      globals.complete.add(true);
-                      Navigator.pop(context);
-                      Navigator.pop(context);
-                    }
-                  },
-                  child: Text("Publish"))
+                                  title: Text("Delete Announcement"),
+                                  content: Text(
+                                      "Are you sure you want to delete this announcement?"),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.pop(context),
+                                      child: const Text('Cancel'),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        if (db != '') {
+                                          announcements.doc(db).delete();
+                                          globals.allAnnouncements();
+                                        }
+                                        Navigator.pop(context);
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text('Delete'),
+                                    ),
+                                  ]));
+                    },
+                    child: Text("Delete", style: TextStyle(color: Colors.red)))
+              ]),
             ]))));
   }
 }
