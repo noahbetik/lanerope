@@ -40,7 +40,7 @@ ThemeData appTheme = ThemeData(
     color: Colors.white,
     elevation: 2.0,
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-    margin: EdgeInsets.all(8.0),
+    margin: EdgeInsets.only(left: 8.0, right: 8.0, bottom: 8.0, top: 2.0),
   )
 );
 

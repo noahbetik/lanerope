@@ -14,6 +14,8 @@ bool ios = Platform.isIOS;
 bool android = Platform.isAndroid;
 StreamController<bool> ctrl = StreamController<bool>.broadcast();
 Stream<bool> redraw = ctrl.stream;
+StreamController<bool> box = StreamController<bool>.broadcast();
+Stream<bool> boxDraw = box.stream;
 CollectionReference groupWrangler =
     FirebaseFirestore.instance.collection('groups');
 
@@ -287,12 +289,32 @@ class GroupBox extends StatefulWidget {
 }
 
 class _GroupBoxState extends State<GroupBox> {
+  CollectionReference users = FirebaseFirestore.instance.collection('users');
   bool checked = false;
-  CollectionReference user = FirebaseFirestore.instance.collection('users');
+  List inGroups = [];
+
+  @override
+  void initState() {
+    String name = widget.groupName;
+    users.doc(globals.currentUID).get().then((snap) {
+      inGroups = snap.get("groups");
+      print("in fx");
+      print(inGroups);
+    });
+    print("after fx");
+    print(inGroups);
+
+    if (inGroups.contains(name)) {
+      checked = true;
+    }
+    setState(() {});
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     String name = widget.groupName;
+
     return CheckboxListTile(
       title: Text(name),
       value: checked == true,

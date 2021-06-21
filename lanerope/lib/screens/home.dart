@@ -63,7 +63,6 @@ class Home extends StatelessWidget {
               floatingActionButton:
                   globals.role == "Coach/Admin" ? CreateAnnouncement() : null,
               body: ListView(
-                  padding: EdgeInsets.all(8.0),
                   children: globals.announcementList),
               drawer: pd.PagesDrawer().importDrawer(context));
         });
