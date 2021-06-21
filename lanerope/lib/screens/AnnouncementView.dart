@@ -6,13 +6,13 @@ import 'package:lanerope/DesignChoices.dart' as dc;
 class AnnouncementView extends StatelessWidget {
   final String title;
   final String mainText;
-  final Image coverImage;
+  final Image? coverImage;
   final String author;
   final String date;
   final EdgeInsets articlePadding = EdgeInsets.all(12.0);
 
   AnnouncementView(
-      this.title, this.mainText, this.coverImage, this.author, this.date);
+      this.title, this.mainText, this.author, this.date, {this.coverImage});
 
   @override
   Widget build(BuildContext context) {

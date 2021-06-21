@@ -20,7 +20,6 @@ StreamController<bool> complete = StreamController<bool>.broadcast();
 Stream<bool> redraw = complete.stream; // maybe wanna make this global some day
 bool loaded = false;
 
-
 final CollectionReference users =
     FirebaseFirestore.instance.collection('users');
 final CollectionReference groups =
@@ -105,7 +104,7 @@ Future<int> announcementID() async {
 
 List<Announcement> announcementList = [];
 
-Future<List<dynamic>> getAnnouncement(String docTitle) async {
+Future<Map> getAnnouncement(String docTitle) async {
   print("getting announcement " + docTitle);
   DocumentSnapshot snap = await announcements.doc(docTitle).get();
   String title = await snap.get("title_text");
@@ -114,8 +113,18 @@ Future<List<dynamic>> getAnnouncement(String docTitle) async {
   String author = await snap.get("author");
   String date = await snap.get("date");
   int id = await snap.get("id");
-  Image img = Image.network(imgURL, fit: BoxFit.cover);
-  return [title, text, img, author, date, id];
+  Map result = {
+    "title": title,
+    "text": text,
+    "author": author,
+    "date": date,
+    "id": id
+  };
+  if (imgURL != '') {
+    result["image"] = Image.network(imgURL, fit: BoxFit.cover);
+  }
+  return result;
+  //[title, text, img, author, date, id];
 }
 
 void sort(List<Announcement> ans) {
@@ -139,11 +148,17 @@ void allAnnouncements() async {
   announcementList.clear();
   QuerySnapshot snap = await announcements.get();
   List items = snap.docs;
-  for(int i=0; i<items.length; i++){
-    List<dynamic> info = await getAnnouncement(items[i].id);
-    info.add(items[i].id);
-    announcementList.add(
-        Announcement(info[0], info[1], info[2], info[3], info[4], info[5], info[6]));
+  for (int i = 0; i < items.length; i++) {
+    Map info = await getAnnouncement(items[i].id);
+
+    if (info.containsKey("image")) {
+      announcementList.add(Announcement(info["title"], info["text"],
+          info["author"], info["date"], info["id"], items[i].id,
+          coverImage: info["image"]));
+    } else {
+      announcementList.add(Announcement(info["title"], info["text"],
+          info["author"], info["date"], info["id"], items[i].id));
+    }
   }
 
   print("did it reflect?");

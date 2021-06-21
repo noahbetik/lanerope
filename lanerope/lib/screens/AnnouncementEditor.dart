@@ -56,7 +56,7 @@ class EditorState extends State<AnnouncementEditor> {
   }
 
   final picker = ImagePicker();
-  var image;
+  dynamic image;
 
   Future getImage() async {
     final pickedFile =
@@ -76,10 +76,16 @@ class EditorState extends State<AnnouncementEditor> {
 
   Future<void> saveImage(File images, String document) async {
     String imageURL = await uploadFile(image);
-    announcements.doc(document).update({"header_image": imageURL});
+    if (imageURL != '') {
+      announcements.doc(document).update({"header_image": imageURL});
+    } else {
+      announcements.doc(document).update({"header_image": ''});
+    }
   }
 
   Future<String> uploadFile(File image) async {
+    print("THE PATH");
+    print(image.path);
     final String fileName = path.basename(image.path);
     File imageFile = File(image.path);
     await storage
@@ -126,15 +132,42 @@ class EditorState extends State<AnnouncementEditor> {
                         child: Image.file(image, fit: BoxFit.cover))
                     : Text('No image selected'),
               ]),
-              Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
+              Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+                OutlinedButton(
+                    onPressed: () {
+                      showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                                  title: Text("Delete Announcement"),
+                                  content: Text(
+                                      "Are you sure you want to delete this announcement?"),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      child: const Text('Cancel'),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        if (db != '') {
+                                          announcements.doc(db).delete();
+                                          globals.allAnnouncements();
+                                        }
+                                        Navigator.pop(context);
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text('Delete'),
+                                    ),
+                                  ]));
+                    },
+                    child: Text("Delete", style: TextStyle(color: Colors.red))),
                 ElevatedButton(
                     onPressed: () async {
                       if (db != '') {
                         announcements.doc(db).update(
                           {
-                            "title_text": titleText.text,
+                            "title_text": titleText.text != ''
+                                ? titleText.text
+                                : "Untitled Announcement",
                             "main_text": mainText.text,
                           },
                         );
@@ -152,7 +185,9 @@ class EditorState extends State<AnnouncementEditor> {
                         announcements.doc(dbTitle).set(
                           {
                             "header_image": null,
-                            "title_text": titleText.text,
+                            "title_text": titleText.text != ''
+                                ? titleText.text
+                                : "Untitled Announcement",
                             "main_text": mainText.text,
                             "author": globals.fullName,
                             "date": pubDate,
@@ -168,19 +203,35 @@ class EditorState extends State<AnnouncementEditor> {
                                   widthFactor: 1,
                                   heightFactor: 1,
                                 )));
-                        await saveImage(image, dbTitle);
-                        //await allAnnouncements();
-                        print("image uploaded");
-                        globals.announcementList.insert(
-                            0,
-                            Announcement(
-                                titleText.text,
-                                mainText.text,
-                                Image.file(image, fit: BoxFit.cover),
-                                globals.fullName,
-                                pubDate,
-                                int.parse(dbTitle.substring(startIndex)),
-                                dbTitle));
+                        if (image != null) {
+                          await saveImage(image, dbTitle);
+                          print("image uploaded");
+                          globals.announcementList.insert(
+                              0,
+                              Announcement(
+                                  titleText.text,
+                                  mainText.text,
+                                  globals.fullName,
+                                  pubDate,
+                                  int.parse(dbTitle.substring(startIndex)),
+                                  dbTitle,
+                                  coverImage:
+                                      Image.file(image, fit: BoxFit.cover)));
+                        } else {
+                          announcements
+                              .doc(dbTitle)
+                              .update({"header_image": ''});
+                          globals.announcementList.insert(
+                              0,
+                              Announcement(
+                                  titleText.text,
+                                  mainText.text,
+                                  globals.fullName,
+                                  pubDate,
+                                  int.parse(dbTitle.substring(startIndex)),
+                                  dbTitle));
+                        }
+                        globals.allAnnouncements();
                         print("announcement added");
                         globals.complete.add(true);
                         Navigator.pop(context);
@@ -188,34 +239,6 @@ class EditorState extends State<AnnouncementEditor> {
                       }
                     },
                     child: Text("Publish")),
-                OutlinedButton(
-                    onPressed: () {
-                      showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                                  title: Text("Delete Announcement"),
-                                  content: Text(
-                                      "Are you sure you want to delete this announcement?"),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () =>
-                                          Navigator.pop(context),
-                                      child: const Text('Cancel'),
-                                    ),
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        if (db != '') {
-                                          announcements.doc(db).delete();
-                                          globals.allAnnouncements();
-                                        }
-                                        Navigator.pop(context);
-                                        Navigator.pop(context);
-                                      },
-                                      child: const Text('Delete'),
-                                    ),
-                                  ]));
-                    },
-                    child: Text("Delete", style: TextStyle(color: Colors.red)))
               ]),
             ]))));
   }

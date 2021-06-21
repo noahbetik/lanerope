@@ -42,6 +42,11 @@ TextStyle announcementTitle = new TextStyle(
   fontSize: 36.0,
 );
 
+TextStyle noImgTitle = new TextStyle(
+  color: Colors.black,
+  fontSize: 36.0,
+);
+
 TextStyle singleAnnouncementTitle = new TextStyle(
   color: Colors.black,
   fontSize: 36.0,
