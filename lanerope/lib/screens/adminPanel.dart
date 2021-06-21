@@ -172,8 +172,6 @@ class SelectionCard extends StatelessWidget {
               },
               child: Text("Subscribe")));
           return ExpandableNotifier(
-              child: Padding(
-            padding: const EdgeInsets.all(10),
             child: Card(
               clipBehavior: Clip.antiAlias,
               child: Column(
@@ -212,7 +210,7 @@ class SelectionCard extends StatelessWidget {
                 ],
               ),
             ),
-          ));
+          );
         });
   }
 }
@@ -225,8 +223,6 @@ class GroupCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ExpandableNotifier(
-        child: Padding(
-      padding: const EdgeInsets.all(10),
       child: Card(
         clipBehavior: Clip.antiAlias,
         child: Column(
@@ -273,7 +269,7 @@ class GroupCard extends StatelessWidget {
           ],
         ),
       ),
-    ));
+    );
   }
 }
 

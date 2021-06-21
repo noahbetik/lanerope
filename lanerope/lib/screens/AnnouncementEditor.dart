@@ -178,7 +178,7 @@ class EditorState extends State<AnnouncementEditor> {
                       } else {
                         DateTime now = DateTime.now();
                         String pubDate = DateFormat.yMd().format(now) +
-                            " - " +
+                            " at " +
                             DateFormat.Hm().format(now);
                         String dbTitle = await AnnouncementEditor.getTitle();
                         int startIndex = dbTitle.indexOf('_') + 1;

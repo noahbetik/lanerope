@@ -59,17 +59,16 @@ class Home extends StatelessWidget {
           globals.sort(globals.announcementList);
           return Scaffold(
               appBar: dc.bar("Lanerope"),
-              backgroundColor: Colors.white,
+              //backgroundColor: Colors.white,
               floatingActionButton:
                   globals.role == "Coach/Admin" ? CreateAnnouncement() : null,
               body: ListView(
                   padding: EdgeInsets.all(8.0),
-                  children: sayHi() + globals.announcementList),
+                  children: globals.announcementList),
               drawer: pd.PagesDrawer().importDrawer(context));
         });
   }
 }
-
 
 class Announcement extends StatelessWidget {
   // wanna make it look like the athletic-ish
@@ -81,37 +80,42 @@ class Announcement extends StatelessWidget {
   final int id;
   final String dbTitle;
 
-  Announcement(this.title, this.mainText, this.author,
-      this.date, this.id, this.dbTitle, {this.coverImage});
+  Announcement(
+      this.title, this.mainText, this.author, this.date, this.id, this.dbTitle,
+      {this.coverImage});
 
   @override
   Widget build(BuildContext context) {
-    Widget titleHeader = this.coverImage != null ? Container(
-        height: 200, // arbitrary for now
-        width: double.infinity,
-        child: Stack(children: [
-          Container(
-              width: double.infinity,
-              child: ColorFiltered(
-                  child: this.coverImage,
-                  colorFilter: ColorFilter.mode(
-                      Colors.black.withOpacity(0.4),
-                      BlendMode.darken))),
-          Container(
-            child: Text(this.title, style: dc.announcementTitle),
+    Widget titleHeader = this.coverImage != null
+        ? Container(
+            height: 200, // arbitrary for now
+            width: double.infinity,
+            child: Stack(children: [
+              Container(
+                  width: double.infinity,
+                  child: ColorFiltered(
+                      child: this.coverImage,
+                      colorFilter: ColorFilter.mode(
+                          Colors.black.withOpacity(0.4), BlendMode.darken))),
+              Container(
+                child: Text(this.title,
+                    style: dc.announcementTitle,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis),
+                alignment: Alignment.bottomLeft,
+                padding: EdgeInsets.all(8.0),
+              )
+            ]))
+        : Container(
+            child: Text(this.title,
+                style: dc.noImgTitle,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis),
             alignment: Alignment.bottomLeft,
-            padding: EdgeInsets.all(8.0),
-          )
-        ])) :
-          Container(
-            child: Text(this.title, style: dc.noImgTitle),
-            alignment: Alignment.bottomLeft,
-            padding: EdgeInsets.all(8.0),
+            padding: EdgeInsets.only(left: 8.0, right: 8.0),
           );
 
-
     return Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
         child: ClipRRect(
             borderRadius: BorderRadius.circular(8.0),
             child: Column(children: [

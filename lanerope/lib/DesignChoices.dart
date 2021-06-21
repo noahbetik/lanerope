@@ -32,9 +32,16 @@ AppBar bar(String title) {
 ThemeData appTheme = ThemeData(
   brightness: Brightness.light,
   primaryColor: Colors.white,
+  scaffoldBackgroundColor: Colors.white,
   accentColor: Colors.lightBlueAccent,
   buttonColor: Colors.redAccent,
   fontFamily: 'Oxygen',
+  cardTheme: CardTheme(
+    color: Colors.white,
+    elevation: 2.0,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+    margin: EdgeInsets.all(8.0),
+  )
 );
 
 TextStyle announcementTitle = new TextStyle(
