@@ -14,31 +14,37 @@ class AnnouncementView extends StatelessWidget {
   AnnouncementView(
       this.title, this.mainText, this.author, this.date, {this.coverImage});
 
+  List<Widget> articleGen() {
+    List<Widget> widgets = [];
+    if (coverImage != null){
+      widgets.add(coverImage!);
+    }
+    widgets.add(Container(
+        child: Text(title, style: dc.singleAnnouncementTitle),
+        padding: articlePadding));
+    widgets.add(Container(
+        child: Row(children: [
+          Text("Posted By: " + author, style: TextStyle(
+              fontFamily: "Oxygen",
+              fontSize: 14.0,
+              fontWeight: FontWeight.bold
+          )),
+          Text("\t\t\t" + date, style: TextStyle(
+              fontFamily: "Oxygen",
+              fontSize: 14.0,
+              fontWeight: FontWeight.w100
+          )),
+        ]),
+        padding: articlePadding));
+    widgets.add(Container(
+        child: Text(mainText, style: dc.announcementText),
+        padding: articlePadding));
+    return widgets;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: ListView(children: [
-          this.coverImage,
-          Container(
-              child: Text(title, style: dc.singleAnnouncementTitle),
-              padding: articlePadding),
-          Container(
-              child: Row(children: [
-                Text("Posted By: " + author, style: TextStyle(
-                  fontFamily: "Oxygen",
-                  fontSize: 14.0,
-                  fontWeight: FontWeight.bold
-                )),
-                Text("\t\t\t" + date, style: TextStyle(
-                    fontFamily: "Oxygen",
-                    fontSize: 14.0,
-                    fontWeight: FontWeight.w100
-                )),
-              ]),
-              padding: articlePadding),
-          Container(
-              child: Text(mainText, style: dc.announcementText),
-              padding: articlePadding)
-        ]));
+        body: ListView(children: articleGen()));
   }
 }
