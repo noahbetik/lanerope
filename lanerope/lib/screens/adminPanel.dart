@@ -27,20 +27,38 @@ String searchText = '';
 List<List<String>> names = [];
 List<List<String>> filteredNames = [];
 
+Future<List> _checkedGroups() async {
+  List inGroups = [];
+  await users.doc(globals.currentUID).get().then((snap) {
+    inGroups = snap.get("groups");
+    print("in fx");
+    print(inGroups);
+  });
+  return inGroups;
+}
+
 Future<void> getGroups() async {
   groupBoxes.clear();
+  List preChecked = await _checkedGroups();
+  print("in fx");
+  print(preChecked);
+
   QuerySnapshot snapshot = await groupWrangler.get();
   snapshot.docs.forEach((element) {
-    groupBoxes.add(GroupBox(groupName: element.id));
+    if (preChecked.contains(element.id)) {
+      groupBoxes.add(GroupBox(groupName: element.id, preChecked: true));
+    } else {
+      groupBoxes.add(GroupBox(groupName: element.id));
+    }
   });
 }
 
 Future<void> getCards() async {
-  cards.clear();
-  cards.add(SelectionCard());
   if (globals.currentUID == '') {
     globals.getUID();
   }
+  cards.clear();
+  cards.add(SelectionCard());
   await FirebaseFirestore.instance
       .collection('users')
       .doc(globals.currentUID) // sometimes null, fix
@@ -276,9 +294,11 @@ class GroupCard extends StatelessWidget {
 }
 
 class GroupBox extends StatefulWidget {
-  const GroupBox({Key? key, required this.groupName}) : super(key: key);
+  const GroupBox({Key? key, this.preChecked = false, required this.groupName})
+      : super(key: key);
 
   final String groupName;
+  final bool preChecked;
 
   getName() {
     return this.groupName;
@@ -291,24 +311,13 @@ class GroupBox extends StatefulWidget {
 class _GroupBoxState extends State<GroupBox> {
   CollectionReference users = FirebaseFirestore.instance.collection('users');
   bool checked = false;
-  List inGroups = [];
 
   @override
   void initState() {
-    String name = widget.groupName;
-    users.doc(globals.currentUID).get().then((snap) {
-      inGroups = snap.get("groups");
-      print("in fx");
-      print(inGroups);
-    });
-    print("after fx");
-    print(inGroups);
-
-    if (inGroups.contains(name)) {
+    super.initState();
+    if (widget.preChecked == true) {
       checked = true;
     }
-    setState(() {});
-    super.initState();
   }
 
   @override
