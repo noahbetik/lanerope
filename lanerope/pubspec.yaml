@@ -39,6 +39,7 @@ dependencies:
   community_material_icon: ^5.3.45
   path_provider: ^2.0.2
   image_cropper: ^1.4.0
+  table_calendar: ^3.0.0
 
 dev_dependencies:
   flutter_test:
