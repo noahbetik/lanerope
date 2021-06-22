@@ -18,7 +18,9 @@ List<String> managedGroups = ['unassigned'];
 Map allAthletes = new Map();
 StreamController<bool> complete = StreamController<bool>.broadcast();
 Stream<bool> redraw = complete.stream; // maybe wanna make this global some day
+
 bool loaded = false;
+bool subLock = false;
 
 final CollectionReference users =
     FirebaseFirestore.instance.collection('users');

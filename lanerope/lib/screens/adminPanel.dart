@@ -320,6 +320,7 @@ class _GroupBoxState extends State<GroupBox> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     String name = widget.groupName;
@@ -327,7 +328,7 @@ class _GroupBoxState extends State<GroupBox> {
     return CheckboxListTile(
       title: Text(name),
       value: checked == true,
-      onChanged: (bool? value) {
+      onChanged: globals.subLock == true ? null : (bool? value) {
         setState(() {
           checked = value! ? true : false;
         });

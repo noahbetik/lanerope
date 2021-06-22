@@ -23,6 +23,11 @@ Future<bool> loginState() async {
   return _status;
 }
 
+Future<void> lockedSubs() async {
+  final prefs = await SharedPreferences.getInstance();
+  globals.subLock = prefs.getBool("boxesLocked") ?? false; // future bool is true if logged in
+}
+
 
 class Lanerope extends StatefulWidget {
   // Create the initialization Future outside of `build`:
@@ -39,6 +44,7 @@ class _LaneropeState extends State<Lanerope> {
 
   final Future<FirebaseApp> _initialization = Firebase.initializeApp();
   final Future<bool> _login = loginState();
+  final Future<void> _subs = lockedSubs();
 
   void getAthletes(String thisUID){
     if (globals.role == 'Coach/Admin'){
@@ -51,7 +57,7 @@ class _LaneropeState extends State<Lanerope> {
     print("inside build widget");
     return FutureBuilder(
       // Initialize FlutterFire:
-      future: Future.wait([_initialization, _login]),
+      future: Future.wait([_initialization, _login, _subs]),
       builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
         // Check for errors
         if (snapshot.hasError) {
