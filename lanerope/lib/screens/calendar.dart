@@ -9,7 +9,6 @@ import 'package:lanerope/globals.dart' as globals;
 
 bool ios = Platform.isIOS;
 bool android = Platform.isAndroid;
-Map<DateTime, List> events = {}; // gotta implement events yourself
 
 class Calendar extends StatefulWidget {
   @override
@@ -24,7 +23,7 @@ class _CalendarState extends State<Calendar> {
   DateTime? _selectedDay;
 
   List _getEventsForDay(DateTime day) {
-    return events[day] ?? [];
+    return globals.events[day] ?? [];
   }
 
   @override

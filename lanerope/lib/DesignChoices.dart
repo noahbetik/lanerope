@@ -44,6 +44,9 @@ ThemeData appTheme = ThemeData(
     backgroundColor: Colors.redAccent,
   ),
   fontFamily: 'Oxygen',
+  iconTheme: IconThemeData(
+    color: Colors.black87
+  ),
   cardTheme: CardTheme(
     color: Colors.white,
     elevation: 2.0,

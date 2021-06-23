@@ -30,6 +30,8 @@ final CollectionReference announcements =
     FirebaseFirestore.instance.collection('announcements');
 final CollectionReference stats =
     FirebaseFirestore.instance.collection('stats');
+final CollectionReference calendar =
+FirebaseFirestore.instance.collection('calendar');
 
 Future<String> findRole() async {
   await users.doc(currentUID).get().then((DocumentSnapshot snapshot) {
@@ -93,6 +95,9 @@ Future<void> allInfo() async {
   }
   print("getting all info");
 }
+
+/// ********************************************************************************
+/// ANNOUNCEMENTS
 
 Future<int> announcementID() async {
   int id = 0;
@@ -168,3 +173,8 @@ void allAnnouncements() async {
   complete.add(true);
   loaded = true;
 }
+
+/// ***********************************************************************
+/// CALENDAR
+
+Map<DateTime, List> events = {}; // gotta implement events yourself

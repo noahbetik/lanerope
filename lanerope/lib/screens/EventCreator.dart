@@ -1,9 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:lanerope/DesignChoices.dart' as dc;
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
-import 'package:lanerope/Event.dart';
 import 'package:intl/intl.dart';
+import 'package:lanerope/InputChipField.dart';
+
+final CollectionReference calendar =
+    FirebaseFirestore.instance.collection('calendar');
 
 class EventCreator extends StatefulWidget {
   final String givenTitle;
@@ -25,8 +29,8 @@ class EventCreator extends StatefulWidget {
 }
 
 class _EventCreatorState extends State<EventCreator> {
-  late TextEditingController startDateGrabber;
-  late TextEditingController endDateGrabber;
+  late TextEditingController startController;
+  late TextEditingController endController;
   late TextEditingController titleText;
   final String givenTitle;
   final String givenStart;
@@ -36,16 +40,16 @@ class _EventCreatorState extends State<EventCreator> {
   _EventCreatorState(
       {this.givenTitle = '', this.givenStart = '', this.givenEnd = ''}) {
     titleText = TextEditingController(text: givenTitle);
-    startDateGrabber = TextEditingController(text: givenStart);
-    endDateGrabber = TextEditingController(text: givenEnd);
+    startController = TextEditingController(text: givenStart);
+    endController = TextEditingController(text: givenEnd);
   }
 
   @override
   void dispose() {
     // to be used later?? idk where
     titleText.dispose();
-    startDateGrabber.dispose();
-    endDateGrabber.dispose();
+    startController.dispose();
+    endController.dispose();
     super.dispose();
   }
 
@@ -62,8 +66,10 @@ class _EventCreatorState extends State<EventCreator> {
                     controller: titleText,
                     decoration: dc.formBorder("Event Title", '')),
                 SizedBox(height: 8),
+                InputChipField(),
+                SizedBox(height: 8),
                 DateTimeField(
-                  controller: startDateGrabber,
+                  controller: startController,
                   format: format,
                   decoration: dc.formBorder('Starts at...', ''),
                   onShowPicker: (context, currentValue) async {
@@ -75,19 +81,18 @@ class _EventCreatorState extends State<EventCreator> {
                     if (date != null) {
                       final time = await showTimePicker(
                         context: context,
-                        initialTime:
-                        TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
+                        initialTime: TimeOfDay.fromDateTime(
+                            currentValue ?? DateTime.now()),
                       );
                       return DateTimeField.combine(date, time);
-                    }
-                    else {
+                    } else {
                       return currentValue;
                     }
                   },
                 ),
                 SizedBox(height: 8),
                 DateTimeField(
-                  controller: endDateGrabber,
+                  controller: endController,
                   format: format,
                   decoration: dc.formBorder('Ends at...', ''),
                   onShowPicker: (context, currentValue) async {
@@ -99,16 +104,25 @@ class _EventCreatorState extends State<EventCreator> {
                     if (date != null) {
                       final time = await showTimePicker(
                         context: context,
-                        initialTime:
-                        TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
+                        initialTime: TimeOfDay.fromDateTime(
+                            currentValue ?? DateTime.now()),
                       );
                       return DateTimeField.combine(date, time);
-                    }
-                    else {
+                    } else {
                       return currentValue;
                     }
                   },
                 ),
+                SizedBox(height: 8),
+                ElevatedButton(onPressed: () {
+                  calendar.add({
+                    "title" : titleText.text,
+                    "start" : startController.text,
+                    "end" : endController.text,
+                    "groups" : [],
+                    "indvs" : []
+                  });
+                }, child: Text("Create Event"))
               ],
             )));
   }
