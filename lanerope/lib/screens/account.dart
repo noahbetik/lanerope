@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:datetime_picker_formfield/datetime_picker_formfield.dart' as dt;
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -70,10 +70,7 @@ class _AccountState extends State<Account> {
           }
         },
         child: Scaffold(
-            appBar: AppBar(
-              title: Text("Create an account"),
-              backgroundColor: Colors.blueAccent,
-            ),
+            appBar: dc.bar("Create an Account"),
             body: Container(
                 padding: EdgeInsets.all(15.0),
                 child: Form(
@@ -185,7 +182,7 @@ class _AccountState extends State<Account> {
                           },
                         ),
                       ),
-                      dt.DateTimeField(
+                      DateTimeField(
                         controller: dateGrabber,
                         format: format,
                         decoration:

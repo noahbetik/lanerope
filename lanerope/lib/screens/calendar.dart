@@ -1,7 +1,9 @@
+import 'dart:collection';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:lanerope/pagesDrawer.dart' as pd;
+import 'package:lanerope/screens/EventCreator.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:lanerope/globals.dart' as globals;
 
@@ -30,8 +32,30 @@ class _CalendarState extends State<Calendar> {
     return Scaffold(
         appBar: AppBar(
           title: Text("Calendar"),
-          actions: globals.role == "Coach/Admin" ? [IconButton(onPressed: () {}, icon: Icon(Icons.add))] : null,
+          actions: globals.role == "Coach/Admin"
+              ? [
+                  IconButton(
+                      onPressed: () {
+                        DateTime now = DateTime.now();
+                        DateTime oneHour = now.add(Duration(hours: 1));
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) => EventCreator('', now, oneHour)));
+                      },
+                      icon: Icon(Icons.add))
+                ]
+              : null,
         ),
+        floatingActionButton: globals.role == "Coach/Admin"
+            ? FloatingActionButton(
+                child: const Icon(Icons.date_range),
+                onPressed: () {
+                  DateTime now = DateTime.now();
+                  DateTime oneHour = now.add(Duration(hours: 1));
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => EventCreator('', now, oneHour)));
+                },
+              )
+            : null,
         body: TableCalendar(
           firstDay: DateTime.utc(2020, 9, 1),
           lastDay: DateTime.utc(2022, 06, 31),

@@ -7,7 +7,7 @@ InputDecoration formBorder(String hint, String helper) {
         borderRadius: BorderRadius.all(Radius.circular(8.0)),
       ),
       focusedBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: Colors.blue, width: 2.0),
+        borderSide: BorderSide(color: Colors.lightBlue, width: 2.0),
         borderRadius: BorderRadius.all(Radius.circular(8.0)),
       ),
       focusedErrorBorder: OutlineInputBorder(
@@ -35,6 +35,14 @@ ThemeData appTheme = ThemeData(
   scaffoldBackgroundColor: Colors.white,
   accentColor: Colors.lightBlueAccent,
   buttonColor: Colors.redAccent,
+  elevatedButtonTheme: ElevatedButtonThemeData(
+    style: ElevatedButton.styleFrom(
+      primary: Colors.lightBlue
+    )
+  ),
+  floatingActionButtonTheme: FloatingActionButtonThemeData(
+    backgroundColor: Colors.redAccent,
+  ),
   fontFamily: 'Oxygen',
   cardTheme: CardTheme(
     color: Colors.white,

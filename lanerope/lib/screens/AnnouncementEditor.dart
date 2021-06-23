@@ -104,7 +104,7 @@ class EditorState extends State<AnnouncementEditor> {
             padding: EdgeInsets.only(left: 8.0, right: 8.0, top: 8.0),
             child: SingleChildScrollView(
                 child: Column(children: [
-              TextField(
+              TextFormField(
                   // eventually wanna replace these with app-level theme constants
                   maxLength: 100, // idk
                   controller: titleText,

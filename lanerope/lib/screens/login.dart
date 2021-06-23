@@ -48,10 +48,7 @@ class _LoginState extends State<Login> {
       },
       child: Scaffold(
           key: _scaffoldKey,
-          appBar: AppBar(
-            title: Text("Login"),
-            backgroundColor: Colors.blueAccent,
-          ),
+          appBar: dc.bar("Login"),
           body: Container(
               padding: EdgeInsets.all(15.0),
               child: Column(children: <Widget>[
