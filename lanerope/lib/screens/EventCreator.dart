@@ -36,6 +36,7 @@ class _EventCreatorState extends State<EventCreator> {
   final String givenStart;
   final String givenEnd;
   final format = DateFormat("yyyy-MM-dd HH:mm");
+  List<Widget> mainSpace = [];
 
   _EventCreatorState(
       {this.givenTitle = '', this.givenStart = '', this.givenEnd = ''}) {
@@ -53,77 +54,98 @@ class _EventCreatorState extends State<EventCreator> {
     super.dispose();
   }
 
+  List<Widget> allocator() {
+    print("redefining space");
+    if (inSearch == true) {
+      return [
+        TextFormField(
+            maxLength: 100, // idk
+            controller: titleText,
+            decoration: dc.formBorder("Event Title", '')),
+        SizedBox(height: 8),
+        InputChipField(),
+        buildList()
+      ];
+    } else {
+      return [
+        TextFormField(
+            maxLength: 100, // idk
+            controller: titleText,
+            decoration: dc.formBorder("Event Title", '')),
+        SizedBox(height: 8),
+        InputChipField(),
+        SizedBox(height: 8),
+        DateTimeField(
+          controller: startController,
+          format: format,
+          decoration: dc.formBorder('Starts at...', ''),
+          onShowPicker: (context, currentValue) async {
+            final date = await showDatePicker(
+                context: context,
+                firstDate: DateTime(2021),
+                initialDate: currentValue ?? DateTime.now(),
+                lastDate: DateTime(2022));
+            if (date != null) {
+              final time = await showTimePicker(
+                context: context,
+                initialTime:
+                    TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
+              );
+              return DateTimeField.combine(date, time);
+            } else {
+              return currentValue;
+            }
+          },
+        ),
+        SizedBox(height: 8),
+        DateTimeField(
+          controller: endController,
+          format: format,
+          decoration: dc.formBorder('Ends at...', ''),
+          onShowPicker: (context, currentValue) async {
+            final date = await showDatePicker(
+                context: context,
+                firstDate: DateTime(2021),
+                initialDate: currentValue ?? DateTime.now(),
+                lastDate: DateTime(2022));
+            if (date != null) {
+              final time = await showTimePicker(
+                context: context,
+                initialTime:
+                    TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
+              );
+              return DateTimeField.combine(date, time);
+            } else {
+              return currentValue;
+            }
+          },
+        ),
+        SizedBox(height: 8),
+        ElevatedButton(
+            onPressed: () {
+              calendar.add({
+                "title": titleText.text,
+                "start": startController.text,
+                "end": endController.text,
+                "groups": [],
+                "indvs": []
+              });
+            },
+            child: Text("Create Event"))
+      ];
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: dc.bar("Create an Event"),
-        body: Container(
-            padding: EdgeInsets.only(left: 8.0, right: 8.0, top: 8.0),
-            child: Column(
-              children: [
-                TextFormField(
-                    maxLength: 100, // idk
-                    controller: titleText,
-                    decoration: dc.formBorder("Event Title", '')),
-                SizedBox(height: 8),
-                InputChipField(),
-                SizedBox(height: 8),
-                DateTimeField(
-                  controller: startController,
-                  format: format,
-                  decoration: dc.formBorder('Starts at...', ''),
-                  onShowPicker: (context, currentValue) async {
-                    final date = await showDatePicker(
-                        context: context,
-                        firstDate: DateTime(2021),
-                        initialDate: currentValue ?? DateTime.now(),
-                        lastDate: DateTime(2022));
-                    if (date != null) {
-                      final time = await showTimePicker(
-                        context: context,
-                        initialTime: TimeOfDay.fromDateTime(
-                            currentValue ?? DateTime.now()),
-                      );
-                      return DateTimeField.combine(date, time);
-                    } else {
-                      return currentValue;
-                    }
-                  },
-                ),
-                SizedBox(height: 8),
-                DateTimeField(
-                  controller: endController,
-                  format: format,
-                  decoration: dc.formBorder('Ends at...', ''),
-                  onShowPicker: (context, currentValue) async {
-                    final date = await showDatePicker(
-                        context: context,
-                        firstDate: DateTime(2021),
-                        initialDate: currentValue ?? DateTime.now(),
-                        lastDate: DateTime(2022));
-                    if (date != null) {
-                      final time = await showTimePicker(
-                        context: context,
-                        initialTime: TimeOfDay.fromDateTime(
-                            currentValue ?? DateTime.now()),
-                      );
-                      return DateTimeField.combine(date, time);
-                    } else {
-                      return currentValue;
-                    }
-                  },
-                ),
-                SizedBox(height: 8),
-                ElevatedButton(onPressed: () {
-                  calendar.add({
-                    "title" : titleText.text,
-                    "start" : startController.text,
-                    "end" : endController.text,
-                    "groups" : [],
-                    "indvs" : []
-                  });
-                }, child: Text("Create Event"))
-              ],
-            )));
+    return StreamBuilder(
+        stream: signal,
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          return Scaffold(
+              appBar: dc.bar("Create an Event"),
+              body: Container(
+                  padding: EdgeInsets.only(left: 8.0, right: 8.0, top: 8.0),
+                  child: Column(children: allocator())));
+        });
   }
 }
