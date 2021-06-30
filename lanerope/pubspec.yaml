@@ -35,11 +35,12 @@ dependencies:
   string_validator: ^0.3.0
   datetime_picker_formfield: ^2.0.0
   image_picker: ^0.8.0+3
-  provider: ^5.0.0
   community_material_icon: ^5.3.45
   path_provider: ^2.0.2
   image_cropper: ^1.4.0
   table_calendar: ^3.0.0
+  equatable: ^2.0.3
+  flutter_bloc: ^7.0.0
 
 dev_dependencies:
   flutter_test:

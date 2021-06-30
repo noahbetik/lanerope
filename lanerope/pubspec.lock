@@ -8,6 +8,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.6.1"
+  bloc:
+    dependency: transitive
+    description:
+      name: bloc
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "7.0.0"
   boolean_selector:
     dependency: transitive
     description:
@@ -92,6 +99,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.1"
+  equatable:
+    dependency: "direct main"
+    description:
+      name: equatable
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.3"
   expandable:
     dependency: "direct main"
     description:
@@ -188,6 +202,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_bloc:
+    dependency: "direct main"
+    description:
+      name: flutter_bloc
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "7.0.1"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -232,7 +253,7 @@ packages:
       name: image_picker
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.8.0+4"
+    version: "0.8.1+2"
   image_picker_for_web:
     dependency: transitive
     description:
@@ -353,7 +374,7 @@ packages:
     source: hosted
     version: "4.2.1"
   provider:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: provider
       url: "https://pub.dartlang.org"
@@ -454,7 +475,7 @@ packages:
       name: table_calendar
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.0.0"
+    version: "3.0.1"
   term_glyph:
     dependency: transitive
     description:
@@ -489,7 +510,7 @@ packages:
       name: win32
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.2.2"
+    version: "2.2.4"
   xdg_directories:
     dependency: transitive
     description:
