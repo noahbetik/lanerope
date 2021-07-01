@@ -14,6 +14,10 @@ import 'ICFState.dart';
 
 List<EntityChip> chips = [];
 List<Widget> displayChips = [];
+String searchText = '';
+List<String> names = ["AG2", "AG3", "AG4", "Novice2", "CoachNoah"]; // db pull
+List<String> filteredNames = [];
+
 final CollectionReference calendar =
     FirebaseFirestore.instance.collection('calendar');
 
@@ -25,8 +29,8 @@ Widget chipGen() {
   return Wrap(children: displayChips, spacing: 8.0,);
 }
 
-Widget buildList() {
-  print("makin a list");
+
+void checkFilter() {
   if (searchText.isNotEmpty) {
     List<String> tempList = [];
     for (int i = 0; i < filteredNames.length; i++) {
@@ -36,6 +40,11 @@ Widget buildList() {
     }
     filteredNames = tempList;
   }
+  print(filteredNames);
+}
+
+Widget buildList() {
+  checkFilter();
   return ListView.builder(
     shrinkWrap: true,
     itemCount: filteredNames.length,
@@ -106,11 +115,9 @@ class EventCreator extends StatelessWidget {
                     keyboardType: TextInputType.multiline,
                     controller: chipCtrl,
                     onChanged: (value) {
-                      print(filteredNames);
                       BlocProvider.of<ICFBloc>(context).add(ShowPredictions());
                       if (value.endsWith(' ')) {
                         // wanted newline but doesn't work?
-                        print("new chip");
                         String text = chipCtrl.text
                             .substring(0, chipCtrl.text.length - 1);
                         // get every except newline
@@ -119,11 +126,19 @@ class EventCreator extends StatelessWidget {
                         chipCtrl.clear();
                         BlocProvider.of<ICFBloc>(context).add(ShowFields());
                       }
+                      else if (chipCtrl.text.isEmpty){
+                        filteredNames = names;
+                        searchText = '';
+                      }
+                      else {
+                        filteredNames = names;
+                        searchText = chipCtrl.text;
+                      }
                     },
                     decoration: dc.formBorder("People/Groups", ''))),
                 BlocBuilder<ICFBloc, ICFState>(builder: (_, icfState) {
                   if (icfState is PredictionsShown) {
-                    return Text("hehe"); // replace with predictions list
+                    return buildList(); // replace with predictions list
                   } else {
                     return ListView(
                       shrinkWrap: true,
