@@ -22,7 +22,7 @@ Widget chipGen() {
   for (int i=0; i<chips.length; i++){
     displayChips.add(chips[i].chip);
   }
-  return Wrap(children: displayChips);
+  return Wrap(children: displayChips, spacing: 8.0,);
 }
 
 Widget buildList() {
@@ -78,8 +78,7 @@ class EventCreator extends StatelessWidget {
   late final TextEditingController titleText;
   final TextEditingController chipCtrl = TextEditingController();
 
-  EventCreator(
-      {this.givenTitle = '', this.givenStart = '', this.givenEnd = ''}) {
+  EventCreator(this.givenTitle, this.givenStart, this.givenEnd) {
     titleText = TextEditingController(text: givenTitle);
     startController = TextEditingController(text: givenStart);
     endController = TextEditingController(text: givenEnd);
@@ -108,6 +107,7 @@ class EventCreator extends StatelessWidget {
                     controller: chipCtrl,
                     onChanged: (value) {
                       print(filteredNames);
+                      BlocProvider.of<ICFBloc>(context).add(ShowPredictions());
                       if (value.endsWith(' ')) {
                         // wanted newline but doesn't work?
                         print("new chip");

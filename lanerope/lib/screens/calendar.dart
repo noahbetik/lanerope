@@ -39,7 +39,7 @@ class _CalendarState extends State<Calendar> {
                         DateTime now = DateTime.now();
                         DateTime oneHour = now.add(Duration(hours: 1));
                         Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => EventCreator('', now, oneHour)));
+                            MaterialPageRoute(builder: (context) => ec2.EventCreator('', now.toString(), oneHour.toString())));
                       },
                       icon: Icon(Icons.add))
                 ]
@@ -52,7 +52,7 @@ class _CalendarState extends State<Calendar> {
                   DateTime now = DateTime.now();
                   DateTime oneHour = now.add(Duration(hours: 1));
                   Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => ec2.EventCreator()));
+                      MaterialPageRoute(builder: (context) => ec2.EventCreator('', now.toString(), oneHour.toString())));
                 },
               )
             : null,
