@@ -13,8 +13,17 @@ import 'ICFBloc.dart';
 import 'ICFState.dart';
 
 List<EntityChip> chips = [];
+List<Widget> displayChips = [];
 final CollectionReference calendar =
     FirebaseFirestore.instance.collection('calendar');
+
+Widget chipGen() {
+  displayChips.clear();
+  for (int i=0; i<chips.length; i++){
+    displayChips.add(chips[i].chip);
+  }
+  return Wrap(children: displayChips);
+}
 
 Widget buildList() {
   print("makin a list");
@@ -28,6 +37,7 @@ Widget buildList() {
     filteredNames = tempList;
   }
   return ListView.builder(
+    shrinkWrap: true,
     itemCount: filteredNames.length,
     itemBuilder: (BuildContext context, int index) {
       return new ListTile(
@@ -42,7 +52,7 @@ class EntityChip {
   late InputChip chip;
   late String name;
 
-  EntityChip(String text) {
+  EntityChip(String text, BuildContext context) {
     this.name = text;
     this.chip = InputChip(
         label: Text(text),
@@ -51,7 +61,7 @@ class EntityChip {
           chips.removeWhere((EntityChip c) {
             return c.name == text;
           });
-          ctrl.add(true);
+          BlocProvider.of<ICFBloc>(context).add(ShowFields());
         });
   }
 }
@@ -77,104 +87,111 @@ class EventCreator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-        create: (_) => ICFBloc(FieldsShown()),
-        child: ListView(
-          children: [
-            TextFormField(
-                maxLength: 100, // idk
-                controller: titleText,
-                decoration: dc.formBorder("Event Title", '')),
-            SizedBox(height: 8),
-            TextFormField(
-                focusNode: _focus,
-                keyboardType: TextInputType.multiline,
-                controller: chipCtrl,
-                onChanged: (value) {
-                  print(filteredNames);
-                  if (value.endsWith(' ')) {
-                    // wanted newline but doesn't work?
-                    print("new chip");
-                    String text =
-                        chipCtrl.text.substring(0, chipCtrl.text.length - 1);
-                    // get every except newline
-                    print(text);
-                    chips.add(EntityChip(text));
-                    chipCtrl.clear();
-                    BlocProvider.of<ICFBloc>(context).add(ShowFields());
+    return Scaffold(
+        appBar: dc.bar("Create an Event"),
+        body: BlocProvider(
+            create: (_) => ICFBloc(FieldsShown()),
+            lazy: false,
+            child: ListView(
+              shrinkWrap: true,
+              padding: EdgeInsets.only(left: 8.0, right: 8.0, top: 8.0),
+              children: [
+                TextFormField(
+                    maxLength: 100, // idk
+                    controller: titleText,
+                    decoration: dc.formBorder("Event Title", '')),
+                SizedBox(height: 8),
+                Builder(
+                    builder: (context) => TextFormField(
+                    focusNode: _focus,
+                    keyboardType: TextInputType.multiline,
+                    controller: chipCtrl,
+                    onChanged: (value) {
+                      print(filteredNames);
+                      if (value.endsWith(' ')) {
+                        // wanted newline but doesn't work?
+                        print("new chip");
+                        String text = chipCtrl.text
+                            .substring(0, chipCtrl.text.length - 1);
+                        // get every except newline
+                        print(text);
+                        chips.add(EntityChip(text, context));
+                        chipCtrl.clear();
+                        BlocProvider.of<ICFBloc>(context).add(ShowFields());
+                      }
+                    },
+                    decoration: dc.formBorder("People/Groups", ''))),
+                BlocBuilder<ICFBloc, ICFState>(builder: (_, icfState) {
+                  if (icfState is PredictionsShown) {
+                    return Text("hehe"); // replace with predictions list
+                  } else {
+                    return ListView(
+                      shrinkWrap: true,
+                      children: [
+                        chipGen(),
+                        SizedBox(height: 8),
+                        DateTimeField(
+                          controller: startController,
+                          format: format,
+                          decoration: dc.formBorder('Starts at...', ''),
+                          onShowPicker: (context, currentValue) async {
+                            final date = await showDatePicker(
+                                context: context,
+                                firstDate: DateTime(2021),
+                                initialDate: currentValue ?? DateTime.now(),
+                                lastDate: DateTime(2022));
+                            if (date != null) {
+                              final time = await showTimePicker(
+                                context: context,
+                                initialTime: TimeOfDay.fromDateTime(
+                                    currentValue ?? DateTime.now()),
+                              );
+                              return DateTimeField.combine(date, time);
+                            } else {
+                              return currentValue;
+                            }
+                          },
+                        ),
+                        SizedBox(height: 8),
+                        DateTimeField(
+                          controller: endController,
+                          format: format,
+                          decoration: dc.formBorder('Ends at...', ''),
+                          onShowPicker: (context, currentValue) async {
+                            final date = await showDatePicker(
+                                context: context,
+                                firstDate: DateTime(2021),
+                                initialDate: currentValue ?? DateTime.now(),
+                                lastDate: DateTime(2022));
+                            if (date != null) {
+                              final time = await showTimePicker(
+                                context: context,
+                                initialTime: TimeOfDay.fromDateTime(
+                                    currentValue ?? DateTime.now()),
+                              );
+                              return DateTimeField.combine(date, time);
+                            } else {
+                              return currentValue;
+                            }
+                          },
+                        ),
+                        SizedBox(height: 8),
+                        ElevatedButton(
+                            onPressed: () {
+                              calendar.add({
+                                "title": titleText.text,
+                                "start": startController.text,
+                                "end": endController.text,
+                                "groups": [],
+                                "indvs": []
+                              });
+                            },
+                            child: Text("Create Event"))
+                      ],
+                    );
                   }
-                },
-                decoration: dc.formBorder("People/Groups", '')),
-            BlocBuilder<ICFBloc, ICFState>(builder: (_, icfState) {
-              if (icfState is PredictionsShown) {
-                return Text("hehe"); // replace with predictions list
-              } else {
-                return ListView(
-                  children: [
-                    buildList(),
-                    SizedBox(height: 8),
-                    DateTimeField(
-                      controller: startController,
-                      format: format,
-                      decoration: dc.formBorder('Starts at...', ''),
-                      onShowPicker: (context, currentValue) async {
-                        final date = await showDatePicker(
-                            context: context,
-                            firstDate: DateTime(2021),
-                            initialDate: currentValue ?? DateTime.now(),
-                            lastDate: DateTime(2022));
-                        if (date != null) {
-                          final time = await showTimePicker(
-                            context: context,
-                            initialTime: TimeOfDay.fromDateTime(
-                                currentValue ?? DateTime.now()),
-                          );
-                          return DateTimeField.combine(date, time);
-                        } else {
-                          return currentValue;
-                        }
-                      },
-                    ),
-                    SizedBox(height: 8),
-                    DateTimeField(
-                      controller: endController,
-                      format: format,
-                      decoration: dc.formBorder('Ends at...', ''),
-                      onShowPicker: (context, currentValue) async {
-                        final date = await showDatePicker(
-                            context: context,
-                            firstDate: DateTime(2021),
-                            initialDate: currentValue ?? DateTime.now(),
-                            lastDate: DateTime(2022));
-                        if (date != null) {
-                          final time = await showTimePicker(
-                            context: context,
-                            initialTime: TimeOfDay.fromDateTime(
-                                currentValue ?? DateTime.now()),
-                          );
-                          return DateTimeField.combine(date, time);
-                        } else {
-                          return currentValue;
-                        }
-                      },
-                    ),
-                    SizedBox(height: 8),
-                    ElevatedButton(
-                        onPressed: () {
-                          calendar.add({
-                            "title": titleText.text,
-                            "start": startController.text,
-                            "end": endController.text,
-                            "groups": [],
-                            "indvs": []
-                          });
-                        },
-                        child: Text("Create Event"))
-                  ],
-                );
-              }
-            })
-          ],
-        ));
+                })
+              ],
+            )));
   }
 }

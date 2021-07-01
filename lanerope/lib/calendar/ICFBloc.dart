@@ -10,10 +10,12 @@ class ICFBloc extends Bloc<ICFEvent, ICFState> {
   Stream<ICFState> mapEventToState(ICFEvent event) async* {
     if (event is ShowFields){
       // show the regular screen
+      print("going to fields");
       yield FieldsShown();
     }
     else if (event is ShowPredictions){
       // show the list of predictions from text controller
+      print("going to predictions");
       yield PredictionsShown();
     }
   }

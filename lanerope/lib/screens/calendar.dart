@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:lanerope/pagesDrawer.dart' as pd;
 import 'package:lanerope/screens/EventCreator.dart';
+import 'package:lanerope/calendar/EventCreator.dart' as ec2;
 import 'package:table_calendar/table_calendar.dart';
 import 'package:lanerope/globals.dart' as globals;
 
@@ -51,7 +52,7 @@ class _CalendarState extends State<Calendar> {
                   DateTime now = DateTime.now();
                   DateTime oneHour = now.add(Duration(hours: 1));
                   Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => EventCreator('', now, oneHour)));
+                      MaterialPageRoute(builder: (context) => ec2.EventCreator()));
                 },
               )
             : null,
