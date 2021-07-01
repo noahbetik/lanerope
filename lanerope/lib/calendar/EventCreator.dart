@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:lanerope/DesignChoices.dart' as dc;
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:intl/intl.dart';
-import 'package:lanerope/InputChipField.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:equatable/equatable.dart';
 import 'package:lanerope/calendar/ICFEvent.dart';
 
 import 'ICFBloc.dart';
@@ -166,6 +164,7 @@ class EventCreator extends StatelessWidget {
                                 initialTime: TimeOfDay.fromDateTime(
                                     currentValue ?? DateTime.now()),
                               );
+                              //startController.text = DateTimeField.combine(date, time).toString();
                               return DateTimeField.combine(date, time);
                             } else {
                               return currentValue;
@@ -180,9 +179,10 @@ class EventCreator extends StatelessWidget {
                           onShowPicker: (context, currentValue) async {
                             final date = await showDatePicker(
                                 context: context,
-                                firstDate: DateTime(2021),
-                                initialDate: currentValue ?? DateTime.now(),
+                                firstDate: DateTime.parse(startController.text),
+                                initialDate: currentValue ?? DateTime.parse(startController.text),
                                 lastDate: DateTime(2022));
+                            // need more logic to ensure end date is after start date
                             if (date != null) {
                               final time = await showTimePicker(
                                 context: context,
