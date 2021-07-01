@@ -43,20 +43,6 @@ void checkFilter() {
   print(filteredNames);
 }
 
-Widget buildList() {
-  checkFilter();
-  return ListView.builder(
-    shrinkWrap: true,
-    itemCount: filteredNames.length,
-    itemBuilder: (BuildContext context, int index) {
-      return new ListTile(
-        title: Text(filteredNames[index]),
-        onTap: () => print(filteredNames[index]),
-      );
-    },
-  );
-}
-
 class EntityChip {
   late InputChip chip;
   late String name;
@@ -92,6 +78,25 @@ class EventCreator extends StatelessWidget {
     startController = TextEditingController(text: givenStart);
     endController = TextEditingController(text: givenEnd);
   } // fix for datetimes
+
+  Widget buildList(BuildContext context) {
+    checkFilter();
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: filteredNames.length,
+      itemBuilder: (BuildContext context, int index) {
+        return new ListTile(
+            title: Text(filteredNames[index]),
+            onTap: () {
+              print(filteredNames[index]);
+              chips.add(EntityChip(filteredNames[index], context));
+              chipCtrl.clear();
+              BlocProvider.of<ICFBloc>(context).add(ShowFields());
+            }
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -138,7 +143,7 @@ class EventCreator extends StatelessWidget {
                     decoration: dc.formBorder("People/Groups", ''))),
                 BlocBuilder<ICFBloc, ICFState>(builder: (_, icfState) {
                   if (icfState is PredictionsShown) {
-                    return buildList(); // replace with predictions list
+                    return buildList(context); // replace with predictions list
                   } else {
                     return ListView(
                       shrinkWrap: true,
