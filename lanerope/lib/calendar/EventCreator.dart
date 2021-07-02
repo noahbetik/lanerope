@@ -21,12 +21,14 @@ final CollectionReference calendar =
 
 Widget chipGen() {
   displayChips.clear();
-  for (int i=0; i<chips.length; i++){
+  for (int i = 0; i < chips.length; i++) {
     displayChips.add(chips[i].chip);
   }
-  return Wrap(children: displayChips, spacing: 8.0,);
+  return Wrap(
+    children: displayChips,
+    spacing: 8.0,
+  );
 }
-
 
 void checkFilter() {
   if (searchText.isNotEmpty) {
@@ -90,8 +92,7 @@ class EventCreator extends StatelessWidget {
               chips.add(EntityChip(filteredNames[index], context));
               chipCtrl.clear();
               BlocProvider.of<ICFBloc>(context).add(ShowFields());
-            }
-        );
+            });
       },
     );
   }
@@ -114,101 +115,118 @@ class EventCreator extends StatelessWidget {
                 SizedBox(height: 8),
                 Builder(
                     builder: (context) => TextFormField(
-                    focusNode: _focus,
-                    keyboardType: TextInputType.multiline,
-                    controller: chipCtrl,
-                    onChanged: (value) {
-                      BlocProvider.of<ICFBloc>(context).add(ShowPredictions());
-                      if (value.endsWith(' ')) {
-                        // wanted newline but doesn't work?
-                        String text = chipCtrl.text
-                            .substring(0, chipCtrl.text.length - 1);
-                        // get every except newline
-                        print(text);
-                        chips.add(EntityChip(text, context));
-                        chipCtrl.clear();
-                        BlocProvider.of<ICFBloc>(context).add(ShowFields());
-                      }
-                      else if (chipCtrl.text.isEmpty){
-                        filteredNames = names;
-                        searchText = '';
-                      }
-                      else {
-                        filteredNames = names;
-                        searchText = chipCtrl.text;
-                      }
-                    },
-                    decoration: dc.formBorder("People/Groups", ''))),
+                        focusNode: _focus,
+                        keyboardType: TextInputType.multiline,
+                        controller: chipCtrl,
+                        onChanged: (value) {
+                          BlocProvider.of<ICFBloc>(context)
+                              .add(ShowPredictions());
+                          if (value.endsWith(' ')) {
+                            // wanted newline but doesn't work?
+                            String text = chipCtrl.text
+                                .substring(0, chipCtrl.text.length - 1);
+                            // get every except newline
+                            print(text);
+                            chips.add(EntityChip(text, context));
+                            chipCtrl.clear();
+                            BlocProvider.of<ICFBloc>(context).add(ShowFields());
+                          } else if (chipCtrl.text.isEmpty) {
+                            filteredNames = names;
+                            searchText = '';
+                          } else {
+                            filteredNames = names;
+                            searchText = chipCtrl.text;
+                          }
+                        },
+                        decoration: dc.formBorder("People/Groups", ''))),
                 BlocBuilder<ICFBloc, ICFState>(builder: (_, icfState) {
+                  final _formKey = GlobalKey<FormState>();
                   if (icfState is PredictionsShown) {
                     return buildList(context); // replace with predictions list
                   } else {
-                    return ListView(
-                      shrinkWrap: true,
-                      children: [
-                        chipGen(),
-                        SizedBox(height: 8),
-                        DateTimeField(
-                          controller: startController,
-                          format: format,
-                          decoration: dc.formBorder('Starts at...', ''),
-                          onShowPicker: (context, currentValue) async {
-                            final date = await showDatePicker(
-                                context: context,
-                                firstDate: DateTime(2021),
-                                initialDate: currentValue ?? DateTime.now(),
-                                lastDate: DateTime(2022));
-                            if (date != null) {
-                              final time = await showTimePicker(
-                                context: context,
-                                initialTime: TimeOfDay.fromDateTime(
-                                    currentValue ?? DateTime.now()),
-                              );
-                              //startController.text = DateTimeField.combine(date, time).toString();
-                              return DateTimeField.combine(date, time);
-                            } else {
-                              return currentValue;
-                            }
-                          },
-                        ),
-                        SizedBox(height: 8),
-                        DateTimeField(
-                          controller: endController,
-                          format: format,
-                          decoration: dc.formBorder('Ends at...', ''),
-                          onShowPicker: (context, currentValue) async {
-                            final date = await showDatePicker(
-                                context: context,
-                                firstDate: DateTime.parse(startController.text),
-                                initialDate: currentValue ?? DateTime.parse(startController.text),
-                                lastDate: DateTime(2022));
-                            // need more logic to ensure end date is after start date
-                            if (date != null) {
-                              final time = await showTimePicker(
-                                context: context,
-                                initialTime: TimeOfDay.fromDateTime(
-                                    currentValue ?? DateTime.now()),
-                              );
-                              return DateTimeField.combine(date, time);
-                            } else {
-                              return currentValue;
-                            }
-                          },
-                        ),
-                        SizedBox(height: 8),
-                        ElevatedButton(
-                            onPressed: () {
-                              calendar.add({
-                                "title": titleText.text,
-                                "start": startController.text,
-                                "end": endController.text,
-                                "groups": [],
-                                "indvs": []
-                              });
-                            },
-                            child: Text("Create Event"))
-                      ],
-                    );
+                    return Form(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            chipGen(),
+                            SizedBox(height: 8),
+                            DateTimeField(
+                              controller: startController,
+                              format: format,
+                              decoration: dc.formBorder('Starts at...', ''),
+                              validator: (value) {
+                                if (endController.text.isNotEmpty &&
+                                    DateTime.parse(endController.text)
+                                        .isBefore(value!)) {
+                                  return "End date/time must be after start date/time";
+                                }
+                                return null;
+                              },
+                              onShowPicker: (context, currentValue) async {
+                                final date = await showDatePicker(
+                                    context: context,
+                                    firstDate: DateTime(2021),
+                                    initialDate: currentValue ?? DateTime.now(),
+                                    lastDate: DateTime(2022));
+                                if (date != null) {
+                                  final time = await showTimePicker(
+                                    context: context,
+                                    initialTime: TimeOfDay.fromDateTime(
+                                        currentValue ?? DateTime.now()),
+                                  );
+                                  //startController.text = DateTimeField.combine(date, time).toString();
+                                  return DateTimeField.combine(date, time);
+                                } else {
+                                  return currentValue;
+                                }
+                              },
+                            ),
+                            SizedBox(height: 8),
+                            DateTimeField(
+                              controller: endController,
+                              format: format,
+                              decoration: dc.formBorder('Ends at...', ''),
+                              onShowPicker: (context, currentValue) async {
+                                currentValue =
+                                    DateTime.parse(startController.text);
+                                final date = await showDatePicker(
+                                    context: context,
+                                    firstDate: currentValue,
+                                    initialDate: currentValue,
+                                    lastDate: DateTime(2022));
+                                // need more logic to ensure end date is after start date
+                                if (date != null) {
+                                  final time = await showTimePicker(
+                                    context: context,
+                                    initialTime:
+                                        TimeOfDay.fromDateTime(currentValue),
+                                  );
+                                  return DateTimeField.combine(date, time);
+                                } else {
+                                  return currentValue;
+                                }
+                              },
+                            ),
+                            SizedBox(height: 8),
+                            ElevatedButton(
+                                onPressed: () {
+                                  if (_formKey.currentState!.validate()) {
+                                    calendar.add({
+                                      "title": titleText.text,
+                                      "start": startController.text,
+                                      "end": endController.text,
+                                      "groups": [],
+                                      "indvs": []
+                                    });
+                                    Navigator.pop(context);
+                                  }
+                                  else {
+                                    print("problem time");
+                                  }
+                                },
+                                child: Text("Create Event"))
+                          ],
+                        ));
                   }
                 })
               ],

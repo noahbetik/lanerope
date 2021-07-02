@@ -108,6 +108,7 @@ class EditorState extends State<AnnouncementEditor> {
                   // eventually wanna replace these with app-level theme constants
                   maxLength: 100, // idk
                   controller: titleText,
+                  textCapitalization: TextCapitalization.words,
                   decoration: dc.formBorder("Title", '')),
               SingleChildScrollView(
                 padding: EdgeInsets.zero,
@@ -117,6 +118,7 @@ class EditorState extends State<AnnouncementEditor> {
                     // idk
                     controller: mainText,
                     keyboardType: TextInputType.multiline,
+                    textCapitalization: TextCapitalization.sentences,
                     decoration: dc.formBorder('Announcement Text', '')),
               ),
               Container(
