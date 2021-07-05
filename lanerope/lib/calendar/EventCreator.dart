@@ -6,6 +6,7 @@ import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lanerope/calendar/ICFEvent.dart';
+import 'package:lanerope/globals.dart' as globals;
 
 import 'ICFBloc.dart';
 import 'ICFState.dart';
@@ -13,7 +14,7 @@ import 'ICFState.dart';
 List<EntityChip> chips = [];
 List<Widget> displayChips = [];
 String searchText = '';
-List<String> names = ["AG2", "AG3", "AG4", "Novice2", "CoachNoah"]; // db pull
+List<String> names = []; // db pull
 List<String> filteredNames = [];
 
 final CollectionReference calendar =
@@ -27,6 +28,7 @@ Widget chipGen() {
   return Wrap(
     children: displayChips,
     spacing: 8.0,
+    alignment: WrapAlignment.start
   );
 }
 
@@ -41,6 +43,13 @@ void checkFilter() {
     filteredNames = tempList;
   }
   print(filteredNames);
+}
+
+void findGroupsPeople() {
+  names = globals.managedGroups;
+  globals.allAthletes.forEach((key, value) {
+    names.add(value[2]);
+  });
 }
 
 class EntityChip {
@@ -74,6 +83,8 @@ class EventCreator extends StatelessWidget {
   final TextEditingController chipCtrl = TextEditingController();
 
   EventCreator(this.givenTitle, this.givenStart, this.givenEnd) {
+    chips.clear();
+    displayChips.clear();
     titleText = TextEditingController(text: givenTitle);
     startController = TextEditingController(text: givenStart);
     endController = TextEditingController(text: givenEnd);
@@ -84,7 +95,7 @@ class EventCreator extends StatelessWidget {
     return ListView.builder(
       shrinkWrap: true,
       itemCount: filteredNames.length,
-      itemBuilder: (BuildContext context, int index) {
+      itemBuilder: (badContext, int index) {
         return new ListTile(
             title: Text(filteredNames[index]),
             onTap: () {
@@ -99,6 +110,9 @@ class EventCreator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (names.isEmpty) {
+      findGroupsPeople();
+    }
     return Scaffold(
         appBar: dc.bar("Create an Event"),
         body: BlocProvider(
@@ -133,6 +147,7 @@ class EventCreator extends StatelessWidget {
                           } else if (chipCtrl.text.isEmpty) {
                             filteredNames = names;
                             searchText = '';
+                            BlocProvider.of<ICFBloc>(context).add(ShowFields());
                           } else {
                             filteredNames = names;
                             searchText = chipCtrl.text;
@@ -142,7 +157,7 @@ class EventCreator extends StatelessWidget {
                 BlocBuilder<ICFBloc, ICFState>(builder: (_, icfState) {
                   final _formKey = GlobalKey<FormState>();
                   if (icfState is PredictionsShown) {
-                    return buildList(context); // replace with predictions list
+                    return buildList(_); // replace with predictions list
                   } else {
                     return Form(
                         key: _formKey,
@@ -219,8 +234,7 @@ class EventCreator extends StatelessWidget {
                                       "indvs": []
                                     });
                                     Navigator.pop(context);
-                                  }
-                                  else {
+                                  } else {
                                     print("problem time");
                                   }
                                 },

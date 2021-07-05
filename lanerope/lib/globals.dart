@@ -50,7 +50,7 @@ void getUID() {
 
 void allGroups() {
   groups.get().then((snapshot) {
-    managedGroups.clear();
+    managedGroups.clear(); // name is causing confusion
     managedGroups.add('unassigned');
     snapshot.docs.forEach((element) {
       managedGroups.add(element.id);
