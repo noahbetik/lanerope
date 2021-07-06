@@ -46,7 +46,7 @@ void checkFilter() {
 }
 
 void findGroupsPeople() {
-  names = globals.managedGroups;
+  names = globals.managedGroups.toList();
   globals.allAthletes.forEach((key, value) {
     names.add(value[2]);
   });
@@ -90,6 +90,22 @@ class EventCreator extends StatelessWidget {
     endController = TextEditingController(text: givenEnd);
   } // fix for datetimes
 
+  List<List<String>> exportNames() {
+    List<List<String>> exports = [[],[]];
+    print(globals.managedGroups);
+    for (final element in chips){
+      if (globals.managedGroups.contains(element.name)){
+        exports[0].add(element.name);
+        print("its a group");
+      }
+      else {
+        exports[1].add(element.name);
+        print("its a person");
+      }
+    }
+    return exports;
+  }
+
   Widget buildList(BuildContext context) {
     checkFilter();
     return ListView.builder(
@@ -125,6 +141,7 @@ class EventCreator extends StatelessWidget {
                 TextFormField(
                     maxLength: 100, // idk
                     controller: titleText,
+                    textCapitalization: TextCapitalization.words,
                     decoration: dc.formBorder("Event Title", '')),
                 SizedBox(height: 8),
                 Builder(
@@ -225,13 +242,14 @@ class EventCreator extends StatelessWidget {
                             SizedBox(height: 8),
                             ElevatedButton(
                                 onPressed: () {
+                                  List<List<String>> exports = exportNames();
                                   if (_formKey.currentState!.validate()) {
                                     calendar.add({
                                       "title": titleText.text,
                                       "start": startController.text,
                                       "end": endController.text,
-                                      "groups": [],
-                                      "indvs": []
+                                      "groups": exports[0],
+                                      "indvs": exports[1]
                                     });
                                     Navigator.pop(context);
                                   } else {
