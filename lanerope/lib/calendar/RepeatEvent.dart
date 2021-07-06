@@ -1,0 +1,1 @@
+enum RepeatEvent {never, daily, weekly, monthly, yearly}

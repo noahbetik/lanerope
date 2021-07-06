@@ -23,6 +23,7 @@ class _CalendarState extends State<Calendar> {
   DateTime? _selectedDay;
 
   List _getEventsForDay(DateTime day) {
+    // puts event dots based on length of list
     return globals.events[day] ?? [];
   }
 

@@ -5,11 +5,14 @@ import 'package:lanerope/DesignChoices.dart' as dc;
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lanerope/calendar/ICFEvent.dart';
 import 'package:lanerope/globals.dart' as globals;
 
 import 'ICFBloc.dart';
 import 'ICFState.dart';
+import 'ICFEvent.dart';
+import 'RepeatBloc.dart';
+import 'RepeatState.dart';
+import 'RepeatEvent.dart';
 
 List<EntityChip> chips = [];
 List<Widget> displayChips = [];
@@ -19,6 +22,23 @@ List<String> filteredNames = [];
 
 final CollectionReference calendar =
     FirebaseFirestore.instance.collection('calendar');
+final TextEditingController dateCtrl = TextEditingController();
+
+AlertDialog repeatScheduling = AlertDialog(
+  title: Text("Event repeats until:"),
+  content: DateTimeField(
+    controller: dateCtrl,
+    format: DateFormat("yyyy-MM-dd"),
+    decoration: dc.formBorder('Ending Date', ''),
+    onShowPicker: (context, currentValue) {
+      return showDatePicker(
+          context: context,
+          firstDate: DateTime.now(),
+          initialDate: currentValue ?? DateTime.now(),
+          lastDate: DateTime.now().add(Duration(days: 1825)));
+    },
+  ),
+);
 
 Widget chipGen() {
   displayChips.clear();
@@ -26,10 +46,7 @@ Widget chipGen() {
     displayChips.add(chips[i].chip);
   }
   return Wrap(
-    children: displayChips,
-    spacing: 8.0,
-    alignment: WrapAlignment.start
-  );
+      children: displayChips, spacing: 8.0, alignment: WrapAlignment.start);
 }
 
 void checkFilter() {
@@ -65,7 +82,7 @@ class EntityChip {
           chips.removeWhere((EntityChip c) {
             return c.name == text;
           });
-          BlocProvider.of<ICFBloc>(context).add(ShowFields());
+          BlocProvider.of<ICFBloc>(context).add(ICFEvent.fields);
         });
   }
 }
@@ -91,14 +108,13 @@ class EventCreator extends StatelessWidget {
   } // fix for datetimes
 
   List<List<String>> exportNames() {
-    List<List<String>> exports = [[],[]];
+    List<List<String>> exports = [[], []];
     print(globals.managedGroups);
-    for (final element in chips){
-      if (globals.managedGroups.contains(element.name)){
+    for (final element in chips) {
+      if (globals.managedGroups.contains(element.name)) {
         exports[0].add(element.name);
         print("its a group");
-      }
-      else {
+      } else {
         exports[1].add(element.name);
         print("its a person");
       }
@@ -118,7 +134,7 @@ class EventCreator extends StatelessWidget {
               print(filteredNames[index]);
               chips.add(EntityChip(filteredNames[index], context));
               chipCtrl.clear();
-              BlocProvider.of<ICFBloc>(context).add(ShowFields());
+              BlocProvider.of<ICFBloc>(context).add(ICFEvent.fields);
             });
       },
     );
@@ -131,17 +147,27 @@ class EventCreator extends StatelessWidget {
     }
     return Scaffold(
         appBar: dc.bar("Create an Event"),
-        body: BlocProvider(
-            create: (_) => ICFBloc(FieldsShown()),
-            lazy: false,
+        body: MultiBlocProvider(
+            providers: [
+              BlocProvider(create: (_) => ICFBloc(FieldsShown()), lazy: false),
+              BlocProvider(
+                  create: (_) => RepeatBloc(RepeatState.never), lazy: false),
+            ],
             child: ListView(
               shrinkWrap: true,
               padding: EdgeInsets.only(left: 8.0, right: 8.0, top: 8.0),
               children: [
                 TextFormField(
-                    maxLength: 100, // idk
+                    maxLength: 100,
+                    // idk
                     controller: titleText,
                     textCapitalization: TextCapitalization.words,
+                    validator: (value) {
+                      if (value == '') {
+                        return "Please give this event a title!";
+                      }
+                      return null;
+                    },
                     decoration: dc.formBorder("Event Title", '')),
                 SizedBox(height: 8),
                 Builder(
@@ -151,7 +177,7 @@ class EventCreator extends StatelessWidget {
                         controller: chipCtrl,
                         onChanged: (value) {
                           BlocProvider.of<ICFBloc>(context)
-                              .add(ShowPredictions());
+                              .add(ICFEvent.predictions);
                           if (value.endsWith(' ')) {
                             // wanted newline but doesn't work?
                             String text = chipCtrl.text
@@ -160,11 +186,13 @@ class EventCreator extends StatelessWidget {
                             print(text);
                             chips.add(EntityChip(text, context));
                             chipCtrl.clear();
-                            BlocProvider.of<ICFBloc>(context).add(ShowFields());
+                            BlocProvider.of<ICFBloc>(context)
+                                .add(ICFEvent.fields);
                           } else if (chipCtrl.text.isEmpty) {
                             filteredNames = names;
                             searchText = '';
-                            BlocProvider.of<ICFBloc>(context).add(ShowFields());
+                            BlocProvider.of<ICFBloc>(context)
+                                .add(ICFEvent.fields);
                           } else {
                             filteredNames = names;
                             searchText = chipCtrl.text;
@@ -240,6 +268,90 @@ class EventCreator extends StatelessWidget {
                               },
                             ),
                             SizedBox(height: 8),
+                            BlocBuilder<RepeatBloc, RepeatState>(
+                                builder: (_, repeatState) {
+                              RepeatState _reoccurrence = repeatState;
+                              return Column(
+                                // tiles indented too much???
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text("Reoccurring event?",
+                                    textAlign: TextAlign.left,
+                                  ),
+                                  ListTile(
+                                      title: Text("Never"),
+                                      leading: Radio(
+                                          value: RepeatState.never,
+                                          groupValue: _reoccurrence,
+                                          onChanged: (value) {
+                                            _reoccurrence = RepeatState.never;
+                                            BlocProvider.of<RepeatBloc>(_)
+                                                .add(RepeatEvent.never);
+                                            showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    repeatScheduling);
+                                          })),
+                                  ListTile(
+                                      title: Text("Daily"),
+                                      leading: Radio(
+                                          value: RepeatState.daily,
+                                          groupValue: _reoccurrence,
+                                          onChanged: (value) {
+                                            _reoccurrence = RepeatState.daily;
+                                            BlocProvider.of<RepeatBloc>(_)
+                                                .add(RepeatEvent.daily);
+                                            showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    repeatScheduling);
+                                          })),
+                                  ListTile(
+                                      title: Text("Weekly"),
+                                      leading: Radio(
+                                          value: RepeatState.weekly,
+                                          groupValue: _reoccurrence,
+                                          onChanged: (value) {
+                                            _reoccurrence = RepeatState.weekly;
+                                            BlocProvider.of<RepeatBloc>(_)
+                                                .add(RepeatEvent.weekly);
+                                            showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    repeatScheduling);
+                                          })),
+                                  ListTile(
+                                      title: Text("Monthly"),
+                                      leading: Radio(
+                                          value: RepeatState.monthly,
+                                          groupValue: _reoccurrence,
+                                          onChanged: (value) {
+                                            _reoccurrence = RepeatState.monthly;
+                                            BlocProvider.of<RepeatBloc>(_)
+                                                .add(RepeatEvent.monthly);
+                                            showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    repeatScheduling);
+                                          })),
+                                  ListTile(
+                                      title: Text("Yearly"),
+                                      leading: Radio(
+                                          value: RepeatState.yearly,
+                                          groupValue: _reoccurrence,
+                                          onChanged: (value) {
+                                            _reoccurrence = RepeatState.yearly;
+                                            BlocProvider.of<RepeatBloc>(_)
+                                                .add(RepeatEvent.yearly);
+                                            showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    repeatScheduling);
+                                          }))
+                                ],
+                              );
+                            }),
+                            SizedBox(height: 8),
                             ElevatedButton(
                                 onPressed: () {
                                   List<List<String>> exports = exportNames();
@@ -251,6 +363,9 @@ class EventCreator extends StatelessWidget {
                                       "groups": exports[0],
                                       "indvs": exports[1]
                                     });
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                            content: Text('Event created!')));
                                     Navigator.pop(context);
                                   } else {
                                     print("problem time");
