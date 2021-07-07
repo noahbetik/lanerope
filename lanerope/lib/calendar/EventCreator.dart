@@ -200,6 +200,7 @@ class EventCreator extends StatelessWidget {
                         },
                         decoration: dc.formBorder("People/Groups", ''))),
                 BlocBuilder<ICFBloc, ICFState>(builder: (_, icfState) {
+                  RepeatState _reoccurrence = RepeatState.never;
                   final _formKey = GlobalKey<FormState>();
                   if (icfState is PredictionsShown) {
                     return buildList(_); // replace with predictions list
@@ -270,12 +271,12 @@ class EventCreator extends StatelessWidget {
                             SizedBox(height: 8),
                             BlocBuilder<RepeatBloc, RepeatState>(
                                 builder: (_, repeatState) {
-                              RepeatState _reoccurrence = repeatState;
                               return Column(
                                 // tiles indented too much???
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text("Reoccurring event?",
+                                  Text(
+                                    "Reoccurring event?",
                                     textAlign: TextAlign.left,
                                   ),
                                   ListTile(
@@ -355,11 +356,73 @@ class EventCreator extends StatelessWidget {
                             ElevatedButton(
                                 onPressed: () {
                                   List<List<String>> exports = exportNames();
+                                  List<DateTime> repeats = [];
+                                  DateTime wrangler =
+                                      DateTime.parse(startController.text);
+                                  DateTime ending =
+                                      DateTime.parse(dateCtrl.text);
                                   if (_formKey.currentState!.validate()) {
+                                    switch (_reoccurrence) {
+                                      case RepeatState.never:
+                                        break;
+                                      case RepeatState.daily:
+                                        while (wrangler.isBefore(ending
+                                            .subtract(Duration(days: 1)))) {
+                                          wrangler =
+                                              wrangler.add(Duration(days: 1));
+                                          repeats.add(wrangler);
+                                        }
+                                        break;
+                                      case RepeatState.weekly:
+                                        while (wrangler.isBefore(ending
+                                            .subtract(Duration(days: 7)))) {
+                                          wrangler =
+                                              wrangler.add(Duration(days: 7));
+                                          repeats.add(wrangler);
+                                          print(wrangler);
+                                          print(ending);
+                                          print("yeet");
+                                        }
+                                        break;
+                                      case RepeatState.monthly:
+                                        while (wrangler.isBefore(new DateTime(
+                                            ending.year,
+                                            ending.month - 1,
+                                            ending.day))) {
+                                          wrangler = new DateTime(
+                                              wrangler.year,
+                                              wrangler.month + 1,
+                                              wrangler.day,
+                                              wrangler.hour,
+                                              wrangler.minute);
+                                          repeats.add(wrangler);
+                                        }
+                                        break;
+                                      case RepeatState.yearly:
+                                        while (wrangler.isBefore(new DateTime(
+                                            ending.year - 1,
+                                            ending.month,
+                                            ending.day))) {
+                                          wrangler = new DateTime(
+                                              wrangler.year + 1,
+                                              wrangler.month,
+                                              wrangler.day,
+                                              wrangler.hour,
+                                              wrangler.minute);
+                                          repeats.add(wrangler);
+                                        }
+                                        break;
+                                    }
                                     calendar.add({
                                       "title": titleText.text,
-                                      "start": startController.text,
-                                      "end": endController.text,
+                                      "start":
+                                          DateTime.parse(startController.text),
+                                      "duration":
+                                          DateTime.parse(endController.text)
+                                              .difference(DateTime.parse(
+                                                  startController.text))
+                                              .toString(),
+                                      "repeats": repeats,
                                       "groups": exports[0],
                                       "indvs": exports[1]
                                     });
