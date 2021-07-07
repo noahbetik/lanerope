@@ -8,6 +8,21 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lanerope/screens/home.dart';
+/// **************************************************************************
+/// DATABASE REFERENCES
+final CollectionReference users =
+    FirebaseFirestore.instance.collection('users');
+final CollectionReference groups =
+    FirebaseFirestore.instance.collection('groups');
+final CollectionReference announcements =
+    FirebaseFirestore.instance.collection('announcements');
+final CollectionReference stats =
+    FirebaseFirestore.instance.collection('stats');
+final CollectionReference calendar =
+    FirebaseFirestore.instance.collection('calendar');
+
+///***************************************************************************
+/// VARIABLES
 
 String currentUID = '';
 String role = '';
@@ -21,17 +36,6 @@ Stream<bool> redraw = complete.stream; // maybe wanna make this global some day
 
 bool loaded = false;
 bool subLock = false;
-
-final CollectionReference users =
-    FirebaseFirestore.instance.collection('users');
-final CollectionReference groups =
-    FirebaseFirestore.instance.collection('groups');
-final CollectionReference announcements =
-    FirebaseFirestore.instance.collection('announcements');
-final CollectionReference stats =
-    FirebaseFirestore.instance.collection('stats');
-final CollectionReference calendar =
-FirebaseFirestore.instance.collection('calendar');
 
 Future<String> findRole() async {
   await users.doc(currentUID).get().then((DocumentSnapshot snapshot) {
@@ -177,4 +181,15 @@ void allAnnouncements() async {
 /// ***********************************************************************
 /// CALENDAR
 
-Map<DateTime, List> events = {}; // gotta implement events yourself
+Map<DateTime, List<Map<String, dynamic>>> events = {}; // gotta implement events yourself
+void getEvents() async {
+  QuerySnapshot snap = await calendar.get();
+  List items = snap.docs;
+  List eventDates = [];
+  for (int i=0; i<items.length; i++){
+    eventDates = items[i].repeats;
+    for (DateTime date in eventDates){
+      
+    }
+  }
+}

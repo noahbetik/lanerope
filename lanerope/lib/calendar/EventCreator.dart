@@ -1,18 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:lanerope/DesignChoices.dart' as dc;
-import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
+import 'package:lanerope/DesignChoices.dart' as dc;
 import 'package:lanerope/globals.dart' as globals;
 
 import 'ICFBloc.dart';
-import 'ICFState.dart';
 import 'ICFEvent.dart';
+import 'ICFState.dart';
 import 'RepeatBloc.dart';
-import 'RepeatState.dart';
 import 'RepeatEvent.dart';
+import 'RepeatState.dart';
 
 List<EntityChip> chips = [];
 List<Widget> displayChips = [];

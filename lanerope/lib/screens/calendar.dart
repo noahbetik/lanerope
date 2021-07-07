@@ -1,11 +1,10 @@
-import 'dart:collection';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:lanerope/pagesDrawer.dart' as pd;
 import 'package:lanerope/calendar/EventCreator.dart' as ec2;
-import 'package:table_calendar/table_calendar.dart';
 import 'package:lanerope/globals.dart' as globals;
+import 'package:lanerope/pagesDrawer.dart' as pd;
+import 'package:table_calendar/table_calendar.dart';
 
 bool ios = Platform.isIOS;
 bool android = Platform.isAndroid;

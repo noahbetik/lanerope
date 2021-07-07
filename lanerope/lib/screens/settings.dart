@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:lanerope/globals.dart' as globals;
 import 'package:lanerope/pagesDrawer.dart' as pd;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:lanerope/globals.dart' as globals;
 
 bool ios = Platform.isIOS;
 bool android = Platform.isAndroid;
