@@ -7,7 +7,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:lanerope/screens/calendar.dart';
 import 'package:lanerope/screens/home.dart';
+
 /// **************************************************************************
 /// DATABASE REFERENCES
 final CollectionReference users =
@@ -181,15 +183,30 @@ void allAnnouncements() async {
 /// ***********************************************************************
 /// CALENDAR
 
-Map<DateTime, List<Map<String, dynamic>>> events = {}; // gotta implement events yourself
-void getEvents() async {
+Map<String, List> events = {}; // gotta implement events yourself
+
+Future<CalendarThing> getEvent(String docTitle) async {
+  DocumentSnapshot snap = await calendar.doc(docTitle).get();
+  String title = await snap.get("title");
+  List dates = await snap.get("repeats");
+  String length = await snap.get("duration");
+  return CalendarThing(length, occurrences: dates, title: title);
+}
+
+
+void allEvents() async {
   QuerySnapshot snap = await calendar.get();
   List items = snap.docs;
-  List eventDates = [];
-  for (int i=0; i<items.length; i++){
-    eventDates = items[i].repeats;
-    for (DateTime date in eventDates){
-      
+  for (int i = 0; i < items.length; i++) {
+    CalendarThing thatEvent = await getEvent(items[i].id);
+    for (String date in thatEvent.occurrences){
+      if (events.containsKey(date)){
+        events[date]?.add(thatEvent);
+      }
+      else{
+        events[date] = [thatEvent];
+      }
     }
   }
+  print(events);
 }

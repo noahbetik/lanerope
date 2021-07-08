@@ -355,8 +355,9 @@ class EventCreator extends StatelessWidget {
                             SizedBox(height: 8),
                             ElevatedButton(
                                 onPressed: () {
+                                  DateFormat fm = DateFormat("yyyy-MM-dd");
                                   List<List<String>> exports = exportNames();
-                                  List<DateTime> repeats = [];
+                                  List<String> repeats = [];
                                   DateTime wrangler =
                                       DateTime.parse(startController.text);
                                   DateTime ending =
@@ -364,52 +365,46 @@ class EventCreator extends StatelessWidget {
                                   if (_formKey.currentState!.validate()) {
                                     switch (_reoccurrence) {
                                       case RepeatState.never:
+                                        repeats.add(fm.format(wrangler));
                                         break;
                                       case RepeatState.daily:
-                                        while (wrangler.isBefore(ending
-                                            .subtract(Duration(days: 1)))) {
+                                        while (wrangler.isBefore(ending)) {
+                                          repeats.add(fm.format(wrangler));
                                           wrangler =
                                               wrangler.add(Duration(days: 1));
-                                          repeats.add(wrangler);
                                         }
                                         break;
                                       case RepeatState.weekly:
-                                        while (wrangler.isBefore(ending
-                                            .subtract(Duration(days: 7)))) {
+                                        while (wrangler.isBefore(ending)) {
+                                          repeats.add(fm.format(wrangler));
                                           wrangler =
                                               wrangler.add(Duration(days: 7));
-                                          repeats.add(wrangler);
+
                                           print(wrangler);
                                           print(ending);
                                           print("yeet");
                                         }
                                         break;
                                       case RepeatState.monthly:
-                                        while (wrangler.isBefore(new DateTime(
-                                            ending.year,
-                                            ending.month - 1,
-                                            ending.day))) {
+                                        while (wrangler.isBefore(ending)) {
+                                          repeats.add(fm.format(wrangler));
                                           wrangler = new DateTime(
                                               wrangler.year,
                                               wrangler.month + 1,
                                               wrangler.day,
                                               wrangler.hour,
                                               wrangler.minute);
-                                          repeats.add(wrangler);
                                         }
                                         break;
                                       case RepeatState.yearly:
-                                        while (wrangler.isBefore(new DateTime(
-                                            ending.year - 1,
-                                            ending.month,
-                                            ending.day))) {
+                                        while (wrangler.isBefore(ending)) {
+                                          repeats.add(fm.format(wrangler));
                                           wrangler = new DateTime(
                                               wrangler.year + 1,
                                               wrangler.month,
                                               wrangler.day,
                                               wrangler.hour,
                                               wrangler.minute);
-                                          repeats.add(wrangler);
                                         }
                                         break;
                                     }
@@ -417,6 +412,7 @@ class EventCreator extends StatelessWidget {
                                       "title": titleText.text,
                                       "start":
                                           DateTime.parse(startController.text),
+                                      // used to keep track of time start
                                       "duration":
                                           DateTime.parse(endController.text)
                                               .difference(DateTime.parse(

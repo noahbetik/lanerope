@@ -5,9 +5,36 @@ import 'package:lanerope/calendar/EventCreator.dart' as ec2;
 import 'package:lanerope/globals.dart' as globals;
 import 'package:lanerope/pagesDrawer.dart' as pd;
 import 'package:table_calendar/table_calendar.dart';
+import 'package:intl/intl.dart';
 
 bool ios = Platform.isIOS;
 bool android = Platform.isAndroid;
+
+class CalendarThing { // i don't wanna use the word event cuz i need it for bloc
+  List occurrences;
+  String title;
+  late Duration length;
+
+  Duration parseDuration(String s) {
+    int hours = 0;
+    int minutes = 0;
+    int micros;
+    List<String> parts = s.split(':');
+    if (parts.length > 2) {
+      hours = int.parse(parts[parts.length - 3]);
+    }
+    if (parts.length > 1) {
+      minutes = int.parse(parts[parts.length - 2]);
+    }
+    micros = (double.parse(parts[parts.length - 1]) * 1000000).round();
+    return Duration(hours: hours, minutes: minutes, microseconds: micros);
+  }
+
+  CalendarThing(String duration, {required this.occurrences, this.title = ''}) {
+    DateFormat format = DateFormat("yyyy-MM-dd");
+    this.length = parseDuration(duration);
+  }
+}
 
 class Calendar extends StatefulWidget {
   @override
@@ -23,7 +50,11 @@ class _CalendarState extends State<Calendar> {
 
   List _getEventsForDay(DateTime day) {
     // puts event dots based on length of list
-    return globals.events[day] ?? [];
+    DateFormat fm = DateFormat("yyyy-MM-dd");
+    String now = fm.format(day);
+    print(now);
+    print(globals.events[now]);
+    return globals.events[now] ?? [];
   }
 
   @override
@@ -36,7 +67,6 @@ class _CalendarState extends State<Calendar> {
                   IconButton(
                       onPressed: () {
                         DateTime now = DateTime.now();
-                        DateTime oneHour = now.add(Duration(hours: 1));
                         Navigator.push(context,
                             MaterialPageRoute(builder: (context) => ec2.EventCreator('', '', '')));
                       },
@@ -49,7 +79,6 @@ class _CalendarState extends State<Calendar> {
                 child: const Icon(Icons.date_range),
                 onPressed: () {
                   DateTime now = DateTime.now();
-                  DateTime oneHour = now.add(Duration(hours: 1));
                   Navigator.push(context,
                       MaterialPageRoute(builder: (context) => ec2.EventCreator('', '', '')));
                 },
