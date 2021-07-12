@@ -93,10 +93,13 @@ class _CalendarState extends State<Calendar> {
               )
             : null,
         body: BlocProvider(
-            create: (context) => CalendarBloc(DateSelected(_getEventsForDay(_focusedDay))),
-            lazy: false,
-            child: Column(
-              children: [
+          create: (context) =>
+              CalendarBloc(DateSelected(_getEventsForDay(_focusedDay))),
+          lazy: false,
+          child:
+              BlocBuilder<CalendarBloc, CalendarState>(builder: (_, calState) {
+            if (calState is DateSelected) {
+              return Column(children: [
                 Builder(
                   builder: (context) => TableCalendar(
                     firstDay: DateTime.utc(2020, 9, 1),
@@ -129,20 +132,17 @@ class _CalendarState extends State<Calendar> {
                     },
                   ),
                 ),
-                BlocBuilder<CalendarBloc, CalendarState>(
-                    builder: (_, calState) {
-                  if (calState is DateSelected) {
-                    return ListView(
-                      children: calState.todaysEvents,
-                      shrinkWrap: true,
-                    );
-                  }
-                  else {
-                    return Text("This should never appear");
-                  }
-                })
-              ],
-            )),
+                ListView(
+                  padding: EdgeInsets.all(8.0),
+                  children: calState.todaysEvents,
+                  shrinkWrap: true,
+                )
+              ]);
+            } else {
+              return Text("This should never appear");
+            }
+          }),
+        ),
         drawer: pd.PagesDrawer().importDrawer(context));
   }
 }
