@@ -195,6 +195,7 @@ Future<CalendarThing> getEvent(String docTitle) async {
 
 
 void allEvents() async {
+  events.clear();
   QuerySnapshot snap = await calendar.get();
   List items = snap.docs;
   for (int i = 0; i < items.length; i++) {

@@ -47,6 +47,9 @@ class Calendar extends StatefulWidget {
   }
 }
 
+// keeping this as stateful widget for now because i need mutable fields
+// not sure if there's a better way
+
 class _CalendarState extends State<Calendar> {
   late List<dynamic> _selectedEvents;
   CalendarFormat _calendarFormat = CalendarFormat.month;
@@ -124,7 +127,6 @@ class _CalendarState extends State<Calendar> {
                           .add(ChangeFormat(format));
                     },
                     onPageChanged: (focusedDay) {
-                      // No need to call `setState()` here
                       _focusedDay = focusedDay;
                     },
                     eventLoader: (day) {

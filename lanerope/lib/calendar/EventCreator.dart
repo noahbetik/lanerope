@@ -200,8 +200,8 @@ class EventCreator extends StatelessWidget {
                         },
                         decoration: dc.formBorder("People/Groups", ''))),
                 BlocBuilder<ICFBloc, ICFState>(builder: (_, icfState) {
-                  RepeatState _reoccurrence = RepeatState.never;
                   final _formKey = GlobalKey<FormState>();
+                  RepeatState _reoccurrence = RepeatState.never;
                   if (icfState is PredictionsShown) {
                     return buildList(_); // replace with predictions list
                   } else {
@@ -360,12 +360,13 @@ class EventCreator extends StatelessWidget {
                                   List<String> repeats = [];
                                   DateTime wrangler =
                                       DateTime.parse(startController.text);
-                                  DateTime ending =
-                                      DateTime.parse(dateCtrl.text);
                                   if (_formKey.currentState!.validate()) {
+                                    repeats.add(fm.format(wrangler));
+                                    if (dateCtrl.text.isNotEmpty){
+                                      DateTime ending =
+                                      DateTime.parse(dateCtrl.text);
                                     switch (_reoccurrence) {
                                       case RepeatState.never:
-                                        repeats.add(fm.format(wrangler));
                                         break;
                                       case RepeatState.daily:
                                         while (wrangler.isBefore(ending)) {
@@ -407,7 +408,7 @@ class EventCreator extends StatelessWidget {
                                               wrangler.minute);
                                         }
                                         break;
-                                    }
+                                    }}
                                     calendar.add({
                                       "title": titleText.text,
                                       "start":
@@ -422,6 +423,7 @@ class EventCreator extends StatelessWidget {
                                       "groups": exports[0],
                                       "indvs": exports[1]
                                     });
+                                    globals.allEvents();
                                     ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(
                                             content: Text('Event created!')));
