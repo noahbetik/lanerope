@@ -8,6 +8,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import './screens/home.dart';
 import "./screens/login.dart";
 
+final navigatorKey = GlobalKey<NavigatorState>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   print("aight lets go");
@@ -83,6 +85,7 @@ class _LaneropeState extends State<Lanerope> {
               debugShowCheckedModeBanner: false,
               title: "Lanerope",
               theme: dc.appTheme,
+              navigatorKey: navigatorKey,
               home: login == true ? Home() : Login(),
               routes: <String, WidgetBuilder>{
                 '/home': (BuildContext context) => new Home(),

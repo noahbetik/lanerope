@@ -19,6 +19,7 @@ class CalendarThing {
   List occurrences;
   String title;
   late Duration length;
+  late DateTime begin;
 
   Duration parseDuration(String s) {
     int hours = 0;
@@ -35,8 +36,9 @@ class CalendarThing {
     return Duration(hours: hours, minutes: minutes, microseconds: micros);
   }
 
-  CalendarThing(String duration, {required this.occurrences, this.title = ''}) {
+  CalendarThing(String duration, DateTime begin, {required this.occurrences, this.title = ''}) {
     this.length = parseDuration(duration);
+    this.begin = begin;
   }
 }
 
@@ -60,8 +62,6 @@ class _CalendarState extends State<Calendar> {
     // puts event dots based on length of list
     DateFormat fm = DateFormat("yyyy-MM-dd");
     String now = fm.format(day);
-    print(now);
-    print(globals.events[now]);
     return globals.events[now] ?? [];
   }
 

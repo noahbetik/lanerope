@@ -190,7 +190,10 @@ Future<CalendarThing> getEvent(String docTitle) async {
   String title = await snap.get("title");
   List dates = await snap.get("repeats");
   String length = await snap.get("duration");
-  return CalendarThing(length, occurrences: dates, title: title);
+  dynamic timestamp = await snap.get("start");
+  DateTime begin = DateTime.parse(timestamp.toDate().toString());
+
+  return CalendarThing(length, begin, occurrences: dates, title: title);
 }
 
 
