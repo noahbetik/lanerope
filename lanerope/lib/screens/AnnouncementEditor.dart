@@ -173,6 +173,10 @@ class EditorState extends State<AnnouncementEditor> {
                             "main_text": mainText.text,
                           },
                         );
+                        if (image != null) {
+                          await saveImage(image, db);
+                          print("image uploaded");
+                        }
                         globals.allAnnouncements();
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
