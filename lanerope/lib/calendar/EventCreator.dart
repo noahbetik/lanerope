@@ -132,18 +132,35 @@ class EventCreator extends StatelessWidget {
         return new ListTile(
             title: Text(filteredNames[index]),
             onTap: () {
-              print(filteredNames[index]);
-              chips.add(EntityChip(filteredNames[index], context));
-              chipCtrl.clear();
-              BlocProvider.of<ICFBloc>(context).add(ICFEvent.fields);
+              if (!duplicateChip(filteredNames[index])) {
+                print(filteredNames[index]);
+                chips.add(EntityChip(filteredNames[index], context));
+                chipCtrl.clear();
+                BlocProvider.of<ICFBloc>(context).add(ICFEvent.fields);
+              }
             });
       },
     );
   }
 
+  bool duplicateChip(String? word) {
+    bool flag = false;
+    chips.forEach((element) {
+      if (element.name == word) {
+        flag = true;
+      }
+    });
+    return flag;
+  }
+
   String? verify(String? name) {
+    if (name == '') {
+      return null;
+    }
     if (!filteredNames.contains(name)) {
       return "Group/Person does not exist here!";
+    } else if (duplicateChip(name)) {
+      return "Already included";
     } else
       return null;
   }
@@ -186,27 +203,32 @@ class EventCreator extends StatelessWidget {
                         keyboardType: TextInputType.multiline,
                         controller: chipCtrl,
                         onChanged: (value) {
-                          BlocProvider.of<ICFBloc>(context)
-                              .add(ICFEvent.predictions);
-
-                          // wanted newline but doesn't work?
-                          String text = chipCtrl.text
-                              .substring(0, chipCtrl.text.length - 1);
-                          // get every except newline
-                          if (value.endsWith(' ') && verify(text) == null) {
-                            print(text);
-                            chips.add(EntityChip(text, context));
-                            chipCtrl.clear();
+                          try {
+                            BlocProvider.of<ICFBloc>(context)
+                                .add(ICFEvent.predictions);
+                            // wanted newline but doesn't work?
+                            String text = chipCtrl.text
+                                .substring(0, chipCtrl.text.length - 1);
+                            // get every except newline
+                            if (value.endsWith(' ') && verify(text) == null) {
+                              print(text);
+                              chips.add(EntityChip(text, context));
+                              chipCtrl.clear();
+                              BlocProvider.of<ICFBloc>(context)
+                                  .add(ICFEvent.fields);
+                            } else if (chipCtrl.text.isEmpty) {
+                              filteredNames = names;
+                              searchText = '';
+                              BlocProvider.of<ICFBloc>(context)
+                                  .add(ICFEvent.fields);
+                            } else {
+                              filteredNames = names;
+                              searchText = chipCtrl.text;
+                            }
+                          } catch (e) {
+                            print(e);
                             BlocProvider.of<ICFBloc>(context)
                                 .add(ICFEvent.fields);
-                          } else if (chipCtrl.text.isEmpty) {
-                            filteredNames = names;
-                            searchText = '';
-                            BlocProvider.of<ICFBloc>(context)
-                                .add(ICFEvent.fields);
-                          } else {
-                            filteredNames = names;
-                            searchText = chipCtrl.text;
                           }
                         },
                         decoration: dc.formBorder("People/Groups", ''))),
