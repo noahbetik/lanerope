@@ -111,10 +111,11 @@ class EventCreator extends StatelessWidget {
     List<List<String>> exports = [[], []];
     print(globals.managedGroups);
     for (final element in chips) {
-      if (globals.managedGroups.contains(element.name)) {
+      if (globals.managedGroups.contains(element.name) &&
+          !(exports[0].contains(element.name))) {
         exports[0].add(element.name);
         print("its a group");
-      } else {
+      } else if (!(exports[1].contains(element.name))) {
         exports[1].add(element.name);
         print("its a person");
       }
@@ -138,6 +139,13 @@ class EventCreator extends StatelessWidget {
             });
       },
     );
+  }
+
+  String? verify(String? name) {
+    if (!filteredNames.contains(name)) {
+      return "Group/Person does not exist here!";
+    } else
+      return null;
   }
 
   @override
@@ -173,16 +181,19 @@ class EventCreator extends StatelessWidget {
                 Builder(
                     builder: (context) => TextFormField(
                         focusNode: _focus,
+                        validator: verify,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
                         keyboardType: TextInputType.multiline,
                         controller: chipCtrl,
                         onChanged: (value) {
                           BlocProvider.of<ICFBloc>(context)
                               .add(ICFEvent.predictions);
-                          if (value.endsWith(' ')) {
-                            // wanted newline but doesn't work?
-                            String text = chipCtrl.text
-                                .substring(0, chipCtrl.text.length - 1);
-                            // get every except newline
+
+                          // wanted newline but doesn't work?
+                          String text = chipCtrl.text
+                              .substring(0, chipCtrl.text.length - 1);
+                          // get every except newline
+                          if (value.endsWith(' ') && verify(text) == null) {
                             print(text);
                             chips.add(EntityChip(text, context));
                             chipCtrl.clear();
@@ -254,8 +265,8 @@ class EventCreator extends StatelessWidget {
                                     context: context,
                                     firstDate: currentValue,
                                     initialDate: currentValue,
-                                    lastDate: DateTime(2022));
-                                // need more logic to ensure end date is after start date
+                                    lastDate: DateTime(currentValue.year,
+                                        currentValue.month, currentValue.day));
                                 if (date != null) {
                                   final time = await showTimePicker(
                                     context: context,
@@ -362,53 +373,54 @@ class EventCreator extends StatelessWidget {
                                       DateTime.parse(startController.text);
                                   if (_formKey.currentState!.validate()) {
                                     repeats.add(fm.format(wrangler));
-                                    if (dateCtrl.text.isNotEmpty){
+                                    if (dateCtrl.text.isNotEmpty) {
                                       DateTime ending =
-                                      DateTime.parse(dateCtrl.text);
-                                    switch (_reoccurrence) {
-                                      case RepeatState.never:
-                                        break;
-                                      case RepeatState.daily:
-                                        while (wrangler.isBefore(ending)) {
-                                          repeats.add(fm.format(wrangler));
-                                          wrangler =
-                                              wrangler.add(Duration(days: 1));
-                                        }
-                                        break;
-                                      case RepeatState.weekly:
-                                        while (wrangler.isBefore(ending)) {
-                                          repeats.add(fm.format(wrangler));
-                                          wrangler =
-                                              wrangler.add(Duration(days: 7));
+                                          DateTime.parse(dateCtrl.text);
+                                      switch (_reoccurrence) {
+                                        case RepeatState.never:
+                                          break;
+                                        case RepeatState.daily:
+                                          while (wrangler.isBefore(ending)) {
+                                            repeats.add(fm.format(wrangler));
+                                            wrangler =
+                                                wrangler.add(Duration(days: 1));
+                                          }
+                                          break;
+                                        case RepeatState.weekly:
+                                          while (wrangler.isBefore(ending)) {
+                                            repeats.add(fm.format(wrangler));
+                                            wrangler =
+                                                wrangler.add(Duration(days: 7));
 
-                                          print(wrangler);
-                                          print(ending);
-                                          print("yeet");
-                                        }
-                                        break;
-                                      case RepeatState.monthly:
-                                        while (wrangler.isBefore(ending)) {
-                                          repeats.add(fm.format(wrangler));
-                                          wrangler = new DateTime(
-                                              wrangler.year,
-                                              wrangler.month + 1,
-                                              wrangler.day,
-                                              wrangler.hour,
-                                              wrangler.minute);
-                                        }
-                                        break;
-                                      case RepeatState.yearly:
-                                        while (wrangler.isBefore(ending)) {
-                                          repeats.add(fm.format(wrangler));
-                                          wrangler = new DateTime(
-                                              wrangler.year + 1,
-                                              wrangler.month,
-                                              wrangler.day,
-                                              wrangler.hour,
-                                              wrangler.minute);
-                                        }
-                                        break;
-                                    }}
+                                            print(wrangler);
+                                            print(ending);
+                                            print("yeet");
+                                          }
+                                          break;
+                                        case RepeatState.monthly:
+                                          while (wrangler.isBefore(ending)) {
+                                            repeats.add(fm.format(wrangler));
+                                            wrangler = new DateTime(
+                                                wrangler.year,
+                                                wrangler.month + 1,
+                                                wrangler.day,
+                                                wrangler.hour,
+                                                wrangler.minute);
+                                          }
+                                          break;
+                                        case RepeatState.yearly:
+                                          while (wrangler.isBefore(ending)) {
+                                            repeats.add(fm.format(wrangler));
+                                            wrangler = new DateTime(
+                                                wrangler.year + 1,
+                                                wrangler.month,
+                                                wrangler.day,
+                                                wrangler.hour,
+                                                wrangler.minute);
+                                          }
+                                          break;
+                                      }
+                                    }
                                     calendar.add({
                                       "title": titleText.text,
                                       "start":

@@ -50,7 +50,7 @@ class Calendar extends StatefulWidget {
 }
 
 // keeping this as stateful widget for now because i need mutable fields
-// not sure if there's a better way
+// need to move mutables into state
 
 class _CalendarState extends State<Calendar> {
   late List<dynamic> _selectedEvents;
