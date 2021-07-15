@@ -30,8 +30,11 @@ String currentUID = '';
 String role = '';
 String name = '';
 String fullName = '';
+List<dynamic> myGroups = [];
+
+
 int annID = 0;
-List<String> managedGroups = ['unassigned'];
+List<String> everyGroup = ['unassigned'];
 Map allAthletes = new Map();
 StreamController<bool> complete = StreamController<bool>.broadcast();
 Stream<bool> redraw = complete.stream; // maybe wanna make this global some day
@@ -44,6 +47,7 @@ Future<String> findRole() async {
     role = snapshot.get("role");
     name = snapshot.get("first_name");
     fullName = name + " " + snapshot.get("last_name");
+    myGroups = snapshot.get("groups");
   });
   print(currentUID);
   print(role);
@@ -56,10 +60,10 @@ void getUID() {
 
 void allGroups() {
   groups.get().then((snapshot) {
-    managedGroups.clear(); // name is causing confusion
-    managedGroups.add('unassigned');
+    everyGroup.clear();
+    everyGroup.add('unassigned');
     snapshot.docs.forEach((element) {
-      managedGroups.add(element.id);
+      everyGroup.add(element.id);
     });
   });
 }
@@ -183,7 +187,7 @@ void allAnnouncements() async {
 /// ***********************************************************************
 /// CALENDAR
 
-Map<String, List> events = {}; // gotta implement events yourself
+Map<String, List> events = {};
 
 Future<CalendarThing> getEvent(String docTitle) async {
   DocumentSnapshot snap = await calendar.doc(docTitle).get();

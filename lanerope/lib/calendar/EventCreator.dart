@@ -63,7 +63,7 @@ void checkFilter() {
 }
 
 void findGroupsPeople() {
-  names = globals.managedGroups.toList();
+  names = globals.everyGroup.toList();
   globals.allAthletes.forEach((key, value) {
     names.add(value[2]);
   });
@@ -109,9 +109,9 @@ class EventCreator extends StatelessWidget {
 
   List<List<String>> exportNames() {
     List<List<String>> exports = [[], []];
-    print(globals.managedGroups);
+    print(globals.everyGroup);
     for (final element in chips) {
-      if (globals.managedGroups.contains(element.name) &&
+      if (globals.everyGroup.contains(element.name) &&
           !(exports[0].contains(element.name))) {
         exports[0].add(element.name);
         print("its a group");

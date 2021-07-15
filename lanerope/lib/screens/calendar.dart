@@ -36,7 +36,8 @@ class CalendarThing {
     return Duration(hours: hours, minutes: minutes, microseconds: micros);
   }
 
-  CalendarThing(String duration, DateTime begin, {required this.occurrences, this.title = ''}) {
+  CalendarThing(String duration, DateTime begin,
+      {required this.occurrences, this.title = ''}) {
     this.length = parseDuration(duration);
     this.begin = begin;
   }
@@ -53,7 +54,6 @@ class Calendar extends StatefulWidget {
 // need to move mutables into state
 
 class _CalendarState extends State<Calendar> {
-  late List<dynamic> _selectedEvents;
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
@@ -138,6 +138,40 @@ class _CalendarState extends State<Calendar> {
                   padding: EdgeInsets.all(8.0),
                   children: calState.todaysEvents,
                   shrinkWrap: true,
+                )
+              ]);
+            } else if (calState is FormatChanged) {
+              return Column(children: [
+                Builder(
+                  builder: (context) => TableCalendar(
+                    firstDay: DateTime.utc(2020, 9, 1),
+                    lastDay: DateTime.utc(2022, 06, 31),
+                    focusedDay: _focusedDay,
+                    selectedDayPredicate: (day) {
+                      return isSameDay(_selectedDay, day);
+                    },
+                    onDaySelected: (selectedDay, focusedDay) {
+                      if (!isSameDay(_selectedDay, selectedDay)) {
+                        _focusedDay = focusedDay;
+                        _selectedDay = selectedDay;
+                        BlocProvider.of<CalendarBloc>(context)
+                            .add(SelectDate(_getEventsForDay(selectedDay)));
+                      }
+                    },
+                    calendarFormat: _calendarFormat,
+                    onFormatChanged: (format) {
+                      print("yote");
+                      _calendarFormat = format;
+                      BlocProvider.of<CalendarBloc>(context)
+                          .add(ChangeFormat(format));
+                    },
+                    onPageChanged: (focusedDay) {
+                      _focusedDay = focusedDay;
+                    },
+                    eventLoader: (day) {
+                      return _getEventsForDay(day);
+                    },
+                  ),
                 )
               ]);
             } else {

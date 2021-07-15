@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lanerope/screens/adminPanel.dart';
 import 'package:lanerope/screens/athleteInfo.dart';
 import 'package:lanerope/screens/calendar.dart';
-import 'package:lanerope/screens/coachDM.dart';
+import 'package:lanerope/DM/coachDM.dart';
 import 'package:lanerope/screens/forms.dart';
 import 'package:lanerope/screens/home.dart';
 import 'package:lanerope/screens/settings.dart';

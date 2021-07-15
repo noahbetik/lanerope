@@ -1,0 +1,1 @@
+enum AdminState {searchShown, cardsShown}

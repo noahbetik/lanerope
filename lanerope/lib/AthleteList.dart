@@ -203,7 +203,7 @@ class _AthleteTileState extends State<AthleteTile> {
                                 child: DropdownButton<String>(
                                   hint: Text('Please select a group'),
                                   value: group,
-                                  items: globals.managedGroups
+                                  items: globals.everyGroup
                                       .map<DropdownMenuItem<String>>(
                                           (String value) {
                                     return DropdownMenuItem<String>(

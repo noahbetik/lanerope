@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lanerope/screens/calendar.dart';
 import 'package:intl/intl.dart';
 import '../main.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 abstract class CalendarState {}
 
@@ -40,4 +41,8 @@ class DateSelected extends CalendarState {
   }
 }
 
-class FormatChanged extends CalendarState {}
+class FormatChanged extends CalendarState {
+  //CalendarFormat calendarFormat;
+
+  //FormatChanged({required this.calendarFormat});
+}

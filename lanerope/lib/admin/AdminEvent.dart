@@ -1,0 +1,1 @@
+enum AdminEvent {showSearch, showCards, updateFilter, AddGroup, SubGroup, AssignGroup, UpdateBoxes}

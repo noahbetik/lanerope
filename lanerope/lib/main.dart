@@ -48,12 +48,6 @@ class _LaneropeState extends State<Lanerope> {
   final Future<bool> _login = loginState();
   final Future<void> _subs = lockedSubs();
 
-  void getAthletes(String thisUID){
-    if (globals.role == 'Coach/Admin'){
-      globals.allInfo();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     print("inside build widget");
@@ -71,6 +65,7 @@ class _LaneropeState extends State<Lanerope> {
         if (snapshot.connectionState == ConnectionState.done) {
           print("database connected");
           bool login = false;
+          globals.findRole(); // may make usage in homepage redundant
           globals.allGroups();
           globals.allInfo();
           globals.allAnnouncements();
