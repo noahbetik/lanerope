@@ -79,20 +79,20 @@ class AdminPanel extends StatefulWidget {
 }
 
 class _AdminPanelState extends State<AdminPanel> {
-  final TextEditingController _filter = new TextEditingController();
+  final TextEditingController filter = new TextEditingController();
   Icon _searchIcon = new Icon(Icons.search);
   Widget _appBarTitle = new Text('Admin Panel');
 
-  _AdminPanelState() {
-    _filter.addListener(() {
-      if (_filter.text.isEmpty) {
+  _AdminPanelState() { // should be redundant now
+    filter.addListener(() {
+      if (filter.text.isEmpty) {
         setState(() {
           searchText = "";
           filteredNames = names;
         });
       } else {
         setState(() {
-          searchText = _filter.text;
+          searchText = filter.text;
         });
       }
     });
@@ -112,23 +112,24 @@ class _AdminPanelState extends State<AdminPanel> {
   }
 
   void _searchPressed() {
+    //replace setState with calls to BLoC
     setState(() {
       if (this._searchIcon.icon == Icons.search) {
         this._searchIcon = Icon(Icons.close);
         this._appBarTitle = TextField(
-          controller: _filter,
+          controller: filter,
           decoration: InputDecoration(hintText: 'Find an athlete'),
         );
       } else {
         this._searchIcon = Icon(Icons.search);
         this._appBarTitle = Text('Admin Panel');
         filteredNames = names;
-        _filter.clear();
+        filter.clear();
       }
     });
   }
 
-  Widget view() {
+  Widget view() { // replace with BLoC provider/builder
     if (this._searchIcon.icon == Icons.search) {
       return ExpandableTheme(
           data: const ExpandableThemeData(
@@ -144,18 +145,18 @@ class _AdminPanelState extends State<AdminPanel> {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<bool>(
+    return StreamBuilder<bool>( // should be useless once BLoC provided
         stream: redraw,
         builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
           // can maybe rebuild less
-          return FutureBuilder(
+          return FutureBuilder( // *probably* don't need to change this? but could
               future: Future.wait([getGroups(), getCards()]),
               builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   return Scaffold(
-                    appBar: _buildBar(context),
-                    floatingActionButton: AddButton(),
-                    body: view(),
+                    appBar: _buildBar(context), // good
+                    floatingActionButton: AddButton(), // good
+                    body: view(), // see above
                     drawer: pd.PagesDrawer().importDrawer(context),
                   );
                 } else {
@@ -174,12 +175,13 @@ class _AdminPanelState extends State<AdminPanel> {
 class SelectionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<bool>(
+    return StreamBuilder<bool>( // useless once BLoC provided
         stream: redraw,
         builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
           List<Widget> subWidgets = List<Widget>.from(groupBoxes);
           subWidgets.add(ElevatedButton(
               onPressed: () {
+                // move to BLoC, passing sub
                 FirebaseFirestore.instance
                     .collection('users')
                     .doc(globals.currentUID)
@@ -329,7 +331,7 @@ class _GroupBoxState extends State<GroupBox> {
       title: Text(name),
       value: checked == true,
       onChanged: globals.subLock == true ? null : (bool? value) {
-        setState(() {
+        setState(() { // replace with BLoC calls
           checked = value! ? true : false;
         });
         if (checked == true) {
@@ -343,7 +345,7 @@ class _GroupBoxState extends State<GroupBox> {
   }
 }
 
-class AddButton extends StatelessWidget {
+class AddButton extends StatelessWidget { // probably fine as is
   final _nameKey = GlobalKey<FormState>();
   final nameGrabber = TextEditingController();
 
