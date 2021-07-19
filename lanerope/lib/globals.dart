@@ -43,6 +43,9 @@ bool loaded = false;
 bool subLock = false;
 
 Future<String> findRole() async {
+  if (currentUID.isEmpty){
+    getUID();
+  }
   await users.doc(currentUID).get().then((DocumentSnapshot snapshot) {
     role = snapshot.get("role");
     name = snapshot.get("first_name");

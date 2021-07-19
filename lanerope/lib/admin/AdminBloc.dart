@@ -19,11 +19,13 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
         yield CardsShown();
         break;
       case UpdateFilter:
-        if (filter.text.isEmpty){
+        if (event.filterText.isEmpty){
+          searchText = "";
           filteredNames = names;
           yield SearchShown(filterText: '');
         }
         else {
+          searchText = event.filterText;
           yield SearchShown(filterText: event.filterText);
         }
         break;

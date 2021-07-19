@@ -5,8 +5,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lanerope/AddGroup.dart';
 import 'package:lanerope/AthleteList.dart';
+import 'package:lanerope/admin/AdminBloc.dart';
+import 'package:lanerope/admin/AdminEvent.dart';
+import 'package:lanerope/admin/AdminState.dart';
 import 'package:lanerope/globals.dart' as globals;
 import 'package:lanerope/pagesDrawer.dart' as pd;
 
@@ -83,91 +87,85 @@ class _AdminPanelState extends State<AdminPanel> {
   Icon _searchIcon = new Icon(Icons.search);
   Widget _appBarTitle = new Text('Admin Panel');
 
-  _AdminPanelState() { // should be redundant now
-    filter.addListener(() {
-      if (filter.text.isEmpty) {
-        setState(() {
-          searchText = "";
-          filteredNames = names;
-        });
-      } else {
-        setState(() {
-          searchText = filter.text;
-        });
-      }
-    });
-  }
-
-  PreferredSizeWidget _buildBar(BuildContext context) {
-    return new AppBar(
-        centerTitle: true,
-        elevation: 0,
-        title: _appBarTitle,
-        actions: [
-          new IconButton(
-            icon: _searchIcon,
-            onPressed: _searchPressed,
-          ),
-        ]);
-  }
-
-  void _searchPressed() {
-    //replace setState with calls to BLoC
-    setState(() {
-      if (this._searchIcon.icon == Icons.search) {
-        this._searchIcon = Icon(Icons.close);
-        this._appBarTitle = TextField(
-          controller: filter,
-          decoration: InputDecoration(hintText: 'Find an athlete'),
-        );
-      } else {
-        this._searchIcon = Icon(Icons.search);
-        this._appBarTitle = Text('Admin Panel');
-        filteredNames = names;
-        filter.clear();
-      }
-    });
-  }
-
-  Widget view() { // replace with BLoC provider/builder
-    if (this._searchIcon.icon == Icons.search) {
-      return ExpandableTheme(
-          data: const ExpandableThemeData(
-              iconColor: Colors.blue, useInkWell: true),
-          child: ListView(
-            physics: const BouncingScrollPhysics(),
-            children: cards,
-          ));
-    } else {
-      return AthleteList('all');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<bool>( // should be useless once BLoC provided
-        stream: redraw,
-        builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
-          // can maybe rebuild less
-          return FutureBuilder( // *probably* don't need to change this? but could
-              future: Future.wait([getGroups(), getCards()]),
-              builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  return Scaffold(
-                    appBar: _buildBar(context), // good
-                    floatingActionButton: AddButton(), // good
-                    body: view(), // see above
-                    drawer: pd.PagesDrawer().importDrawer(context),
-                  );
-                } else {
-                  return Scaffold(
-                    appBar: _buildBar(context),
-                    body: Center(child: CircularProgressIndicator.adaptive()),
-                    // make it look less stupid
-                    drawer: pd.PagesDrawer().importDrawer(context),
-                  );
-                }
-              });
+    return FutureBuilder(
+        // *probably* don't need to change this? but could
+        future: Future.wait([getGroups(), getCards()]),
+        builder: (context, AsyncSnapshot<List<dynamic>> snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return BlocProvider(
+              create: (BuildContext context) => AdminBloc(CardsShown()),
+              child: Scaffold(
+                  appBar: AppBar(
+                      centerTitle: true,
+                      elevation: 0,
+                      title: BlocBuilder<AdminBloc, AdminState>(
+                          builder: (context, adminState) {
+                        return _appBarTitle;
+                      }),
+                      actions: [
+                        Builder(
+                            builder: (context) => IconButton(
+                                  icon: BlocBuilder<AdminBloc, AdminState>(
+                                      builder: (context, adminState) {
+                                    return _searchIcon;
+                                  }),
+                                  onPressed: () {
+                                    if (this._searchIcon.icon == Icons.search) {
+                                      this._searchIcon = Icon(Icons.close);
+                                      this._appBarTitle = TextField(
+                                        controller: filter,
+                                        onChanged: (value) {
+                                          BlocProvider.of<AdminBloc>(context)
+                                              .add(UpdateFilter(
+                                                  filterText: value));
+                                        },
+                                        decoration: InputDecoration(
+                                            hintText: 'Find an athlete'),
+                                      );
+                                      BlocProvider.of<AdminBloc>(context)
+                                          .add(ShowSearch());
+                                    } else {
+                                      this._searchIcon = Icon(Icons.search);
+                                      this._appBarTitle = Text('Admin Panel');
+                                      filteredNames = names;
+                                      filter.clear();
+                                      BlocProvider.of<AdminBloc>(context)
+                                          .add(ShowCards());
+                                    }
+                                  },
+                                )),
+                      ]), // good
+                  floatingActionButton: AddButton(),
+                  drawer: pd.PagesDrawer().importDrawer(context), // good
+                  body: BlocBuilder<AdminBloc, AdminState>(
+                      builder: (context, adminState) {
+                    if (adminState is CardsShown) {
+                      return ExpandableTheme(
+                          data: const ExpandableThemeData(
+                              iconColor: Colors.blue, useInkWell: true),
+                          child: ListView(
+                            physics: const BouncingScrollPhysics(),
+                            children: cards,
+                          ));
+                    } else {
+                      return AthleteList('all');
+                    }
+                  })),
+            );
+          } else {
+            return Scaffold(
+              appBar: AppBar(
+                title: Text("Admin Panel"),
+                centerTitle: true,
+                elevation: 0
+              ), // should probably just replace with text
+              body: Center(child: CircularProgressIndicator.adaptive()),
+              // make it look less stupid
+              drawer: pd.PagesDrawer().importDrawer(context),
+            );
+          }
         });
   }
 }
@@ -175,7 +173,8 @@ class _AdminPanelState extends State<AdminPanel> {
 class SelectionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<bool>( // useless once BLoC provided
+    return StreamBuilder<bool>(
+        // useless once BLoC provided
         stream: redraw,
         builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
           List<Widget> subWidgets = List<Widget>.from(groupBoxes);
@@ -322,7 +321,6 @@ class _GroupBoxState extends State<GroupBox> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     String name = widget.groupName;
@@ -330,22 +328,26 @@ class _GroupBoxState extends State<GroupBox> {
     return CheckboxListTile(
       title: Text(name),
       value: checked == true,
-      onChanged: globals.subLock == true ? null : (bool? value) {
-        setState(() { // replace with BLoC calls
-          checked = value! ? true : false;
-        });
-        if (checked == true) {
-          subs.add(name);
-        } else if (subs.contains(name)) {
-          subs.remove(name);
-        }
-      },
+      onChanged: globals.subLock == true
+          ? null
+          : (bool? value) {
+              setState(() {
+                // replace with BLoC calls
+                checked = value! ? true : false;
+              });
+              if (checked == true) {
+                subs.add(name);
+              } else if (subs.contains(name)) {
+                subs.remove(name);
+              }
+            },
       secondary: const Icon(Icons.hourglass_empty),
     );
   }
 }
 
-class AddButton extends StatelessWidget { // probably fine as is
+class AddButton extends StatelessWidget {
+  // probably fine as is
   final _nameKey = GlobalKey<FormState>();
   final nameGrabber = TextEditingController();
 
@@ -383,7 +385,7 @@ class AddButton extends StatelessWidget { // probably fine as is
                                       if (_nameKey.currentState!.validate()) {
                                         groupBoxes.add(GroupBox(
                                             groupName: nameGrabber.text));
-                                        AddGroup(nameGrabber.text).addGroup();
+                                        NewGroup(nameGrabber.text).addGroup();
                                         nameGrabber.clear();
                                         ctrl.add(true);
                                         Navigator.pop(context);

@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class AddGroup {
+class NewGroup {
   final String groupName;
-  AddGroup(this.groupName);
+  NewGroup(this.groupName);
   CollectionReference groups = FirebaseFirestore.instance.collection('groups');
 
   Future<void> addGroup() {
