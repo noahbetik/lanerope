@@ -22,6 +22,7 @@ class CoachDM extends StatelessWidget {
           }),
       drawer: pd.PagesDrawer().importDrawer(context),
       floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.message),
         onPressed: () {
           Navigator.push(
               context,

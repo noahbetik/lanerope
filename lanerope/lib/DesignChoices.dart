@@ -32,6 +32,9 @@ AppBar bar(String title) {
 ThemeData appTheme = ThemeData(
   brightness: Brightness.light,
   primaryColor: Colors.white,
+  appBarTheme: AppBarTheme(
+    elevation: 0
+  ),
   scaffoldBackgroundColor: Colors.white,
   accentColor: Colors.lightBlueAccent,
   buttonColor: Colors.redAccent,

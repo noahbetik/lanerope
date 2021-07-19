@@ -84,7 +84,8 @@ class AdminPanel extends StatefulWidget {
 
 class _AdminPanelState extends State<AdminPanel> {
   final TextEditingController filter = new TextEditingController();
-  Icon _searchIcon = new Icon(Icons.search);
+  Icon _searchIcon =
+      new Icon(Icons.search); // can these be moved to BLoC state?
   Widget _appBarTitle = new Text('Admin Panel');
 
   @override
@@ -146,7 +147,6 @@ class _AdminPanelState extends State<AdminPanel> {
                           data: const ExpandableThemeData(
                               iconColor: Colors.blue, useInkWell: true),
                           child: ListView(
-                            physics: const BouncingScrollPhysics(),
                             children: cards,
                           ));
                     } else {
@@ -157,10 +157,9 @@ class _AdminPanelState extends State<AdminPanel> {
           } else {
             return Scaffold(
               appBar: AppBar(
-                title: Text("Admin Panel"),
-                centerTitle: true,
-                elevation: 0
-              ), // should probably just replace with text
+                  title: this._appBarTitle,
+                  centerTitle: true,
+                  elevation: 0), // should probably just replace with text
               body: Center(child: CircularProgressIndicator.adaptive()),
               // make it look less stupid
               drawer: pd.PagesDrawer().importDrawer(context),
