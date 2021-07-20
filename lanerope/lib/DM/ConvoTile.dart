@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 
 import 'MessageView.dart';
 
-final CollectionReference users =
-FirebaseFirestore.instance.collection('users');
 
 class ConvoTile extends StatelessWidget {
   final String name;

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:lanerope/screens/adminPanel.dart';
 import 'package:lanerope/screens/athleteInfo.dart';
@@ -12,6 +13,7 @@ import 'globals.dart' as globals;
 class PagesDrawer extends Drawer {
 
   importDrawer(context) {
+
     return new Drawer(
       child: ListView(
         // Important: Remove any padding from the ListView.
@@ -81,7 +83,7 @@ class PagesDrawer extends Drawer {
             onTap: () {
               Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(builder: (context) => Settings()),
+                  MaterialPageRoute(builder: (context) => LaneropeSettings()),
                       (Route<dynamic> route) => false);
             },
           ),

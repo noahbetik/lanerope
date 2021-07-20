@@ -32,7 +32,6 @@ String name = '';
 String fullName = '';
 List<dynamic> myGroups = [];
 
-
 int annID = 0;
 List<String> everyGroup = ['unassigned'];
 Map allAthletes = new Map();
@@ -43,7 +42,7 @@ bool loaded = false;
 bool subLock = false;
 
 Future<String> findRole() async {
-  if (currentUID.isEmpty){
+  if (currentUID.isEmpty) {
     getUID();
   }
   await users.doc(currentUID).get().then((DocumentSnapshot snapshot) {
@@ -203,21 +202,64 @@ Future<CalendarThing> getEvent(String docTitle) async {
   return CalendarThing(length, begin, occurrences: dates, title: title);
 }
 
-
 void allEvents() async {
   events.clear();
   QuerySnapshot snap = await calendar.get();
   List items = snap.docs;
   for (int i = 0; i < items.length; i++) {
     CalendarThing thatEvent = await getEvent(items[i].id);
-    for (String date in thatEvent.occurrences){
-      if (events.containsKey(date)){
+    for (String date in thatEvent.occurrences) {
+      if (events.containsKey(date)) {
         events[date]?.add(thatEvent);
-      }
-      else{
+      } else {
         events[date] = [thatEvent];
       }
     }
   }
   print(events);
+}
+
+/// ***********************************************************************
+/// DM
+
+List contacts = [];
+
+Future<Map?> oneContact(String id) async {
+  DocumentSnapshot snap = await users.doc(id).get();
+  String name = await snap.get("first_name") + " " + await snap.get("last_name");
+  List group = await snap.get("groups");
+  int age = int.parse(await snap.get("age"));
+
+  if (age >= 13) {
+    return {"name" : name, "group" : group};
+  } else
+    return null;
+}
+
+void getContacts() async {
+  if (role == "Coach/Admin") {
+    // all parents
+    // athletes 13+
+    contacts.clear();
+    QuerySnapshot snap = await users.get();
+    List items = snap.docs;
+    for (int i = 0; i < items.length; i++) {
+      Map? info = await oneContact(items[i].id);
+      contacts.add(info);
+    }
+  } else if (role == "Parent/Guardian" || role == "Athlete") {
+    // group coaches only
+    // age checking done in oneContact() function
+    contacts.clear();
+    QuerySnapshot snap = await users.get();
+    List items = snap.docs;
+    for (int i = 0; i < items.length; i++) {
+      if (items[i].get("role") == "Coach/Admin") {
+        Map? info = await oneContact(items[i].id);
+        if (myGroups.contains(info!["groups"][0])) {
+          contacts.add(info);
+        }
+      }
+    }
+  }
 }

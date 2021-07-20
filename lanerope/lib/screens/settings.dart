@@ -9,14 +9,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 bool ios = Platform.isIOS;
 bool android = Platform.isAndroid;
 
-class Settings extends StatefulWidget {
+class LaneropeSettings extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     return _SettingState();
   }
 }
 
-class _SettingState extends State<Settings> {
+class _SettingState extends State<LaneropeSettings> {
   final double boxHeight = 60.0;
   final double textSize = 16.0;
 
