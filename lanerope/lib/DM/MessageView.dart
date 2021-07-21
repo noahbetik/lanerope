@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 class MessageView extends StatelessWidget {
   final String convoName;
+  final FocusNode _focus = new FocusNode();
 
   MessageView({required this.convoName});
 
@@ -39,16 +40,34 @@ class MessageView extends StatelessWidget {
                     ),
                   )),
               SizedBox(width: 4),
-              SizedBox(
-                  width: 330,
+              Expanded(
                   child: TextField(
-                    keyboardType: TextInputType.multiline,
-                    maxLines: 1,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText: 'Type a message',
+                focusNode: _focus,
+                keyboardType: TextInputType.multiline,
+                maxLines: 1,
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  hintText: 'Type a message',
+                ),
+              )),
+              _focus.hasFocus
+                  ? Material(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(100),
+                  child: InkWell(
+                    customBorder: CircleBorder(),
+                    radius: 80,
+                    onTap: () {},
+                    splashColor: Colors.redAccent.withOpacity(0.5),
+                    highlightColor: Colors.redAccent.withOpacity(0.5),
+                    child: Container(
+                      width: 42,
+                      height: 42,
+                      child: Icon(Icons.send_rounded),
                     ),
                   ))
+                  : SizedBox.shrink(),
+              SizedBox(width: 4)
             ]),
           )),
     );
