@@ -19,7 +19,7 @@ class ConvoTile extends StatelessWidget {
       subtitle: Text(this.lastMsg),
       trailing: Text(this.timestamp),
       onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => MessageView()));
+        Navigator.push(context, MaterialPageRoute(builder: (context) => MessageView(convoName: this.name)));
       },
       dense: true,
     );

@@ -105,7 +105,6 @@ Future<void> allInfo() async {
       });
     });
   }
-  print("getting all info");
 }
 
 /// ********************************************************************************
@@ -124,7 +123,6 @@ Future<int> announcementID() async {
 List<Announcement> announcementList = [];
 
 Future<Map> getAnnouncement(String docTitle) async {
-  print("getting announcement " + docTitle);
   DocumentSnapshot snap = await announcements.doc(docTitle).get();
   String title = await snap.get("title_text");
   String text = await snap.get("main_text");
@@ -155,7 +153,6 @@ void sort(List<Announcement> ans) {
         Announcement temp = ans[j];
         ans[j] = ans[j + 1];
         ans[j + 1] = temp;
-        print("swap em");
       }
     }
   }
@@ -180,8 +177,6 @@ void allAnnouncements() async {
     }
   }
 
-  print("did it reflect?");
-  print(announcementList);
   complete.add(true);
   loaded = true;
 }
@@ -216,7 +211,6 @@ void allEvents() async {
       }
     }
   }
-  print(events);
 }
 
 /// ***********************************************************************

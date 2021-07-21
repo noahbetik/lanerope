@@ -9,8 +9,6 @@ FirebaseFirestore.instance.collection('users');
 
 class ListContacts extends StatelessWidget {
 
-
-
   @override
   Widget build(BuildContext context) {
     print(globals.contacts);
@@ -21,7 +19,6 @@ class ListContacts extends StatelessWidget {
       body: ListView.builder(
           itemCount: globals.contacts.length,
           itemBuilder: (context, index){
-            print(globals.contacts);
         return ConvoTile(name: globals.contacts[index]["name"], lastMsg: "Tap to send a message");
       }),
     );
