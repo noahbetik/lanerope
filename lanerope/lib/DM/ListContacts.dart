@@ -5,23 +5,21 @@ import 'package:lanerope/DM/ConvoTile.dart';
 import 'package:lanerope/globals.dart' as globals;
 
 final CollectionReference users =
-FirebaseFirestore.instance.collection('users');
+    FirebaseFirestore.instance.collection('users');
 
 class ListContacts extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
-    print(globals.contacts);
     return Scaffold(
-      appBar: AppBar(
-        title: Text("New Message")
-      ),
+      appBar: AppBar(title: Text("New Message")),
       body: ListView.builder(
           itemCount: globals.contacts.length,
-          itemBuilder: (context, index){
-        return ConvoTile(name: globals.contacts[index]["name"], lastMsg: "Tap to send a message");
-      }),
+          itemBuilder: (context, index) {
+            return ConvoTile(
+                id: globals.contacts[index]["id"],
+                name: globals.contacts[index]["name"],
+                lastMsg: "Tap to send a message");
+          }),
     );
   }
-
 }

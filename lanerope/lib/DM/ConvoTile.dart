@@ -1,16 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import 'MessageView.dart';
+import 'package:lanerope/globals.dart' as globals;
 
+final CollectionReference messages =
+    FirebaseFirestore.instance.collection('messages');
 
 class ConvoTile extends StatelessWidget {
   final String name;
   final String lastMsg;
   final String timestamp;
+  final String id;
 
-  ConvoTile({this.name = '', this.lastMsg = '', this.timestamp = ''});
+  ConvoTile({this.name = '', this.lastMsg = '', this.timestamp = '', required this.id});
 
   @override
   Widget build(BuildContext context) {
@@ -18,11 +21,22 @@ class ConvoTile extends StatelessWidget {
       title: Text(this.name),
       subtitle: Text(this.lastMsg),
       trailing: Text(this.timestamp),
-      onTap: () {
-        Navigator.push(context, MaterialPageRoute(builder: (context) => MessageView(convoName: this.name)));
+      onTap: () async {
+        String docID = '';
+        await messages.add({
+          "participants" : [globals.currentUID, this.id],
+          "messages" : [],
+          "status" : "old"
+        }).then((doc){
+          docID = doc.id;
+        });
+        print("docID is " + docID);
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => MessageView(convoName: this.name, chatID: docID,)));
       },
       dense: true,
     );
   }
-
 }

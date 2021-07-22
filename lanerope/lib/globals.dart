@@ -22,6 +22,8 @@ final CollectionReference stats =
     FirebaseFirestore.instance.collection('stats');
 final CollectionReference calendar =
     FirebaseFirestore.instance.collection('calendar');
+final CollectionReference messages =
+    FirebaseFirestore.instance.collection('messages');
 
 ///***************************************************************************
 /// VARIABLES
@@ -220,12 +222,13 @@ List contacts = [];
 
 Future<Map?> oneContact(String id) async {
   DocumentSnapshot snap = await users.doc(id).get();
-  String name = await snap.get("first_name") + " " + await snap.get("last_name");
+  String name =
+      await snap.get("first_name") + " " + await snap.get("last_name");
   List group = await snap.get("groups");
   int age = int.parse(await snap.get("age"));
 
   if (age >= 13) {
-    return {"name" : name, "group" : group};
+    return {"name": name, "group": group, "id": id};
   } else
     return null;
 }
