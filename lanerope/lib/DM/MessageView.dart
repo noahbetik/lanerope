@@ -41,6 +41,7 @@ class MessageView extends StatelessWidget {
                       // ⛄𝄞⛄
                       return Message(
                           text: info[0],
+                          timestamp: info[1],
                           user: info[2] == globals.currentUID
                               ? Participant.you
                               : Participant.them,

@@ -51,8 +51,13 @@ class Message extends StatefulWidget {
   final String text;
   final Participant user;
   final String chatID;
+  final String timestamp;
 
-  Message({required this.text, required this.user, required this.chatID});
+  Message(
+      {required this.text,
+      required this.user,
+      required this.chatID,
+      required this.timestamp});
 
   @override
   State<StatefulWidget> createState() {
@@ -77,15 +82,13 @@ class MsgState extends State<Message> {
   Widget showStatus(AsyncSnapshot<DocumentSnapshot<Object?>> snap) {
     if (!snap.hasData) {
       return Icon(Icons.send_outlined, size: 14.0, color: Colors.grey);
-    }
-    else {
+    } else {
       var ds = snap.data;
       int len = ds!['messages'].length;
-      String bit = ds['messages'][len-1].split("⛄𝄞⛄")[0];
-      if (bit != widget.text){
+      String bit = ds['messages'][len - 1].split("⛄𝄞⛄")[1];
+      if (bit != widget.timestamp) {
         updateStatus(MsgStatus.old);
-      }
-      else{
+      } else {
         updateStatus(parseString(ds['status']));
       }
       switch (this._status) {
@@ -122,25 +125,35 @@ class MsgState extends State<Message> {
                       top: 8.0, bottom: 4.0, right: 64.0, left: 8.0),
               decoration:
                   BoxDecoration(borderRadius: BorderRadius.circular(4.0)),
-              child: Column(children: [
-                Container(
-                    padding: EdgeInsets.all(8.0),
-                    alignment: Alignment.centerLeft,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16.0),
-                        color: widget.user == Participant.you
-                            ? Colors.lightBlueAccent
-                            : Colors.grey[200]),
-                    child: Text(widget.text,
-                        style: TextStyle(
-                            color: widget.user == Participant.you
-                                ? Colors.white
-                                : Colors.black))),
-                Container(
-                    child: widget.user == Participant.you
-                        ? showStatus(snap)
-                        : SizedBox.shrink(),
-                    alignment: Alignment.bottomRight)
+              child: Row(
+                  textDirection: widget.user == Participant.you
+                      ? TextDirection.ltr : TextDirection.rtl,
+                  children: [
+                Spacer(),
+                Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                  Container(
+                      padding: EdgeInsets.all(8.0),
+                      alignment: Alignment.centerLeft,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16.0),
+                          color: widget.user == Participant.you
+                              ? Colors.lightBlueAccent
+                              : Colors.grey[200]),
+                      child: Text(widget.text,
+                          textWidthBasis: TextWidthBasis.longestLine,
+                          style: TextStyle(
+                              color: widget.user == Participant.you
+                                  ? Colors.white
+                                  : Colors.black))),
+                  Container(
+                    padding: EdgeInsets.only(right: 8.0),
+                      child: widget.user == Participant.you
+                          ? showStatus(snap)
+                          : SizedBox.shrink(),
+                      alignment: Alignment.bottomRight)
+                ])
               ]));
         });
   }
