@@ -36,13 +36,15 @@ class MessageView extends StatelessWidget {
                   itemCount: ds!['messages'].length,
                   itemBuilder: (context, i) {
                     if (ds['messages'].length != 0) {
-                      List info = ds['messages'][i].split("*&^");
+                      List info = ds['messages'][i].split("⛄𝄞⛄");
                       // has the potential to go buggy but makes db wayyyyyy simpler
+                      // ⛄𝄞⛄
                       return Message(
                           text: info[0],
                           user: info[2] == globals.currentUID
                               ? Participant.you
-                              : Participant.them);
+                              : Participant.them,
+                          chatID: this.chatID);
                     } else {
                       print("hek");
                       return SizedBox.shrink();
@@ -82,7 +84,9 @@ class MessageView extends StatelessWidget {
                   focusNode: _focus,
                   controller: msgCtrl,
                   keyboardType: TextInputType.multiline,
-                  maxLines: 1,
+                  textCapitalization: TextCapitalization.sentences,
+                  maxLines: 10,
+                  minLines: 1,
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     hintText: 'Type a message',
@@ -102,14 +106,16 @@ class MessageView extends StatelessWidget {
                                 .update({
                                   'messages': FieldValue.arrayUnion([
                                     msgCtrl.text +
-                                        "*&^" +
+                                        "⛄𝄞⛄" +
                                         DateTime.now().toString() +
-                                        "*&^" +
+                                        "⛄𝄞⛄" +
                                         globals.currentUID,
                                   ]),
                                   'status': "sent"
                                 })
-                                .then((value) => print("Message Sent"))
+                                .then((value) => messages
+                                    .doc(this.chatID)
+                                    .update({'status': 'sent'}))
                                 .catchError((error) => print(error));
                             msgCtrl.clear();
                           },

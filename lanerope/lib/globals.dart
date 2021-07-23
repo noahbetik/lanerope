@@ -239,7 +239,7 @@ void getContacts() async {
     // athletes 13+
     contacts.clear();
     QuerySnapshot snap = await users.get();
-    List items = snap.docs;
+    List<DocumentSnapshot> items = snap.docs;
     for (int i = 0; i < items.length; i++) {
       Map? info = await oneContact(items[i].id);
       contacts.add(info);
@@ -254,6 +254,7 @@ void getContacts() async {
       if (items[i].get("role") == "Coach/Admin") {
         Map? info = await oneContact(items[i].id);
         if (myGroups.contains(info!["groups"][0])) {
+          // need to fix for coaches w multiple groups
           contacts.add(info);
         }
       }
