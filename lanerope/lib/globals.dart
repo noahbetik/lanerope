@@ -278,9 +278,11 @@ Future<List> convoInfo (String convoID) async {
   List info = [];
 
   var cv = await messages.doc(convoID).get();
-  List<String> temp = cv.get('participants');
+  List temp = cv.get('participants');
   info.add(temp[0] == currentUID ? temp[1] : temp[0]); // other UID
-  var other = await messages.doc(info[0]).get();
+  var other = await users.doc(info[0]).get();
+  print("this that");
+  print(info[0]);
   info.add(other.get("first_name") + " " + other.get("last_name")); // name
   temp = cv.get('messages');
   int len = temp.length;

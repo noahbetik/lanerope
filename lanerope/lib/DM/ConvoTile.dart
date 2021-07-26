@@ -37,10 +37,10 @@ class ConvoTile extends StatelessWidget {
           docID = doc.id;
         });
         users.doc(globals.currentUID).update({
-          'convos' : {FieldValue.arrayUnion([docID])}
+          'convos' : FieldValue.arrayUnion([docID])
         }); // update for creating user
         users.doc(this.id).update({
-          'convos' : {FieldValue.arrayUnion([docID])}
+          'convos' : FieldValue.arrayUnion([docID])
         }); // update for other user
         print("docID is " + docID);
         Navigator.push(
