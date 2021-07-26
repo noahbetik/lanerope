@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lanerope/screens/calendar.dart';
 import 'package:lanerope/screens/home.dart';
+import 'package:lanerope/DM/ConvoTile.dart';
 
 /// **************************************************************************
 /// DATABASE REFERENCES
@@ -260,4 +261,29 @@ void getContacts() async {
       }
     }
   }
+}
+
+List convos = [];
+
+void getConvos() async {
+  var snap = await users.doc(currentUID).get();
+  List cvs = snap.get('convos');
+  for (String c in cvs){
+    List temp = await convoInfo(c);
+    convos.add(ConvoTile(id: temp[0], name: temp[1], lastMsg: temp[2]));
+  }
+}
+
+Future<List> convoInfo (String convoID) async {
+  List info = [];
+
+  var cv = await messages.doc(convoID).get();
+  List<String> temp = cv.get('participants');
+  info.add(temp[0] == currentUID ? temp[1] : temp[0]); // other UID
+  var other = await messages.doc(info[0]).get();
+  info.add(other.get("first_name") + " " + other.get("last_name")); // name
+  temp = cv.get('messages');
+  int len = temp.length;
+  info.add(temp[len-1]); // last msg
+  return info;
 }

@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 // add name, gender, pronouns
@@ -12,7 +11,8 @@ class AddUser {
   String age;
   final DateTime birthday;
 
-  AddUser(this.uid, this.role, this.firstName, this.lastName, this.gender, this.age, this.birthday);
+  AddUser(this.uid, this.role, this.firstName, this.lastName, this.gender,
+      this.age, this.birthday);
 
   // Create a CollectionReference called users that references the firestore collection
   CollectionReference users = FirebaseFirestore.instance.collection('users');
@@ -26,10 +26,11 @@ class AddUser {
           'role': role,
           'first_name': firstName,
           'last_name': lastName,
-          'gender' : gender,
-          'age' : age,
-          'birthday' : birthday,
-          'groups' : <String>['unassigned'],
+          'gender': gender,
+          'age': age,
+          'birthday': birthday,
+          'groups': <String>['unassigned'],
+          'convos': <String>[]
           // want nested something for parent/athlete/coach/relations
         })
         .then((value) => print("User Added"))
