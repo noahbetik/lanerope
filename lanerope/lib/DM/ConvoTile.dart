@@ -13,12 +13,14 @@ class ConvoTile extends StatelessWidget {
   final String name;
   final String lastMsg;
   final String timestamp;
+  final String cID;
   final String id;
 
   ConvoTile(
       {this.name = '',
       this.lastMsg = '',
       this.timestamp = '',
+      this.cID = '',
       required this.id});
 
   @override
@@ -27,29 +29,39 @@ class ConvoTile extends StatelessWidget {
       title: Text(this.name),
       subtitle: Text(this.lastMsg),
       trailing: Text(this.timestamp),
-      onTap: () async {
-        String docID = '';
-        await messages.add({
-          "participants": [globals.currentUID, this.id],
-          "messages": [],
-          "status": "old"
-        }).then((doc) {
-          docID = doc.id;
-        });
-        users.doc(globals.currentUID).update({
-          'convos' : FieldValue.arrayUnion([docID])
-        }); // update for creating user
-        users.doc(this.id).update({
-          'convos' : FieldValue.arrayUnion([docID])
-        }); // update for other user
-        print("docID is " + docID);
+      onTap: this.cID == ''
+          ? () async {
+              String docID = '';
+              await messages.add({
+                "participants": [globals.currentUID, this.id],
+                "messages": [],
+                "status": "old"
+              }).then((doc) {
+                docID = doc.id;
+              });
+              users.doc(globals.currentUID).update({
+                'convos': FieldValue.arrayUnion([docID])
+              }); // update for creating user
+              users.doc(this.id).update({
+                'convos': FieldValue.arrayUnion([docID])
+              }); // update for other user
+              print("docID is " + docID);
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => MessageView(
+                            convoName: this.name,
+                            chatID: docID,
+                          )));
+            }
+          : () async {
         Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => MessageView(
-                      convoName: this.name,
-                      chatID: docID,
-                    )));
+                  convoName: this.name,
+                  chatID: this.cID,
+                )));
       },
       dense: true,
     );

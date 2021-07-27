@@ -270,13 +270,15 @@ void getConvos() async {
   List cvs = snap.get('convos');
   for (String c in cvs){
     List temp = await convoInfo(c);
-    convos.add(ConvoTile(id: temp[0], name: temp[1], lastMsg: temp[2]));
+    String text = temp[2].split("⛄𝄞⛄")[0];
+    print(text);
+    convos.add(ConvoTile(cID: c, id: temp[0], name: temp[1], lastMsg: text));
   }
 }
 
 Future<List> convoInfo (String convoID) async {
   List info = [];
-
+  print("getting convo " + convoID);
   var cv = await messages.doc(convoID).get();
   List temp = cv.get('participants');
   info.add(temp[0] == currentUID ? temp[1] : temp[0]); // other UID
