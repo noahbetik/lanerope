@@ -55,6 +55,7 @@ class ConvoTile extends StatelessWidget {
                           )));
             }
           : () async {
+        messages.doc(this.cID).update({"status" : "received"});
         Navigator.push(
             context,
             MaterialPageRoute(

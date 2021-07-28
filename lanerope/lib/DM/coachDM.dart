@@ -17,7 +17,6 @@ List conversations = [];
 
 class CoachDM extends StatelessWidget {
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,7 +24,6 @@ class CoachDM extends StatelessWidget {
       body: ListView.builder(
           itemCount: globals.convos.length,
           itemBuilder: (context, index) {
-            print("build dis list");
             return globals.convos[index];
           }),
       drawer: pd.PagesDrawer().importDrawer(context),

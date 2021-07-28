@@ -113,6 +113,13 @@ class _LoginState extends State<Login> {
                                 await SharedPreferences.getInstance();
                                 prefs.setBool("login", true);
                                 prefs.setString("role", globals.role);
+                                globals.findRole(); // may make usage in homepage redundant
+                                globals.allGroups();
+                                globals.allInfo();
+                                globals.allAnnouncements();
+                                globals.allEvents();
+                                globals.getContacts();
+                                globals.getConvos();
                                 Navigator.pushAndRemoveUntil(
                                     _scaffoldKey.currentContext!,
                                     MaterialPageRoute(

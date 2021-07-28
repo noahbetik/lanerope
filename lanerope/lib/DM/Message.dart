@@ -117,7 +117,42 @@ class MsgState extends State<Message> {
     return StreamBuilder<DocumentSnapshot>(
         stream: messages.doc(widget.chatID).snapshots(),
         builder: (context, snap) {
-          return Container(
+          return Align(
+            alignment: widget.user == Participant.you
+                ? Alignment.centerRight
+                : Alignment.centerLeft,
+            child: Container(
+                padding:
+                EdgeInsets.only(top: 8.0, bottom: 4.0, left: 8.0, right: 8.0),
+                constraints: BoxConstraints(maxWidth: 300),
+                child: Column(
+                  crossAxisAlignment: widget.user == Participant.you
+                      ? CrossAxisAlignment.end
+                      : CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                        padding: EdgeInsets.all(8.0),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16.0),
+                            color: widget.user == Participant.you
+                                ? Colors.lightBlueAccent
+                                : Colors.grey[200]),
+                        child: Text(widget.text,
+                            style: TextStyle(
+                                color: widget.user == Participant.you
+                                    ? Colors.white
+                                    : Colors.black))),
+                    Container(
+                        padding: EdgeInsets.only(right: 8.0),
+                        child: widget.user == Participant.you
+                            ? showStatus(snap)
+                            : SizedBox.shrink(),
+                        alignment: Alignment.bottomRight)
+                  ],
+                ))
+          );
+
+          /*return Container(
               padding: widget.user == Participant.you
                   ? EdgeInsets.only(
                       top: 8.0, bottom: 4.0, right: 8.0, left: 64.0)
@@ -126,35 +161,37 @@ class MsgState extends State<Message> {
               decoration:
                   BoxDecoration(borderRadius: BorderRadius.circular(4.0)),
               child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   textDirection: widget.user == Participant.you
-                      ? TextDirection.ltr : TextDirection.rtl,
+                      ? TextDirection.ltr
+                      : TextDirection.rtl,
                   children: [
-                Spacer(),
-                Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                  Container(
-                      padding: EdgeInsets.all(8.0),
-                      alignment: Alignment.centerLeft,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16.0),
-                          color: widget.user == Participant.you
-                              ? Colors.lightBlueAccent
-                              : Colors.grey[200]),
-                      child: Text(widget.text,
-                          textWidthBasis: TextWidthBasis.longestLine,
-                          style: TextStyle(
-                              color: widget.user == Participant.you
-                                  ? Colors.white
-                                  : Colors.black))),
-                  Container(
-                    padding: EdgeInsets.only(right: 8.0),
-                      child: widget.user == Participant.you
-                          ? showStatus(snap)
-                          : SizedBox.shrink(),
-                      alignment: Alignment.bottomRight)
-                ])
-              ]));
+                    Spacer(),
+                    Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Container(
+                              padding: EdgeInsets.all(8.0),
+                              alignment: Alignment.centerLeft,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(16.0),
+                                  color: widget.user == Participant.you
+                                      ? Colors.lightBlueAccent
+                                      : Colors.grey[200]),
+                              child: Text(widget.text,
+                                  textWidthBasis: TextWidthBasis.longestLine,
+                                  style: TextStyle(
+                                      color: widget.user == Participant.you
+                                          ? Colors.white
+                                          : Colors.black))),
+                          Container(
+                              padding: EdgeInsets.only(right: 8.0),
+                              child: widget.user == Participant.you
+                                  ? showStatus(snap)
+                                  : SizedBox.shrink(),
+                              alignment: Alignment.bottomRight)
+                        ])
+                  ]));*/
         });
   }
 }
