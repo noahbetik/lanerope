@@ -15,20 +15,26 @@ class ConvoTile extends StatelessWidget {
   final String timestamp;
   final String cID;
   final String id;
+  final bool newMsg;
 
   ConvoTile(
       {this.name = '',
       this.lastMsg = '',
       this.timestamp = '',
       this.cID = '',
+      required this.newMsg,
       required this.id});
 
   @override
   Widget build(BuildContext context) {
+    TextStyle ts = TextStyle(
+      fontWeight: newMsg ? FontWeight.bold : FontWeight.normal
+    );
+
     return ListTile(
-      title: Text(this.name),
-      subtitle: Text(this.lastMsg),
-      trailing: Text(this.timestamp),
+      title: Text(this.name, style: ts),
+      subtitle: Text(this.lastMsg, style: ts),
+      trailing: Text(this.timestamp, style: ts),
       onTap: this.cID == ''
           ? () async {
               String docID = '';
@@ -55,15 +61,20 @@ class ConvoTile extends StatelessWidget {
                           )));
             }
           : () async {
-        messages.doc(this.cID).update({"status" : "received"});
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => MessageView(
-                  convoName: this.name,
-                  chatID: this.cID,
-                )));
-      },
+              var wrangler = await messages.doc(this.cID).get();
+              List msgs = wrangler.get("messages");
+              int len = msgs.length;
+              if (msgs[len - 1].split("⛄𝄞⛄")[2] != globals.currentUID) {
+                messages.doc(this.cID).update({"status": "received"});
+              }
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => MessageView(
+                            convoName: this.name,
+                            chatID: this.cID,
+                          )));
+            },
       dense: true,
     );
   }

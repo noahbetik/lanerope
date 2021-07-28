@@ -263,7 +263,7 @@ void getContacts() async {
   }
 }
 
-List convos = [];
+Map convos = {};
 
 void getConvos() async {
   var snap = await users.doc(currentUID).get();
@@ -271,8 +271,9 @@ void getConvos() async {
   for (String c in cvs){
     List temp = await convoInfo(c);
     String text = temp[2].split("⛄𝄞⛄")[0];
-    print(text);
-    convos.add(ConvoTile(cID: c, id: temp[0], name: temp[1], lastMsg: text));
+    bool newMsg = (temp[3] != 'received') && temp[0] != currentUID;
+    print(newMsg);
+    convos[c] = ConvoTile(cID: c, id: temp[0], name: temp[1], newMsg: newMsg, lastMsg: text);
   }
 }
 
@@ -289,5 +290,6 @@ Future<List> convoInfo (String convoID) async {
   temp = cv.get('messages');
   int len = temp.length;
   info.add(temp[len-1]); // last msg
+  info.add(cv.get("status"));
   return info;
 }

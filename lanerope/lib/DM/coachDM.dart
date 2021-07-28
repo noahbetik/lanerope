@@ -11,30 +11,35 @@ import 'package:lanerope/globals.dart' as globals;
 bool ios = Platform.isIOS;
 bool android = Platform.isAndroid;
 final CollectionReference messages =
-FirebaseFirestore.instance.collection('messages');
+    FirebaseFirestore.instance.collection('messages');
 
 List conversations = [];
 
 class CoachDM extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Direct Messages")),
-      body: ListView.builder(
-          itemCount: globals.convos.length,
-          itemBuilder: (context, index) {
-            return globals.convos[index];
+      body: StreamBuilder<QuerySnapshot>(
+          stream: messages.snapshots(),
+          builder: (context, snap) {
+            if (!snap.hasData) {
+              return SizedBox.shrink();
+            } else {
+              return ListView.builder(
+                  itemCount: globals.convos.length,
+                  itemBuilder: (context, index) {
+                    return globals.convos[index];
+                  });
+            }
           }),
       drawer: pd.PagesDrawer().importDrawer(context),
       floatingActionButton: FloatingActionButton(
           child: Icon(Icons.message),
           onPressed: () {
-            Navigator.push(
-                context,
+            Navigator.push(context,
                 MaterialPageRoute(builder: (context) => ListContacts()));
-          }
-      ),
+          }),
     );
   }
 }

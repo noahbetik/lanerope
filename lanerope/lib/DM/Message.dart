@@ -8,26 +8,6 @@ enum MsgStatus { sending, sent, delivered, received, error, old }
 final CollectionReference messages =
     FirebaseFirestore.instance.collection('messages');
 
-extension toString on MsgStatus {
-  // feels really dumb but idk what else to do
-  String str() {
-    switch (this) {
-      case MsgStatus.sending:
-        return "sending";
-      case MsgStatus.sent:
-        return "sent";
-      case MsgStatus.delivered:
-        return "delivered";
-      case MsgStatus.received:
-        return "received";
-      case MsgStatus.error:
-        return "error";
-      case MsgStatus.old:
-        return "old";
-    }
-  }
-}
-
 MsgStatus parseString(String dbString) {
   switch (dbString) {
     case "sending":
@@ -151,47 +131,6 @@ class MsgState extends State<Message> {
                   ],
                 ))
           );
-
-          /*return Container(
-              padding: widget.user == Participant.you
-                  ? EdgeInsets.only(
-                      top: 8.0, bottom: 4.0, right: 8.0, left: 64.0)
-                  : EdgeInsets.only(
-                      top: 8.0, bottom: 4.0, right: 64.0, left: 8.0),
-              decoration:
-                  BoxDecoration(borderRadius: BorderRadius.circular(4.0)),
-              child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  textDirection: widget.user == Participant.you
-                      ? TextDirection.ltr
-                      : TextDirection.rtl,
-                  children: [
-                    Spacer(),
-                    Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Container(
-                              padding: EdgeInsets.all(8.0),
-                              alignment: Alignment.centerLeft,
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(16.0),
-                                  color: widget.user == Participant.you
-                                      ? Colors.lightBlueAccent
-                                      : Colors.grey[200]),
-                              child: Text(widget.text,
-                                  textWidthBasis: TextWidthBasis.longestLine,
-                                  style: TextStyle(
-                                      color: widget.user == Participant.you
-                                          ? Colors.white
-                                          : Colors.black))),
-                          Container(
-                              padding: EdgeInsets.only(right: 8.0),
-                              child: widget.user == Participant.you
-                                  ? showStatus(snap)
-                                  : SizedBox.shrink(),
-                              alignment: Alignment.bottomRight)
-                        ])
-                  ]));*/
         });
   }
 }

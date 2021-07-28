@@ -18,6 +18,7 @@ class ListContacts extends StatelessWidget {
             return ConvoTile(
                 id: globals.contacts[index]["id"],
                 name: globals.contacts[index]["name"],
+                newMsg: false,
                 lastMsg: "Tap to send a message");
           }),
     );
