@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:intl/intl.dart';
 import 'Message.dart';
 import 'package:lanerope/globals.dart' as globals;
@@ -8,15 +9,29 @@ import 'package:lanerope/globals.dart' as globals;
 final CollectionReference messages =
     FirebaseFirestore.instance.collection('messages');
 
-class MessageView extends StatelessWidget {
+class MessageView extends StatefulWidget {
   final String convoName;
+  final String chatID;
+  MessageView({required this.convoName, required this.chatID});
+
+  @override
+  State<StatefulWidget> createState() {
+    return MsgViewState();
+  }
+}
+
+class MsgViewState extends State<MessageView>{
   final FocusNode _focus = new FocusNode();
   final _sCtrl = ScrollController();
   final TextEditingController msgCtrl = TextEditingController();
-  final String chatID;
   final format = DateFormat("yyyy-MM-dd HH:mm");
 
-  MessageView({required this.convoName, required this.chatID});
+  @override
+  void dispose() {
+    _sCtrl.dispose();
+    msgCtrl.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,19 +40,21 @@ class MessageView extends StatelessWidget {
         FocusManager.instance.primaryFocus?.unfocus();
       },
       child: Scaffold(
-        appBar: AppBar(title: Text(this.convoName)),
+        appBar: AppBar(title: Text(widget.convoName)),
         body: StreamBuilder<DocumentSnapshot>(
-          stream: messages.doc(chatID).snapshots(),
+          stream: messages.doc(widget.chatID).snapshots(),
           builder: (context, snap) {
             if (!snap.hasData) {
               return SizedBox.shrink();
             } else {
               var ds = snap.data;
-              /*_sCtrl.animateTo(
-                _sCtrl.position.maxScrollExtent,
-                duration: Duration(milliseconds: 500),
-                curve: Curves.fastOutSlowIn,
-              );*/
+              SchedulerBinding.instance?.addPostFrameCallback((_) {
+                _sCtrl.animateTo(
+                  _sCtrl.position.maxScrollExtent,
+                  duration: Duration(milliseconds: 500),
+                  curve: Curves.fastOutSlowIn,
+                );
+              });
               return ListView.builder(
                 controller: _sCtrl,
                   itemCount: ds!['messages'].length,
@@ -52,7 +69,7 @@ class MessageView extends StatelessWidget {
                           user: info[2] == globals.currentUID
                               ? Participant.you
                               : Participant.them,
-                          chatID: this.chatID);
+                          chatID: widget.chatID);
                     } else {
                       print("hek");
                       return SizedBox.shrink();
@@ -110,7 +127,7 @@ class MessageView extends StatelessWidget {
                           onTap: () {
                             // db update here
                             messages
-                                .doc(this.chatID)
+                                .doc(widget.chatID)
                                 .update({
                                   'messages': FieldValue.arrayUnion([
                                     msgCtrl.text +
@@ -122,7 +139,7 @@ class MessageView extends StatelessWidget {
                                   'status': "sent"
                                 })
                                 .then((value) => messages
-                                    .doc(this.chatID)
+                                    .doc(widget.chatID)
                                     .update({'status': 'sent'}))
                                 .catchError((error) => print(error));
                             msgCtrl.clear();
