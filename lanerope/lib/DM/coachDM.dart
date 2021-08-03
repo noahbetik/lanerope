@@ -26,6 +26,7 @@ class CoachDM extends StatelessWidget {
             if (!snap.hasData) {
               return SizedBox.shrink();
             } else {
+              // seems weird since this is only used for first view
               return ListView.builder(
                   itemCount: globals.convos.length,
                   itemBuilder: (context, index) {

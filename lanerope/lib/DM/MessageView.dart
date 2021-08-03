@@ -11,6 +11,7 @@ final CollectionReference messages =
 class MessageView extends StatelessWidget {
   final String convoName;
   final FocusNode _focus = new FocusNode();
+  final _sCtrl = ScrollController();
   final TextEditingController msgCtrl = TextEditingController();
   final String chatID;
   final format = DateFormat("yyyy-MM-dd HH:mm");
@@ -32,7 +33,13 @@ class MessageView extends StatelessWidget {
               return SizedBox.shrink();
             } else {
               var ds = snap.data;
+              /*_sCtrl.animateTo(
+                _sCtrl.position.maxScrollExtent,
+                duration: Duration(milliseconds: 500),
+                curve: Curves.fastOutSlowIn,
+              );*/
               return ListView.builder(
+                controller: _sCtrl,
                   itemCount: ds!['messages'].length,
                   itemBuilder: (context, i) {
                     if (ds['messages'].length != 0) {

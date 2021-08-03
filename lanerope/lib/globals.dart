@@ -263,7 +263,7 @@ void getContacts() async {
   }
 }
 
-Map convos = {};
+List convos = [];
 
 void getConvos() async {
   var snap = await users.doc(currentUID).get();
@@ -273,7 +273,7 @@ void getConvos() async {
     String text = temp[2].split("⛄𝄞⛄")[0];
     bool newMsg = (temp[3] != 'received') && temp[0] != currentUID;
     print(newMsg);
-    convos[c] = ConvoTile(cID: c, id: temp[0], name: temp[1], newMsg: newMsg, lastMsg: text);
+    convos.add(ConvoTile(cID: c, id: temp[0], name: temp[1], newMsg: newMsg, lastMsg: text));
   }
 }
 
