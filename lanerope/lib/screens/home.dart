@@ -43,6 +43,7 @@ List<Widget> sayHi() {
 class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    // redo with firestore stream
     return StreamBuilder(
         stream: globals.redraw,
         builder: (BuildContext context, AsyncSnapshot snapshot) {

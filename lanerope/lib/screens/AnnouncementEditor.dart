@@ -60,7 +60,7 @@ class EditorState extends State<AnnouncementEditor> {
 
   Future getImage() async {
     final pickedFile =
-        await picker.getImage(source: ImageSource.gallery, imageQuality: 25);
+        await picker.getImage(source: ImageSource.gallery, imageQuality: 50);
     final croppedFile = await ImageCropper.cropImage(
         sourcePath: pickedFile!.path,
         aspectRatio: CropAspectRatio(ratioX: 4, ratioY: 3));

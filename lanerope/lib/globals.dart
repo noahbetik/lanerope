@@ -10,6 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:lanerope/screens/calendar.dart';
 import 'package:lanerope/screens/home.dart';
 import 'package:lanerope/DM/ConvoTile.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 /// **************************************************************************
 /// DATABASE REFERENCES
@@ -141,7 +142,8 @@ Future<Map> getAnnouncement(String docTitle) async {
     "id": id
   };
   if (imgURL != '') {
-    result["image"] = Image.network(imgURL, fit: BoxFit.cover);
+    result["image"] = CachedNetworkImageProvider(imgURL);
+        //Image.network(imgURL, fit: BoxFit.cover);
   }
   return result;
   //[title, text, img, author, date, id];
@@ -164,6 +166,7 @@ void sort(List<Announcement> ans) {
 
 void allAnnouncements() async {
   // it still feels stupid to do it this way but whatever
+  // redo with firestore stream
   announcementList.clear();
   QuerySnapshot snap = await announcements.get();
   List items = snap.docs;
@@ -173,7 +176,7 @@ void allAnnouncements() async {
     if (info.containsKey("image")) {
       announcementList.add(Announcement(info["title"], info["text"],
           info["author"], info["date"], info["id"], items[i].id,
-          coverImage: info["image"]));
+          coverImage: Image(image: info["image"], fit: BoxFit.cover,)));
     } else {
       announcementList.add(Announcement(info["title"], info["text"],
           info["author"], info["date"], info["id"], items[i].id));
