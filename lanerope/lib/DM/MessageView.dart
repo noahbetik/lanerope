@@ -52,11 +52,14 @@ class MsgViewState extends State<MessageView> {
                 SchedulerBinding.instance?.addPostFrameCallback((_) {
                   _sCtrl.animateTo(
                     _sCtrl.position.minScrollExtent,
-                    duration: Duration(milliseconds: 500),
+                    duration: Duration(milliseconds: 1000),
                     curve: Curves.fastOutSlowIn,
                   );
                 });
                 int num = ds!['messages'].length;
+                if(ds['messages'][num-1].split("⛄𝄞⛄")[2] != globals.currentUID){
+                  messages.doc(widget.chatID).update({"status": "received"});
+                }
                 return ListView.builder(
                     reverse: true,
                     controller: _sCtrl,
