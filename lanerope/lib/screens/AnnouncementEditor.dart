@@ -152,7 +152,7 @@ class EditorState extends State<AnnouncementEditor> {
                                       onPressed: () {
                                         if (db != '') {
                                           announcements.doc(db).delete();
-                                          globals.allAnnouncements();
+                                          //globals.allAnnouncements();
                                         }
                                         Navigator.pop(context);
                                         Navigator.pop(context);
@@ -177,7 +177,7 @@ class EditorState extends State<AnnouncementEditor> {
                           await saveImage(image, db);
                           print("image uploaded");
                         }
-                        globals.allAnnouncements();
+                        //globals.allAnnouncements();
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text('Announcement updated')));
@@ -237,7 +237,7 @@ class EditorState extends State<AnnouncementEditor> {
                                   int.parse(dbTitle.substring(startIndex)),
                                   dbTitle));
                         }
-                        globals.allAnnouncements();
+                        //globals.allAnnouncements();
                         print("announcement added");
                         globals.complete.add(true);
                         Navigator.pop(context);

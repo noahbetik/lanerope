@@ -126,66 +126,6 @@ Future<int> announcementID() async {
 
 List<Announcement> announcementList = [];
 
-Future<Map> getAnnouncement(String docTitle) async {
-  DocumentSnapshot snap = await announcements.doc(docTitle).get();
-  String title = await snap.get("title_text");
-  String text = await snap.get("main_text");
-  String imgURL = await snap.get("header_image");
-  String author = await snap.get("author");
-  String date = await snap.get("date");
-  int id = await snap.get("id");
-  Map result = {
-    "title": title,
-    "text": text,
-    "author": author,
-    "date": date,
-    "id": id
-  };
-  if (imgURL != '') {
-    result["image"] = CachedNetworkImageProvider(imgURL);
-        //Image.network(imgURL, fit: BoxFit.cover);
-  }
-  return result;
-  //[title, text, img, author, date, id];
-}
-
-void sort(List<Announcement> ans) {
-  // do a better sorting algorithm
-  int n = ans.length;
-  for (int i = 0; i < n - 1; i++) {
-    for (int j = 0; j < n - i - 1; j++) {
-      if (ans[j].id < ans[j + 1].id) {
-        Announcement temp = ans[j];
-        ans[j] = ans[j + 1];
-        ans[j + 1] = temp;
-      }
-    }
-  }
-  complete.add(true);
-}
-
-void allAnnouncements() async {
-  // it still feels stupid to do it this way but whatever
-  // redo with firestore stream
-  announcementList.clear();
-  QuerySnapshot snap = await announcements.get();
-  List items = snap.docs;
-  for (int i = 0; i < items.length; i++) {
-    Map info = await getAnnouncement(items[i].id);
-
-    if (info.containsKey("image")) {
-      announcementList.add(Announcement(info["title"], info["text"],
-          info["author"], info["date"], info["id"], items[i].id,
-          coverImage: Image(image: info["image"], fit: BoxFit.cover,)));
-    } else {
-      announcementList.add(Announcement(info["title"], info["text"],
-          info["author"], info["date"], info["id"], items[i].id));
-    }
-  }
-
-  complete.add(true);
-  loaded = true;
-}
 
 /// ***********************************************************************
 /// CALENDAR

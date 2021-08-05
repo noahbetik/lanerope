@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -44,31 +45,61 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // redo with firestore stream
-    return StreamBuilder(
-        stream: globals.redraw,
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (globals.loaded != true) {
-            globals.complete.add(true);
+    return StreamBuilder<QuerySnapshot>(
+        stream: announcements.snapshots(),
+        builder: (BuildContext context, snapshot) {
+          if (!snapshot.hasData) {
             return Scaffold(
                 appBar: dc.bar("Lanerope"),
                 floatingActionButton:
-                    globals.role == "Coach/Admin" ? CreateAnnouncement() : null,
+                globals.role == "Coach/Admin" ? CreateAnnouncement() : null,
                 body: Center(child: CircularProgressIndicator.adaptive()),
                 drawer: pd.PagesDrawer().importDrawer(context));
           }
+          else{
+            List<DocumentSnapshot> qs = snapshot.data!.docs.reversed.toList();
+            for(DocumentSnapshot ds in qs){
+              String title = ds.get("title_text");
+              String text = ds.get("main_text");
+              String imgURL = ds.get("header_image");
+              String author = ds.get("author");
+              String date = ds.get("date");
+              int id = ds.get("id");
+              Map result = {
+                "title": title,
+                "text": text,
+                "author": author,
+                "date": date,
+                "id": id
+              };
+              if (imgURL != '') {
+                result["image"] = CachedNetworkImageProvider(imgURL);
+                //Image.network(imgURL, fit: BoxFit.cover);
+              }
+              if (result.containsKey("image")) {
+                globals.announcementList.add(Announcement(result["title"], result["text"],
+                    result["author"], result["date"], result["id"], ds.id,
+                    coverImage: Image(image: result["image"], fit: BoxFit.cover,)));
+              } else {
+                globals.announcementList.add(Announcement(result["title"], result["text"],
+                    result["author"], result["date"], result["id"], ds.id));
+              }
+            }
+          }
 
-          globals.sort(globals.announcementList);
           return Scaffold(
               appBar: dc.bar("Lanerope"),
               //backgroundColor: Colors.white,
               floatingActionButton:
-                  globals.role == "Coach/Admin" ? CreateAnnouncement() : null,
+              globals.role == "Coach/Admin" ? CreateAnnouncement() : null,
               body: ListView(
+                reverse: false,
                   children: globals.announcementList),
               drawer: pd.PagesDrawer().importDrawer(context));
         });
   }
 }
+
 
 class Announcement extends StatelessWidget {
   // wanna make it look like the athletic-ish

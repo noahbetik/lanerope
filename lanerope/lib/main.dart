@@ -68,7 +68,7 @@ class _LaneropeState extends State<Lanerope> {
           globals.findRole(); // may make usage in homepage redundant
           globals.allGroups();
           globals.allInfo();
-          globals.allAnnouncements();
+          //globals.allAnnouncements();
           globals.allEvents();
           globals.getContacts();
           globals.getConvos();
