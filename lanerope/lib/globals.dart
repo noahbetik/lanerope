@@ -124,7 +124,7 @@ Future<int> announcementID() async {
   return id;
 }
 
-List<Announcement> announcementList = [];
+List<Widget> announcementList = [];
 
 
 /// ***********************************************************************

@@ -89,7 +89,6 @@ class _LaneropeState extends State<Lanerope> {
                 '/login': (BuildContext context) => new Login()
               });
         }
-        // Otherwise, show something whilst waiting for initialization to complete
         return CircularProgressIndicator
             .adaptive(); // great place to put a splash screen or something
       },

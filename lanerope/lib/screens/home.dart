@@ -42,6 +42,8 @@ List<Widget> sayHi() {
 }
 
 class Home extends StatelessWidget {
+  final int perPage = 20;
+
   @override
   Widget build(BuildContext context) {
     // redo with firestore stream
@@ -52,13 +54,12 @@ class Home extends StatelessWidget {
             return Scaffold(
                 appBar: dc.bar("Lanerope"),
                 floatingActionButton:
-                globals.role == "Coach/Admin" ? CreateAnnouncement() : null,
+                    globals.role == "Coach/Admin" ? CreateAnnouncement() : null,
                 body: Center(child: CircularProgressIndicator.adaptive()),
                 drawer: pd.PagesDrawer().importDrawer(context));
-          }
-          else{
+          } else {
             List<DocumentSnapshot> qs = snapshot.data!.docs.reversed.toList();
-            for(DocumentSnapshot ds in qs){
+            for (DocumentSnapshot ds in qs) {
               String title = ds.get("title_text");
               String text = ds.get("main_text");
               String imgURL = ds.get("header_image");
@@ -77,32 +78,108 @@ class Home extends StatelessWidget {
                 //Image.network(imgURL, fit: BoxFit.cover);
               }
               if (result.containsKey("image")) {
-                globals.announcementList.add(Announcement(result["title"], result["text"],
-                    result["author"], result["date"], result["id"], ds.id,
-                    coverImage: Image(image: result["image"], fit: BoxFit.cover,)));
+                globals.announcementList.add(Announcement(
+                    result["title"],
+                    result["text"],
+                    result["author"],
+                    result["date"],
+                    result["id"],
+                    ds.id,
+                    coverImage: Image(
+                      image: result["image"],
+                      fit: BoxFit.cover,
+                    )));
               } else {
-                globals.announcementList.add(Announcement(result["title"], result["text"],
-                    result["author"], result["date"], result["id"], ds.id));
+                globals.announcementList.add(Announcement(
+                    result["title"],
+                    result["text"],
+                    result["author"],
+                    result["date"],
+                    result["id"],
+                    ds.id));
               }
             }
+            globals.announcementList
+                .add(PageSelector(maxPages: 4));
+                // (qs.length / perPage).ceil()
           }
 
           return Scaffold(
               appBar: dc.bar("Lanerope"),
               //backgroundColor: Colors.white,
               floatingActionButton:
-              globals.role == "Coach/Admin" ? CreateAnnouncement() : null,
-              body: ListView(
-                reverse: false,
-                  children: globals.announcementList),
+                  globals.role == "Coach/Admin" ? CreateAnnouncement() : null,
+              body:
+                  ListView(reverse: false, children: globals.announcementList),
               drawer: pd.PagesDrawer().importDrawer(context));
         });
   }
 }
 
+class PageSelector extends StatefulWidget {
+  final int maxPages;
 
-class Announcement extends StatelessWidget {
+  PageSelector({required this.maxPages});
+
+  @override
+  State<StatefulWidget> createState() {
+    return PageSelectorState();
+  }
+}
+
+class PageSelectorState extends State<PageSelector>
+    with AutomaticKeepAliveClientMixin {
+  Widget left() {
+    Widget item = pageNo <= 1
+        ? Icon(Icons.navigate_before_rounded, color: Colors.grey)
+        : IconButton(
+            onPressed: () {
+              setState(() {
+                pageNo--;
+              });
+            },
+            icon: Icon(Icons.navigate_before_rounded),
+          );
+    return item;
+  }
+
+  Widget right() {
+    Widget item = pageNo >= widget.maxPages
+        ? Icon(Icons.navigate_next_rounded, color: Colors.grey)
+        : IconButton(
+            onPressed: () {
+              setState(() {
+                pageNo++;
+              });
+            },
+            icon: Icon(Icons.navigate_next_rounded),
+          );
+    return item;
+  }
+
+  int pageNo = 1;
+
+  Widget display() {
+    return Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+      left(),
+      Text("Page " + pageNo.toString(), textAlign: TextAlign.center,),
+      right()
+    ]);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return display();
+  }
+
+  @override
+  bool get wantKeepAlive => true;
+}
+
+class Announcement extends StatefulWidget {
   // wanna make it look like the athletic-ish
+  // is there a way to send keep-alive noti without using the state mixin?
   final String title;
   final String mainText;
   final String author;
@@ -116,8 +193,17 @@ class Announcement extends StatelessWidget {
       {this.coverImage});
 
   @override
+  State<StatefulWidget> createState() {
+    return AnnouncementState();
+  }
+}
+
+class AnnouncementState extends State<Announcement>
+    with AutomaticKeepAliveClientMixin {
+  @override
   Widget build(BuildContext context) {
-    Widget titleHeader = this.coverImage != null
+    super.build(context);
+    Widget titleHeader = widget.coverImage != null
         ? Container(
             height: 200, // arbitrary for now
             width: double.infinity,
@@ -125,11 +211,11 @@ class Announcement extends StatelessWidget {
               Container(
                   width: double.infinity,
                   child: ColorFiltered(
-                      child: this.coverImage,
+                      child: widget.coverImage,
                       colorFilter: ColorFilter.mode(
                           Colors.black.withOpacity(0.4), BlendMode.darken))),
               Container(
-                child: Text(this.title,
+                child: Text(widget.title,
                     style: dc.announcementTitle,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis),
@@ -138,7 +224,7 @@ class Announcement extends StatelessWidget {
               )
             ]))
         : Container(
-            child: Text(this.title,
+            child: Text(widget.title,
                 style: dc.noImgTitle,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis),
@@ -157,7 +243,7 @@ class Announcement extends StatelessWidget {
                   width: double.infinity,
                   child: Column(children: [
                     Text(
-                      this.mainText,
+                      widget.mainText,
                       textDirection: TextDirection.ltr,
                       overflow: TextOverflow.fade,
                       style: dc.announcementText,
@@ -175,27 +261,27 @@ class Announcement extends StatelessWidget {
                                               MaterialPageRoute(
                                                   builder: (context) =>
                                                       AnnouncementView(
-                                                          this.title,
-                                                          this.mainText,
-                                                          this.author,
-                                                          this.date,
-                                                          coverImage: this
+                                                          widget.title,
+                                                          widget.mainText,
+                                                          widget.author,
+                                                          widget.date,
+                                                          coverImage: widget
                                                               .coverImage)));
                                         },
                                         child: Text("VIEW FULL")),
                                     IconButton(
                                         onPressed: () {
-                                          print("editing " + this.dbTitle);
+                                          print("editing " + widget.dbTitle);
                                           Navigator.push(
                                               context,
                                               MaterialPageRoute(
                                                   builder: (context) =>
                                                       AnnouncementEditor(
                                                           givenTitle:
-                                                              this.title,
+                                                              widget.title,
                                                           givenText:
-                                                              this.mainText,
-                                                          db: this.dbTitle)));
+                                                              widget.mainText,
+                                                          db: widget.dbTitle)));
                                         },
                                         icon: const Icon(Icons.edit))
                                   ]
@@ -207,11 +293,11 @@ class Announcement extends StatelessWidget {
                                               MaterialPageRoute(
                                                   builder: (context) =>
                                                       AnnouncementView(
-                                                          this.title,
-                                                          this.mainText,
-                                                          this.author,
-                                                          this.date,
-                                                          coverImage: this
+                                                          widget.title,
+                                                          widget.mainText,
+                                                          widget.author,
+                                                          widget.date,
+                                                          coverImage: widget
                                                               .coverImage)));
                                         },
                                         child: Text("VIEW FULL"))
@@ -219,6 +305,9 @@ class Announcement extends StatelessWidget {
                   ]))
             ])));
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
 class CreateAnnouncement extends StatelessWidget {
