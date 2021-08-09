@@ -163,6 +163,7 @@ void allEvents() async {
 /// DM
 
 List contacts = [];
+String splitSeq = "⛄𝄞⛄";
 
 Future<Map?> oneContact(String id) async {
   DocumentSnapshot snap = await users.doc(id).get();

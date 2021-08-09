@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:lanerope/globals.dart' as globals;
 
 enum Participant { you, them }
 enum MsgStatus { sending, sent, delivered, received, error, old }
@@ -66,7 +67,7 @@ class MsgState extends State<Message> {
     } else {
       var ds = snap.data;
       int len = ds!['messages'].length;
-      String bit = ds['messages'][len - 1].split("⛄𝄞⛄")[1];
+      String bit = ds['messages'][len - 1].split(globals.splitSeq)[1];
       if (bit != widget.timestamp) {
         updateStatus(MsgStatus.old);
       } else {
@@ -99,39 +100,38 @@ class MsgState extends State<Message> {
         stream: messages.doc(widget.chatID).snapshots(),
         builder: (context, snap) {
           return Align(
-            alignment: widget.user == Participant.you
-                ? Alignment.centerRight
-                : Alignment.centerLeft,
-            child: Container(
-                padding:
-                EdgeInsets.only(top: 8.0, bottom: 4.0, left: 8.0, right: 8.0),
-                constraints: BoxConstraints(maxWidth: 300),
-                child: Column(
-                  crossAxisAlignment: widget.user == Participant.you
-                      ? CrossAxisAlignment.end
-                      : CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                        padding: EdgeInsets.all(8.0),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16.0),
-                            color: widget.user == Participant.you
-                                ? Colors.lightBlueAccent
-                                : Colors.grey[200]),
-                        child: Text(widget.text,
-                            style: TextStyle(
-                                color: widget.user == Participant.you
-                                    ? Colors.white
-                                    : Colors.black))),
-                    Container(
-                        padding: EdgeInsets.only(right: 8.0),
-                        child: widget.user == Participant.you
-                            ? showStatus(snap)
-                            : SizedBox.shrink(),
-                        alignment: Alignment.bottomRight)
-                  ],
-                ))
-          );
+              alignment: widget.user == Participant.you
+                  ? Alignment.centerRight
+                  : Alignment.centerLeft,
+              child: Container(
+                  padding: EdgeInsets.only(
+                      top: 8.0, bottom: 4.0, left: 8.0, right: 8.0),
+                  constraints: BoxConstraints(maxWidth: 300),
+                  child: Column(
+                    crossAxisAlignment: widget.user == Participant.you
+                        ? CrossAxisAlignment.end
+                        : CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                          padding: EdgeInsets.all(8.0),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16.0),
+                              color: widget.user == Participant.you
+                                  ? Colors.lightBlueAccent
+                                  : Colors.grey[200]),
+                          child: Text(widget.text,
+                              style: TextStyle(
+                                  color: widget.user == Participant.you
+                                      ? Colors.white
+                                      : Colors.black))),
+                      Container(
+                          padding: EdgeInsets.only(right: 8.0),
+                          child: widget.user == Participant.you
+                              ? showStatus(snap)
+                              : SizedBox.shrink(),
+                          alignment: Alignment.bottomRight)
+                    ],
+                  )));
         });
   }
 }
@@ -144,9 +144,9 @@ class ImageMessage extends StatefulWidget {
 
   ImageMessage(
       {required this.imgSrc,
-        required this.user,
-        required this.chatID,
-        required this.timestamp});
+      required this.user,
+      required this.chatID,
+      required this.timestamp});
 
   @override
   State<StatefulWidget> createState() {
@@ -154,7 +154,8 @@ class ImageMessage extends StatefulWidget {
   }
 }
 
-class ImgMsgState extends State<ImageMessage> with AutomaticKeepAliveClientMixin {
+class ImgMsgState extends State<ImageMessage>
+    with AutomaticKeepAliveClientMixin {
   late MsgStatus _status;
 
   ImgMsgState() {
@@ -174,7 +175,7 @@ class ImgMsgState extends State<ImageMessage> with AutomaticKeepAliveClientMixin
     } else {
       var ds = snap.data;
       int len = ds!['messages'].length;
-      String bit = ds['messages'][len - 1].split("⛄𝄞⛄")[1];
+      String bit = ds['messages'][len - 1].split(globals.splitSeq)[1];
       if (bit != widget.timestamp) {
         updateStatus(MsgStatus.old);
       } else {
@@ -212,8 +213,8 @@ class ImgMsgState extends State<ImageMessage> with AutomaticKeepAliveClientMixin
                   ? Alignment.centerRight
                   : Alignment.centerLeft,
               child: Container(
-                  padding:
-                  EdgeInsets.only(top: 8.0, bottom: 4.0, left: 8.0, right: 8.0),
+                  padding: EdgeInsets.only(
+                      top: 8.0, bottom: 4.0, left: 8.0, right: 8.0),
                   constraints: BoxConstraints(maxWidth: 300),
                   child: Column(
                     crossAxisAlignment: widget.user == Participant.you
@@ -221,13 +222,10 @@ class ImgMsgState extends State<ImageMessage> with AutomaticKeepAliveClientMixin
                         : CrossAxisAlignment.start,
                     children: [
                       Container(
-                          padding: EdgeInsets.all(8.0),
-                          decoration: BoxDecoration(
+                          child: ClipRRect(
                               borderRadius: BorderRadius.circular(16.0),
-                              color: widget.user == Participant.you
-                                  ? Colors.lightBlueAccent
-                                  : Colors.grey[200]),
-                          child: CachedNetworkImage(imageUrl: widget.imgSrc,)),
+                              child: CachedNetworkImage(
+                                  imageUrl: widget.imgSrc, fit: BoxFit.fill))),
                       Container(
                           padding: EdgeInsets.only(right: 8.0),
                           child: widget.user == Participant.you
@@ -235,8 +233,7 @@ class ImgMsgState extends State<ImageMessage> with AutomaticKeepAliveClientMixin
                               : SizedBox.shrink(),
                           alignment: Alignment.bottomRight)
                     ],
-                  ))
-          );
+                  )));
         });
   }
 

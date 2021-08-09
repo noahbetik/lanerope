@@ -15,6 +15,8 @@ final CollectionReference messages =
     FirebaseFirestore.instance.collection('messages');
 FirebaseStorage storage = FirebaseStorage.instance;
 
+
+
 class MessageView extends StatefulWidget {
   final String convoName;
   final String chatID;
@@ -100,7 +102,7 @@ class MsgViewState extends State<MessageView> {
                   );
                 });
                 int num = ds!['messages'].length;
-                if (ds['messages'][num - 1].split("⛄𝄞⛄")[2] !=
+                if (ds['messages'][num - 1].split(globals.splitSeq)[2] !=
                     globals.currentUID) {
                   messages.doc(widget.chatID).update({"status": "received"});
                 }
@@ -110,7 +112,7 @@ class MsgViewState extends State<MessageView> {
                     itemCount: num,
                     itemBuilder: (context, i) {
                       if (ds['messages'].length != 0) {
-                        List info = ds['messages'][num - i - 1].split("⛄𝄞⛄");
+                        List info = ds['messages'][num - i - 1].split(globals.splitSeq);
                         // has the potential to go buggy but makes db wayyyyyy simpler
                         // ⛄𝄞⛄
                         if (info[0].toString().startsWith(
@@ -205,9 +207,9 @@ class MsgViewState extends State<MessageView> {
                                           .update({
                                             'messages': FieldValue.arrayUnion([
                                               url +
-                                                  "⛄𝄞⛄" +
+                                                  globals.splitSeq +
                                                   DateTime.now().toString() +
-                                                  "⛄𝄞⛄" +
+                                                  globals.splitSeq +
                                                   globals.currentUID,
                                             ]),
                                             'status': "sent"
@@ -227,9 +229,9 @@ class MsgViewState extends State<MessageView> {
                                       .update({
                                         'messages': FieldValue.arrayUnion([
                                           msgCtrl.text +
-                                              "⛄𝄞⛄" +
+                                              globals.splitSeq +
                                               DateTime.now().toString() +
-                                              "⛄𝄞⛄" +
+                                              globals.splitSeq +
                                               globals.currentUID,
                                         ]),
                                         'status': "sent"
