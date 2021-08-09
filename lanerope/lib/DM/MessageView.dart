@@ -15,7 +15,7 @@ final CollectionReference messages =
     FirebaseFirestore.instance.collection('messages');
 FirebaseStorage storage = FirebaseStorage.instance;
 
-
+final key = new GlobalKey<ScaffoldState>();
 
 class MessageView extends StatefulWidget {
   final String convoName;
@@ -86,6 +86,7 @@ class MsgViewState extends State<MessageView> {
         FocusManager.instance.primaryFocus?.unfocus();
       },
       child: Scaffold(
+          key: key,
           appBar: AppBar(title: Text(widget.convoName)),
           body: StreamBuilder<DocumentSnapshot>(
             stream: messages.doc(widget.chatID).snapshots(),
@@ -112,7 +113,8 @@ class MsgViewState extends State<MessageView> {
                     itemCount: num,
                     itemBuilder: (context, i) {
                       if (ds['messages'].length != 0) {
-                        List info = ds['messages'][num - i - 1].split(globals.splitSeq);
+                        List info =
+                            ds['messages'][num - i - 1].split(globals.splitSeq);
                         // has the potential to go buggy but makes db wayyyyyy simpler
                         // ⛄𝄞⛄
                         if (info[0].toString().startsWith(
@@ -124,8 +126,7 @@ class MsgViewState extends State<MessageView> {
                                   ? Participant.you
                                   : Participant.them,
                               chatID: widget.chatID);
-                        }
-                        else{
+                        } else {
                           return Message(
                               text: info[0],
                               timestamp: info[1],

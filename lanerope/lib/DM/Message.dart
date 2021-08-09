@@ -2,6 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart';
+import 'package:lanerope/DM/MessageView.dart';
 import 'package:lanerope/globals.dart' as globals;
 
 enum Participant { you, them }
@@ -103,35 +105,40 @@ class MsgState extends State<Message> {
               alignment: widget.user == Participant.you
                   ? Alignment.centerRight
                   : Alignment.centerLeft,
-              child: Container(
-                  padding: EdgeInsets.only(
-                      top: 8.0, bottom: 4.0, left: 8.0, right: 8.0),
-                  constraints: BoxConstraints(maxWidth: 300),
-                  child: Column(
-                    crossAxisAlignment: widget.user == Participant.you
-                        ? CrossAxisAlignment.end
-                        : CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                          padding: EdgeInsets.all(8.0),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(16.0),
-                              color: widget.user == Participant.you
-                                  ? Colors.lightBlueAccent
-                                  : Colors.grey[200]),
-                          child: Text(widget.text,
-                              style: TextStyle(
+              child: GestureDetector(
+                onLongPress: () {
+                  Clipboard.setData(new ClipboardData(text: widget.text));
+                  HapticFeedback.mediumImpact();
+                },
+                  child: Container(
+                      padding: EdgeInsets.only(
+                          top: 8.0, bottom: 4.0, left: 8.0, right: 8.0),
+                      constraints: BoxConstraints(maxWidth: 300),
+                      child: Column(
+                        crossAxisAlignment: widget.user == Participant.you
+                            ? CrossAxisAlignment.end
+                            : CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                              padding: EdgeInsets.all(8.0),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(16.0),
                                   color: widget.user == Participant.you
-                                      ? Colors.white
-                                      : Colors.black))),
-                      Container(
-                          padding: EdgeInsets.only(right: 8.0),
-                          child: widget.user == Participant.you
-                              ? showStatus(snap)
-                              : SizedBox.shrink(),
-                          alignment: Alignment.bottomRight)
-                    ],
-                  )));
+                                      ? Colors.lightBlueAccent
+                                      : Colors.grey[200]),
+                              child: Text(widget.text,
+                                  style: TextStyle(
+                                      color: widget.user == Participant.you
+                                          ? Colors.white
+                                          : Colors.black))),
+                          Container(
+                              padding: EdgeInsets.only(right: 8.0),
+                              child: widget.user == Participant.you
+                                  ? showStatus(snap)
+                                  : SizedBox.shrink(),
+                              alignment: Alignment.bottomRight)
+                        ],
+                      ))));
         });
   }
 }
@@ -212,32 +219,51 @@ class ImgMsgState extends State<ImageMessage>
               alignment: widget.user == Participant.you
                   ? Alignment.centerRight
                   : Alignment.centerLeft,
-              child: Container(
-                  padding: EdgeInsets.only(
-                      top: 8.0, bottom: 4.0, left: 8.0, right: 8.0),
-                  constraints: BoxConstraints(maxWidth: 300),
-                  child: Column(
-                    crossAxisAlignment: widget.user == Participant.you
-                        ? CrossAxisAlignment.end
-                        : CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                          child: ClipRRect(
-                              borderRadius: BorderRadius.circular(16.0),
-                              child: CachedNetworkImage(
-                                  imageUrl: widget.imgSrc, fit: BoxFit.fill))),
-                      Container(
-                          padding: EdgeInsets.only(right: 8.0),
-                          child: widget.user == Participant.you
-                              ? showStatus(snap)
-                              : SizedBox.shrink(),
-                          alignment: Alignment.bottomRight)
-                    ],
-                  )));
+              child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => FullImage(widget.imgSrc)));
+                  },
+                  child: Container(
+                      padding: EdgeInsets.only(
+                          top: 8.0, bottom: 4.0, left: 8.0, right: 8.0),
+                      constraints: BoxConstraints(maxWidth: 300),
+                      child: Column(
+                        crossAxisAlignment: widget.user == Participant.you
+                            ? CrossAxisAlignment.end
+                            : CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                              child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(16.0),
+                                  child: CachedNetworkImage(
+                                      imageUrl: widget.imgSrc,
+                                      fit: BoxFit.fill))),
+                          Container(
+                              padding: EdgeInsets.only(right: 8.0),
+                              child: widget.user == Participant.you
+                                  ? showStatus(snap)
+                                  : SizedBox.shrink(),
+                              alignment: Alignment.bottomRight)
+                        ],
+                      ))));
         });
   }
 
   @override
-  // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
+}
+
+class FullImage extends StatelessWidget {
+  final String imgSrc;
+
+  FullImage(this.imgSrc);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        child: CachedNetworkImage(imageUrl: this.imgSrc, fit: BoxFit.contain));
+  }
 }
