@@ -4,13 +4,12 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:lanerope/screens/calendar.dart';
-import 'package:lanerope/screens/home.dart';
 import 'package:lanerope/DM/ConvoTile.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 /// **************************************************************************
 /// DATABASE REFERENCES
@@ -82,6 +81,11 @@ Future<List<String>> getInfo(String uid) async {
   String group = '';
   String gender = '';
   String birthday = '';
+
+  FirebaseMessaging m = FirebaseMessaging.instance;
+  String? mToken = await m.getToken();
+  // for use later maybe
+
   DocumentSnapshot snapshot = await users.doc(uid).get();
   fName = snapshot.get("first_name");
   lName = snapshot.get("last_name");
@@ -125,7 +129,6 @@ Future<int> announcementID() async {
 }
 
 List<Widget> announcementList = [];
-
 
 /// ***********************************************************************
 /// CALENDAR
@@ -212,16 +215,17 @@ List convos = [];
 void getConvos() async {
   var snap = await users.doc(currentUID).get();
   List cvs = snap.get('convos');
-  for (String c in cvs){
+  for (String c in cvs) {
     List temp = await convoInfo(c);
     String text = temp[2].split("⛄𝄞⛄")[0];
     bool newMsg = (temp[3] != 'received') && temp[0] != currentUID;
     print(newMsg);
-    convos.add(ConvoTile(cID: c, id: temp[0], name: temp[1], newMsg: newMsg, lastMsg: text));
+    convos.add(ConvoTile(
+        cID: c, id: temp[0], name: temp[1], newMsg: newMsg, lastMsg: text));
   }
 }
 
-Future<List> convoInfo (String convoID) async {
+Future<List> convoInfo(String convoID) async {
   List info = [];
   print("getting convo " + convoID);
   var cv = await messages.doc(convoID).get();
@@ -233,7 +237,7 @@ Future<List> convoInfo (String convoID) async {
   info.add(other.get("first_name") + " " + other.get("last_name")); // name
   temp = cv.get('messages');
   int len = temp.length;
-  info.add(temp[len-1]); // last msg
+  info.add(temp[len - 1]); // last msg
   info.add(cv.get("status"));
   return info;
 }

@@ -26,6 +26,7 @@ const AndroidNotificationChannel channel = AndroidNotificationChannel(
   'This channel is used for important notifications.', // description
   importance: Importance.max,
 );
+
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
@@ -78,6 +79,35 @@ class _LaneropeState extends State<Lanerope> {
   final Future<void> _notis = notiChannelSetup();
 
   @override
+  void initState() {
+    super.initState();
+    // something is wrong so its not working
+    // considering the use case it's not super necessary though
+    // gonna leave it in in case i figure out how to fix it later
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      RemoteNotification? notification = message.notification;
+      AndroidNotification? android = message.notification?.android;
+      print("we got something");
+      if (notification != null && android != null) {
+        print("kk we rolling");
+        flutterLocalNotificationsPlugin.show(
+            notification.hashCode,
+            notification.title,
+            notification.body,
+            NotificationDetails(
+              android: AndroidNotificationDetails(
+                channel.id,
+                channel.name,
+                channel.description,
+                icon: android.smallIcon,
+                // other properties...
+              ),
+            ));
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     print("inside build widget");
     return FutureBuilder(
@@ -106,30 +136,6 @@ class _LaneropeState extends State<Lanerope> {
             login = true;
             print("user already logged in");
           }
-          FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-            RemoteNotification? notification = message.notification;
-            AndroidNotification? android = message.notification?.android;
-            print("we got something");
-
-            // If `onMessage` is triggered with a notification, construct our own
-            // local notification to show to users using the created channel.
-            if (notification != null && android != null) {
-              print("kk we rolling");
-              flutterLocalNotificationsPlugin.show(
-                  notification.hashCode,
-                  notification.title,
-                  notification.body,
-                  NotificationDetails(
-                    android: AndroidNotificationDetails(
-                      channel.id,
-                      channel.name,
-                      channel.description,
-                      icon: android.smallIcon,
-                      // other properties...
-                    ),
-                  ));
-            }
-          });
 
           return new MaterialApp(
               debugShowCheckedModeBanner: false,

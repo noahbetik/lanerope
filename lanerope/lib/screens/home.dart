@@ -100,8 +100,7 @@ class Home extends StatelessWidget {
               }
             }
             globals.announcementList
-                .add(PageSelector(maxPages: 4));
-                // (qs.length / perPage).ceil()
+                .add(PageSelector(maxPages: (qs.length / perPage).ceil()));
           }
 
           return Scaffold(
