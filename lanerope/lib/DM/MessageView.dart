@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
@@ -20,8 +21,9 @@ final key = new GlobalKey<ScaffoldState>();
 class MessageView extends StatefulWidget {
   final String convoName;
   final String chatID;
+  final String otherFCM;
 
-  MessageView({required this.convoName, required this.chatID});
+  MessageView({required this.convoName, required this.chatID, required this.otherFCM});
 
   @override
   State<StatefulWidget> createState() {
@@ -38,6 +40,7 @@ class MsgViewState extends State<MessageView> {
   final picker = ImagePicker();
   dynamic image;
   Widget imageIcon = Icon(Icons.image);
+  final FirebaseMessaging notis = FirebaseMessaging.instance;
 
   @override
   void dispose() {
@@ -219,6 +222,7 @@ class MsgViewState extends State<MessageView> {
                                               .doc(widget.chatID)
                                               .update({'status': 'sent'}))
                                           .catchError((error) => print(error));
+
                                     } else {
                                       print("blank");
                                       // gotta do 'smth about empty messages

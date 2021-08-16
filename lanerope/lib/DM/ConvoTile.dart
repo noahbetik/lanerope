@@ -50,12 +50,15 @@ class ConvoTile extends StatelessWidget {
             'convos': FieldValue.arrayUnion([docID])
           }); // update for other user
           print("docID is " + docID);
+          DocumentSnapshot fcmRef = await users.doc(this.id).get();
+          String fcm = fcmRef.get("FCM");
           Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (context) => MessageView(
                     convoName: this.name,
                     chatID: docID,
+                    otherFCM: fcm,
                   )));
         },
         dense: true,

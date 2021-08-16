@@ -77,10 +77,12 @@ class _LaneropeState extends State<Lanerope> {
   final Future<bool> _login = loginState();
   final Future<void> _subs = lockedSubs();
   final Future<void> _notis = notiChannelSetup();
+  late FirebaseMessaging messaging;
 
   @override
   void initState() {
     super.initState();
+
     // something is wrong so its not working
     // considering the use case it's not super necessary though
     // gonna leave it in in case i figure out how to fix it later
@@ -136,6 +138,11 @@ class _LaneropeState extends State<Lanerope> {
             login = true;
             print("user already logged in");
           }
+          messaging = FirebaseMessaging.instance;
+          messaging.getToken().then((value){
+            users.doc(globals.currentUID).update({"FCM" : value});
+          });
+          //update the user db with the local device FCM token
 
           return new MaterialApp(
               debugShowCheckedModeBanner: false,
