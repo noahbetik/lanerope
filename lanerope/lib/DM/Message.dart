@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
-import 'package:lanerope/DM/MessageView.dart';
 import 'package:lanerope/globals.dart' as globals;
 
 enum Participant { you, them }
@@ -64,6 +63,9 @@ class MsgState extends State<Message> {
   double statusSize = 14.0;
 
   Widget showStatus(AsyncSnapshot<DocumentSnapshot<Object?>> snap) {
+    // displays status of most recent message if sent by local user
+    // otherwise shows nothing
+    // appears under message similar to instagram dm
     if (!snap.hasData) {
       return Icon(Icons.send_outlined, size: 14.0, color: Colors.grey);
     } else {
@@ -99,6 +101,7 @@ class MsgState extends State<Message> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<DocumentSnapshot>(
+      // streambuilder using specific convo document
         stream: messages.doc(widget.chatID).snapshots(),
         builder: (context, snap) {
           return Align(
@@ -107,14 +110,17 @@ class MsgState extends State<Message> {
                   : Alignment.centerLeft,
               child: GestureDetector(
                 onLongPress: () {
+                  // need more UX to confirm copy operation complete
                   Clipboard.setData(new ClipboardData(text: widget.text));
                   HapticFeedback.mediumImpact();
                 },
                   child: Container(
+                    // alignment & positioning wizardry
                       padding: EdgeInsets.only(
                           top: 8.0, bottom: 4.0, left: 8.0, right: 8.0),
                       constraints: BoxConstraints(maxWidth: 300),
                       child: Column(
+                        // align to proper side (you = right, other = left)
                         crossAxisAlignment: widget.user == Participant.you
                             ? CrossAxisAlignment.end
                             : CrossAxisAlignment.start,
@@ -126,6 +132,7 @@ class MsgState extends State<Message> {
                                   color: widget.user == Participant.you
                                       ? Colors.lightBlueAccent
                                       : Colors.grey[200]),
+                              // colours based on user as well
                               child: Text(widget.text,
                                   style: TextStyle(
                                       color: widget.user == Participant.you
@@ -144,7 +151,10 @@ class MsgState extends State<Message> {
 }
 
 class ImageMessage extends StatefulWidget {
-  final String imgSrc;
+
+  // extremely similar to a normal message, but modifies formatting slightly
+
+  final String imgSrc; // uses image URL to display image
   final Participant user;
   final String chatID;
   final String timestamp;
@@ -163,6 +173,9 @@ class ImageMessage extends StatefulWidget {
 
 class ImgMsgState extends State<ImageMessage>
     with AutomaticKeepAliveClientMixin {
+  // keep-alive mixin used to ensure image is not continually destroyed and rebuilt when user scrolls
+  // otherwise the disappearing/reappearing message is very jarring in the UI
+
   late MsgStatus _status;
 
   ImgMsgState() {
@@ -220,6 +233,7 @@ class ImgMsgState extends State<ImageMessage>
                   ? Alignment.centerRight
                   : Alignment.centerLeft,
               child: GestureDetector(
+                // can view image larger if tapped on
                   onTap: () {
                     Navigator.push(
                         context,
@@ -238,6 +252,7 @@ class ImgMsgState extends State<ImageMessage>
                           Container(
                               child: ClipRRect(
                                   borderRadius: BorderRadius.circular(16.0),
+                                  // cached to avoid reloading when possible
                                   child: CachedNetworkImage(
                                       imageUrl: widget.imgSrc,
                                       fit: BoxFit.fill))),
@@ -254,6 +269,7 @@ class ImgMsgState extends State<ImageMessage>
 
   @override
   bool get wantKeepAlive => true;
+  // used for keep-alive mixin
 }
 
 class FullImage extends StatelessWidget {

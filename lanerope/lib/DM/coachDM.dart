@@ -2,11 +2,9 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:lanerope/DM/ConvoTile.dart';
-import 'package:lanerope/DM/MessageView.dart';
 import 'package:lanerope/DM/ListContacts.dart';
-import 'package:lanerope/pagesDrawer.dart' as pd;
 import 'package:lanerope/globals.dart' as globals;
+import 'package:lanerope/pagesDrawer.dart' as pd;
 
 bool ios = Platform.isIOS;
 bool android = Platform.isAndroid;
@@ -20,6 +18,8 @@ class CoachDM extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("Direct Messages")),
+      // streambuilder monitors all conversations to provide realtime update from outside the convo view
+      // rebuilds each convo tile
       body: StreamBuilder<QuerySnapshot>(
           stream: messages.snapshots(),
           builder: (context, snap) {

@@ -8,8 +8,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:lanerope/screens/calendar.dart';
 import 'package:lanerope/DM/ConvoTile.dart';
+import 'package:lanerope/screens/calendar.dart';
 
 /// **************************************************************************
 /// DATABASE REFERENCES
@@ -217,7 +217,7 @@ void getConvos() async {
   List cvs = snap.get('convos');
   for (String c in cvs) {
     List temp = await convoInfo(c);
-    String text = temp[2].split("⛄𝄞⛄")[0];
+    String text = temp[2].split(splitSeq)[0];
     bool newMsg = (temp[3] != 'received') && temp[0] != currentUID;
     print(newMsg);
     convos.add(ConvoTile(

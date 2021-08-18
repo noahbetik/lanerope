@@ -24,6 +24,7 @@ final CollectionReference calendar =
     FirebaseFirestore.instance.collection('calendar');
 final TextEditingController dateCtrl = TextEditingController();
 
+// popup for scheduling repeated events
 AlertDialog repeatScheduling = AlertDialog(
   title: Text("Event repeats until:"),
   content: DateTimeField(
@@ -41,6 +42,7 @@ AlertDialog repeatScheduling = AlertDialog(
 );
 
 Widget chipGen() {
+  // creates list of chips with group/person name below text field
   displayChips.clear();
   for (int i = 0; i < chips.length; i++) {
     displayChips.add(chips[i].chip);
@@ -50,6 +52,7 @@ Widget chipGen() {
 }
 
 void checkFilter() {
+  // used in updating prediction list
   if (searchText.isNotEmpty) {
     List<String> tempList = [];
     for (int i = 0; i < filteredNames.length; i++) {
@@ -63,6 +66,7 @@ void checkFilter() {
 }
 
 void findGroupsPeople() {
+  // used when generating predictions list
   names = globals.everyGroup.toList();
   globals.allAthletes.forEach((key, value) {
     names.add(value[2]);
@@ -108,6 +112,7 @@ class EventCreator extends StatelessWidget {
   } // fix for datetimes
 
   List<List<String>> exportNames() {
+    // used to create list of groups/people added to the event
     List<List<String>> exports = [[], []];
     print(globals.everyGroup);
     for (final element in chips) {
@@ -132,6 +137,7 @@ class EventCreator extends StatelessWidget {
         return new ListTile(
             title: Text(filteredNames[index]),
             onTap: () {
+              // add a new chip if the person/group exists and is not already in the list
               if (!duplicateChip(filteredNames[index])) {
                 print(filteredNames[index]);
                 chips.add(EntityChip(filteredNames[index], context));
@@ -144,6 +150,7 @@ class EventCreator extends StatelessWidget {
   }
 
   bool duplicateChip(String? word) {
+    // duplicate checking
     bool flag = false;
     chips.forEach((element) {
       if (element.name == word) {
@@ -154,6 +161,8 @@ class EventCreator extends StatelessWidget {
   }
 
   String? verify(String? name) {
+    // since user can submit by pressing enter
+    // need to ensure non-existent people/groups can't be added
     if (name == '') {
       return null;
     }
@@ -209,7 +218,7 @@ class EventCreator extends StatelessWidget {
                             // wanted newline but doesn't work?
                             String text = chipCtrl.text
                                 .substring(0, chipCtrl.text.length - 1);
-                            // get every except newline
+                            // get everything except end character (' ' here)
                             if (value.endsWith(' ') && verify(text) == null) {
                               print(text);
                               chips.add(EntityChip(text, context));
@@ -217,15 +226,19 @@ class EventCreator extends StatelessWidget {
                               BlocProvider.of<ICFBloc>(context)
                                   .add(ICFEvent.fields);
                             } else if (chipCtrl.text.isEmpty) {
+                              // reset prediction list if search text is empty
+                              // close the list
                               filteredNames = names;
                               searchText = '';
                               BlocProvider.of<ICFBloc>(context)
                                   .add(ICFEvent.fields);
                             } else {
+                              // update list
                               filteredNames = names;
                               searchText = chipCtrl.text;
                             }
                           } catch (e) {
+                            // close the list if any errors occur
                             print(e);
                             BlocProvider.of<ICFBloc>(context)
                                 .add(ICFEvent.fields);
@@ -236,14 +249,17 @@ class EventCreator extends StatelessWidget {
                   final _formKey = GlobalKey<FormState>();
                   RepeatState _reoccurrence = RepeatState.never;
                   if (icfState is PredictionsShown) {
-                    return buildList(_); // replace with predictions list
+                    return buildList(_);
+                    // show predictions for groups/people based on filter text
                   } else {
+                    // otherwise show the other fields for creating an event
                     return Form(
                         key: _formKey,
                         child: Column(
                           children: [
                             chipGen(),
                             SizedBox(height: 8),
+                            // start date/time selection
                             DateTimeField(
                               controller: startController,
                               format: format,
@@ -276,6 +292,7 @@ class EventCreator extends StatelessWidget {
                               },
                             ),
                             SizedBox(height: 8),
+                            // end date/time selection
                             DateTimeField(
                               controller: endController,
                               format: format,
@@ -312,6 +329,7 @@ class EventCreator extends StatelessWidget {
                                     "Reoccurring event?",
                                     textAlign: TextAlign.left,
                                   ),
+                                  // usage of radio to force one option for event repetition
                                   ListTile(
                                       title: Text("Never"),
                                       leading: Radio(
@@ -394,6 +412,8 @@ class EventCreator extends StatelessWidget {
                                   DateTime wrangler =
                                       DateTime.parse(startController.text);
                                   if (_formKey.currentState!.validate()) {
+                                    // date wrangling to ensure all reoccurrences of an event
+                                    // are put properly in db
                                     repeats.add(fm.format(wrangler));
                                     if (dateCtrl.text.isNotEmpty) {
                                       DateTime ending =
@@ -413,10 +433,6 @@ class EventCreator extends StatelessWidget {
                                             repeats.add(fm.format(wrangler));
                                             wrangler =
                                                 wrangler.add(Duration(days: 7));
-
-                                            print(wrangler);
-                                            print(ending);
-                                            print("yeet");
                                           }
                                           break;
                                         case RepeatState.monthly:
@@ -443,6 +459,7 @@ class EventCreator extends StatelessWidget {
                                           break;
                                       }
                                     }
+                                    // actual database push
                                     calendar.add({
                                       "title": titleText.text,
                                       "start":
@@ -457,6 +474,8 @@ class EventCreator extends StatelessWidget {
                                       "groups": exports[0],
                                       "indvs": exports[1]
                                     });
+                                    // get events from db again
+                                    // streambuilder *may* be better here
                                     globals.allEvents();
                                     ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(

@@ -1,16 +1,18 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:intl/intl.dart';
-import 'Message.dart';
-import 'package:lanerope/globals.dart' as globals;
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
+import 'package:lanerope/globals.dart' as globals;
 import 'package:path/path.dart' as path;
+
+import 'Message.dart';
 
 final CollectionReference messages =
     FirebaseFirestore.instance.collection('messages');
@@ -21,9 +23,8 @@ final key = new GlobalKey<ScaffoldState>();
 class MessageView extends StatefulWidget {
   final String convoName;
   final String chatID;
-  final String otherFCM;
 
-  MessageView({required this.convoName, required this.chatID, required this.otherFCM});
+  MessageView({required this.convoName, required this.chatID});
 
   @override
   State<StatefulWidget> createState() {
@@ -35,11 +36,12 @@ class MsgViewState extends State<MessageView> {
   // not really sure why this needs to be stateful
   final FocusNode _focus = new FocusNode();
   final _sCtrl = ScrollController();
+  // controllers are helpful for UX
   final TextEditingController msgCtrl = TextEditingController();
   final format = DateFormat("yyyy-MM-dd HH:mm");
   final picker = ImagePicker();
   dynamic image;
-  Widget imageIcon = Icon(Icons.image);
+  Widget imageIcon = Icon(Icons.image); // show small image upon upload before sending
   final FirebaseMessaging notis = FirebaseMessaging.instance;
 
   @override
@@ -50,10 +52,12 @@ class MsgViewState extends State<MessageView> {
   }
 
   Future getImage() async {
+    // get image from gallery
     final pickedFile =
         await picker.pickImage(source: ImageSource.gallery, imageQuality: 50);
     final croppedFile =
         await ImageCropper.cropImage(sourcePath: pickedFile!.path);
+    // crop it
 
     setState(() {
       if (croppedFile != null) {
@@ -75,17 +79,21 @@ class MsgViewState extends State<MessageView> {
     print(image.path);
     final String fileName = path.basename(image.path);
     File imageFile = File(image.path);
+    // upload the image to firebase cloud storage
     await storage
         .ref(fileName)
         .putFile(imageFile, SettableMetadata(customMetadata: {}));
     String downloadURL = await storage.ref(fileName).getDownloadURL();
     return downloadURL;
+    // get the url it is stored at
+    // this url will effectively be sent as a "message" to the db
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        // used to dismiss keyboard when tapping elsewhere on screen
         FocusManager.instance.primaryFocus?.unfocus();
       },
       child: Scaffold(
@@ -99,9 +107,11 @@ class MsgViewState extends State<MessageView> {
               } else {
                 var ds = snap.data;
                 SchedulerBinding.instance?.addPostFrameCallback((_) {
+                  // move to bottom of screen upon sending/receiving new message
+                  // animation not working for some reason
                   _sCtrl.animateTo(
                     _sCtrl.position.minScrollExtent,
-                    duration: Duration(milliseconds: 1000),
+                    duration: Duration(milliseconds: 2000),
                     curve: Curves.fastOutSlowIn,
                   );
                 });
@@ -109,8 +119,11 @@ class MsgViewState extends State<MessageView> {
                 if (ds['messages'][num - 1].split(globals.splitSeq)[2] !=
                     globals.currentUID) {
                   messages.doc(widget.chatID).update({"status": "received"});
+                  // update message status as received
                 }
                 return ListView.builder(
+                  // show all the messages
+                  // can use lazy builder since images use keep-alives and text renders quickly
                     reverse: true,
                     controller: _sCtrl,
                     itemCount: num,
@@ -118,9 +131,10 @@ class MsgViewState extends State<MessageView> {
                       if (ds['messages'].length != 0) {
                         List info =
                             ds['messages'][num - i - 1].split(globals.splitSeq);
+                        // parse info using split sequence
                         // has the potential to go buggy but makes db wayyyyyy simpler
-                        // ⛄𝄞⛄
                         if (info[0].toString().startsWith(
+                          // if it's an image it is stored in firebase and will therefore start with this sequence
                             "https://firebasestorage.googleapis.com/v0/b/lanerope-nb.appspot.com/o/image_cropper")) {
                           return ImageMessage(
                               imgSrc: info[0],
@@ -139,13 +153,14 @@ class MsgViewState extends State<MessageView> {
                               chatID: widget.chatID);
                         }
                       } else {
-                        print("hek");
                         return SizedBox.shrink();
                       }
                     });
               }
             },
           ),
+          // using bottom navigation bar for textfield bar
+          // similar UI to instagram
           bottomNavigationBar: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -190,6 +205,8 @@ class MsgViewState extends State<MessageView> {
                           hintText: 'Type a message',
                         ),
                       )),
+                      // could add condition here for empty textfield
+                      // but need state management of some kind
                       _focus.hasFocus
                           ? Material(
                               color: Colors.grey[200],
@@ -198,14 +215,18 @@ class MsgViewState extends State<MessageView> {
                                 customBorder: CircleBorder(),
                                 radius: 80,
                                 onTap: () async {
+                                  // should so something to indicate picture message is sending
+                                  // as it is a bit slow right now
                                   while (msgCtrl.text.endsWith('\n')) {
                                     msgCtrl.text = msgCtrl.text
                                         .substring(0, msgCtrl.text.length - 1);
                                     // newline removal
                                   }
                                   if (msgCtrl.text.isEmpty) {
+                                    // don't send a blank message with an image!
                                     if (image != null) {
                                       String url = await saveImage();
+                                      // push image and data to database
                                       messages
                                           .doc(widget.chatID)
                                           .update({
@@ -222,18 +243,40 @@ class MsgViewState extends State<MessageView> {
                                               .doc(widget.chatID)
                                               .update({'status': 'sent'}))
                                           .catchError((error) => print(error));
-
-                                    } else {
-                                      print("blank");
-                                      // gotta do 'smth about empty messages
+                                      setState(() {
+                                        // reset right-side icon and clear old image
+                                        imageIcon = Icon(Icons.image);
+                                        image = null;
+                                      });
                                     }
                                   }
-                                  // db update here
-                                  messages
-                                      .doc(widget.chatID)
-                                      .update({
+                                  else{
+                                    // send both the image and the text message
+                                    messages
+                                        .doc(widget.chatID)
+                                        .update({
+                                      'messages': FieldValue.arrayUnion([
+                                        msgCtrl.text +
+                                            globals.splitSeq +
+                                            DateTime.now().toString() +
+                                            globals.splitSeq +
+                                            globals.currentUID,
+                                      ]),
+                                      'status': "sent"
+                                    })
+                                        .then((value) => messages
+                                        .doc(widget.chatID)
+                                        .update({'status': 'sent'}))
+                                        .catchError((error) => print(error));
+                                    msgCtrl.clear();
+                                    if (image != null) {
+                                      String url = await saveImage();
+                                      // push image and data to database
+                                      messages
+                                          .doc(widget.chatID)
+                                          .update({
                                         'messages': FieldValue.arrayUnion([
-                                          msgCtrl.text +
+                                          url +
                                               globals.splitSeq +
                                               DateTime.now().toString() +
                                               globals.splitSeq +
@@ -241,14 +284,18 @@ class MsgViewState extends State<MessageView> {
                                         ]),
                                         'status': "sent"
                                       })
-                                      .then((value) => messages
+                                          .then((value) => messages
                                           .doc(widget.chatID)
                                           .update({'status': 'sent'}))
-                                      .catchError((error) => print(error));
-                                  msgCtrl.clear();
-                                  setState(() {
-                                    imageIcon = Icon(Icons.image);
-                                  });
+                                          .catchError((error) => print(error));
+                                      setState(() {
+                                        // reset right-side icon and clear old image
+                                        imageIcon = Icon(Icons.image);
+                                        image = null;
+                                      });
+                                    }
+                                  }
+                                  // push message and data to database
                                 },
                                 splashColor: Colors.redAccent.withOpacity(0.5),
                                 highlightColor:

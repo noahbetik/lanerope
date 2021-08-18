@@ -8,6 +8,7 @@ class AdminBloc extends Bloc<AdminEvent, AdminState> {
   AdminBloc(AdminState initialState) : super(initialState);
 
   TextEditingController filter = TextEditingController();
+  // used with admin panel search bar
 
   @override
   Stream<AdminState> mapEventToState(AdminEvent event) async* {
