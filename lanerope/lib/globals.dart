@@ -13,6 +13,7 @@ import 'package:lanerope/screens/calendar.dart';
 
 /// **************************************************************************
 /// DATABASE REFERENCES
+
 final CollectionReference users =
     FirebaseFirestore.instance.collection('users');
 final CollectionReference groups =
@@ -167,6 +168,8 @@ void allEvents() async {
 
 List contacts = [];
 String splitSeq = "⛄𝄞⛄";
+// can be anything but ideally a sequence of untypable characters
+// once sequence is changed, all existing messages are corrupted
 
 Future<Map?> oneContact(String id) async {
   DocumentSnapshot snap = await users.doc(id).get();

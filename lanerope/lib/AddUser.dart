@@ -14,7 +14,6 @@ class AddUser {
   AddUser(this.uid, this.role, this.firstName, this.lastName, this.gender,
       this.age, this.birthday);
 
-  // Create a CollectionReference called users that references the firestore collection
   CollectionReference users = FirebaseFirestore.instance.collection('users');
 
   Future<void> addUser() {

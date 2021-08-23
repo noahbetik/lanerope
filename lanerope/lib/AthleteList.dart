@@ -115,6 +115,8 @@ class _AthleteListState extends State<AthleteList> {
         }
         admin.filteredNames = temp;
       }
+
+      // long-term readability/maintainability would be better if this was dictionary instead of list
       return ListView.builder(
         itemCount: admin.filteredNames.length,
         itemBuilder: (BuildContext context, int index) {
