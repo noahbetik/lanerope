@@ -218,13 +218,16 @@ List convos = [];
 void getConvos() async {
   var snap = await users.doc(currentUID).get();
   List cvs = snap.get('convos');
-  for (String c in cvs) {
-    List temp = await convoInfo(c);
-    String text = temp[2].split(splitSeq)[0];
-    bool newMsg = (temp[3] != 'received') && temp[0] != currentUID;
-    print(newMsg);
-    convos.add(ConvoTile(
-        cID: c, id: temp[0], name: temp[1], newMsg: newMsg, lastMsg: text));
+  if (cvs.isNotEmpty){
+    for (String c in cvs) {
+      print(cvs.length);
+      List temp = await convoInfo(c);
+      String text = temp[2].split(splitSeq)[0];
+      bool newMsg = (temp[3] != 'received') && temp[0] != currentUID;
+      print(newMsg);
+      convos.add(ConvoTile(
+          cID: c, id: temp[0], name: temp[1], newMsg: newMsg, lastMsg: text));
+    }
   }
 }
 
@@ -233,6 +236,8 @@ Future<List> convoInfo(String convoID) async {
   print("getting convo " + convoID);
   var cv = await messages.doc(convoID).get();
   List temp = cv.get('participants');
+  print("this is temp");
+  print(temp);
   info.add(temp[0] == currentUID ? temp[1] : temp[0]); // other UID
   var other = await users.doc(info[0]).get();
   print("this that");
@@ -240,7 +245,12 @@ Future<List> convoInfo(String convoID) async {
   info.add(other.get("first_name") + " " + other.get("last_name")); // name
   temp = cv.get('messages');
   int len = temp.length;
-  info.add(temp[len - 1]); // last msg
+  if (len > 0){
+    info.add(temp[len - 1]); // last msg
+  }
+  else {
+    info.add("yeehaw");
+  }
   info.add(cv.get("status"));
   return info;
 }

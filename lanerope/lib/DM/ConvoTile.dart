@@ -88,21 +88,30 @@ class ConvoTile extends StatelessWidget {
             else {
               ts = TextStyle(fontWeight: FontWeight.normal);
             }
-
-            String dbMessage = msgs[len-1].split(globals.splitSeq)[0];
-            if (dbMessage.startsWith("https://firebasestorage.googleapis.com/v0/b/lanerope-nb.appspot.com/o/image_cropper")){
-              dbMessage = "<Image>";
-              // don't want to display the image link as the message preview
+            String dbMessage = '';
+            if (len > 0){
+              dbMessage = msgs[len-1].split(globals.splitSeq)[0];
+              if (dbMessage.startsWith("https://firebasestorage.googleapis.com/v0/b/lanerope-nb.appspot.com/o/image_cropper")){
+                dbMessage = "<Image>";
+                // don't want to display the image link as the message preview
+              }
             }
+
+            else {
+              dbMessage = "Start the conversation!";
+            }
+
 
             return ListTile(
               title: Text(this.name, style: ts),
               subtitle: Text(dbMessage, style: ts),
               trailing: Text('', style: ts),
               onTap: () async {
-                if (msgs[len - 1].split(globals.splitSeq)[2] != globals.currentUID) {
-                  messages.doc(this.cID).update({"status": "received"});
-                  // update message status
+                if (len > 0) {
+                  if (msgs[len - 1].split(globals.splitSeq)[2] != globals.currentUID) {
+                    messages.doc(this.cID).update({"status": "received"});
+                    // update message status
+                  }
                 }
                 Navigator.push(
                     context,

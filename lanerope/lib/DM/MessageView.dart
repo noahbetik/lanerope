@@ -106,7 +106,7 @@ class MsgViewState extends State<MessageView> {
                 return SizedBox.shrink();
               } else {
                 var ds = snap.data;
-                SchedulerBinding.instance?.addPostFrameCallback((_) {
+                /*SchedulerBinding.instance?.addPostFrameCallback((_) {
                   // move to bottom of screen upon sending/receiving new message
                   // animation not working for some reason
                   _sCtrl.animateTo(
@@ -114,13 +114,16 @@ class MsgViewState extends State<MessageView> {
                     duration: Duration(milliseconds: 2000),
                     curve: Curves.fastOutSlowIn,
                   );
-                });
+                });*/
                 int num = ds!['messages'].length;
-                if (ds['messages'][num - 1].split(globals.splitSeq)[2] !=
-                    globals.currentUID) {
-                  messages.doc(widget.chatID).update({"status": "received"});
-                  // update message status as received
+                if (num > 0) {
+                  if (ds['messages'][num - 1].split(globals.splitSeq)[2] !=
+                      globals.currentUID) {
+                    messages.doc(widget.chatID).update({"status": "received"});
+                    // update message status as received
+                  }
                 }
+
                 return ListView.builder(
                   // show all the messages
                   // can use lazy builder since images use keep-alives and text renders quickly
